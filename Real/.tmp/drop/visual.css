@@ -8203,6 +8203,7 @@
   max-width: 100%;
 }
 .visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG .headTitle {
+  color: #a6a6a6;
   font-size: 1em;
   font-weight: 500;
 }
@@ -8241,6 +8242,7 @@
 }
 .visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG .progress {
   border-radius: 0px;
+  display: none;
 }
 .visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG .progress-bar-selected {
   background-color: green;
@@ -8249,4 +8251,5 @@
   -webkit-filter: grayscale(100%);
   /* Safari 6.0 - 9.0 */
   filter: grayscale(100%);
+  opacity: 0.1;
 }

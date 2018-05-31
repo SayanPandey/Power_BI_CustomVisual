@@ -629,11 +629,8 @@ var powerbi;
                         this.row.append("div").classed("col-3", true).attr("id", "col-2").append("h5").text("Develop").classed("head head2", true);
                         this.row.append("div").classed("col-3", true).attr("id", "col-3").append("h5").text("Launch").classed("head head3", true);
                         this.row.append("div").classed("col-3", true).attr("id", "col-4").append("h5").text("Grow").classed("head head4", true);
-                        //Setting event handlers
-                        $("svg").click(function () {
-                            console.log(this);
-                        });
                     }
+                    //Utility function to create chart
                     Visual.prototype.createChart = function (col, head, value, id) {
                         var color;
                         var stroke;
@@ -644,7 +641,7 @@ var powerbi;
                                 break;
                             case 2:
                                 color = "white";
-                                stroke = "#027600";
+                                stroke = "#18a518";
                                 break;
                             case 3:
                                 color = "white";
@@ -659,23 +656,34 @@ var powerbi;
                                 stroke = "";
                         }
                         //This is the column used to recognise specific chart
-                        var newCol = d3.select("#col-" + col).append("div").classed("SVGcontainer grey", true).attr("id", id).attr("style", "padding:10px;");
+                        var newCol = d3.select("#col-" + col).append("div").classed("SVGcontainer grey inactive", true)
+                            .attr("id", id).attr("style", "padding:10px;");
                         //making new chart
                         var svg = newCol.append("svg")
                             .attr("width", "220")
                             .attr("height", "130")
                             .attr("xmlns", "http://www.w3.org/2000/svg");
                         //Appending Rectangle
+                        var textcolor = "black";
+                        if (col == 2) {
+                            var temp = color; //This code actually revesrses the color scheme for column 2
+                            color = stroke;
+                            stroke = temp;
+                            textcolor = "white";
+                        }
+                        //appending the rectangle
                         svg.append("rect").attr("rx", "10").attr("ry", "10")
-                            .attr("height", "130").attr("width", "220")
+                            .attr("height", "90").attr("width", "220")
                             .attr("fill", color).attr("stroke", stroke).attr("stroke-width", "2.5");
                         //appending text;
                         svg.append("text").text(value)
                             .attr("x", "95%").attr("y", "20%").attr("text-anchor", "end").attr("dy", "0.35em")
-                            .classed("label", true);
+                            .classed("label", true).attr("fill", textcolor);
                         //appending head text;
                         svg.append("foreignObject")
-                            .attr("x", "10").attr("y", "10").attr("width", "150").attr("height", "70").append("xhtml:div").text(head).classed("headTitle", true);
+                            .attr("x", "10").attr("y", "10").attr("width", "150").attr("height", "70")
+                            .append("xhtml:div").text(head).classed("headTitle", true)
+                            .attr("style", "color:" + textcolor);
                         //appending progress bars
                         if (col != 2) {
                             svg.append("foreignObject")
@@ -700,6 +708,14 @@ var powerbi;
                         for (var i = 0; i < COL.length; i++) {
                             this.createChart(COL[i], HD[i], VL[i], ID[i]);
                         }
+                        //Setting event handlers
+                        //Partial display
+                        $(".inactive").mouseenter(function () {
+                            $(this).removeClass("grey");
+                        });
+                        $(".inactive").mouseleave(function () {
+                            $(this).addClass("grey");
+                        });
                     };
                     return Visual;
                 }());
