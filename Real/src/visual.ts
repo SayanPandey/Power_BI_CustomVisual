@@ -23,7 +23,6 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-
 module powerbi.extensibility.visual {
 
     export class Visual implements IVisual {
@@ -37,6 +36,7 @@ module powerbi.extensibility.visual {
         private Data:DataView;
         private newCol:d3.Selection<SVGAElement>;
 
+
         constructor(options: VisualConstructorOptions) {
             this.host=options.host;
             this.target = options.element;
@@ -49,6 +49,12 @@ module powerbi.extensibility.visual {
             this.row.append("div").classed("col-3",true).attr("id","col-2").append("h5").text("Develop").classed("head head2",true);
             this.row.append("div").classed("col-3",true).attr("id","col-3").append("h5").text("Launch").classed("head head3",true);
             this.row.append("div").classed("col-3",true).attr("id","col-4").append("h5").text("Grow").classed("head head4",true);
+
+            //Setting event handlers
+            $("svg").click(
+                function (this): void {
+                    console.log(this);
+                });
         }
 
         public createChart(col : number,head : string, value : number, id : string){
@@ -76,7 +82,7 @@ module powerbi.extensibility.visual {
                     stroke="";
             }
             //This is the column used to recognise specific chart
-            let newCol = d3.select("#col-"+col).append("div").classed("SVGconatiner",true).attr("id",id).attr("style","padding:10px;"); 
+            let newCol = d3.select("#col-"+col).append("div").classed("SVGcontainer grey",true).attr("id",id).attr("style","padding:10px;"); 
             //making new chart
             let svg = newCol.append("svg")
                         .attr("width","220")
@@ -86,7 +92,7 @@ module powerbi.extensibility.visual {
             //Appending Rectangle
             svg.append("rect").attr("rx","10").attr("ry","10")
                 .attr("height","130").attr("width","220")
-                .attr("fill",color);//.attr("stroke",stroke).attr("stroke-width","2.5");
+                .attr("fill",color).attr("stroke",stroke).attr("stroke-width","2.5");
             //appending text;
             svg.append("text").text(value)
                 .attr("x","95%").attr("y","20%").attr("text-anchor","end").attr("dy","0.35em")
@@ -111,6 +117,7 @@ module powerbi.extensibility.visual {
 
         public update(options: VisualUpdateOptions) {
             //Removing elements
+            $(".col-3").find('div').remove();
             let dv = options.dataViews;
             let COL = dv[0].categorical.values[0].values;
             let HD = dv[0].categorical.categories[0].values;
@@ -132,3 +139,5 @@ module powerbi.extensibility.visual {
         // }
     }
 }
+
+

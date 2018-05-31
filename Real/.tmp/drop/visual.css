@@ -8245,3 +8245,8 @@
 .visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG .progress-bar-selected {
   background-color: green;
 }
+.visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG .grey {
+  -webkit-filter: grayscale(100%);
+  /* Safari 6.0 - 9.0 */
+  filter: grayscale(100%);
+}
