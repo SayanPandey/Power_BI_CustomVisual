@@ -35,6 +35,7 @@ module powerbi.extensibility.visual {
         private barGroup : d3.Selection<SVGAElement>;
         private target;
         private Data:DataView;
+        private newCol:d3.Selection<SVGAElement>;
 
         constructor(options: VisualConstructorOptions) {
             this.host=options.host;
@@ -49,19 +50,59 @@ module powerbi.extensibility.visual {
             this.row.append("div").classed("col-3",true).attr("id","col-4").append("h5").text("Grow").classed("head head4",true);
         }
 
-        public createChart(col : number){
-            console.log(col);
+        public createChart(col : number,head : string, value : number, id : string){
+            let newCol = d3.select("#col-"+col).append("div").attr("id",id); //This is the column used to recognise specific chart
+            var color;
+            var stroke
+            switch(col){
+                case 1:
+                    color="white";
+                    stroke="orange";
+                    break;
+                case 2:
+                    color="white";
+                    stroke="#027600";
+                    break;
+                case 3:
+                    color="white";
+                    stroke="#04D9DF";
+                    break;
+                case 4:
+                    color="white";
+                    stroke="rgb(50, 64, 255,0.6)";
+                    break;
+                default:
+                    color="rgba(0,0,0,0)";
+                    stroke="";
+            }
+            //making new chart
+            let svg = newCol.append("svg")
+                        .attr("width","250")
+                        .attr("height","160")
+                        .attr("xmlns","http://www.w3.org/2000/svg");
+
+            //Appending Rectangle
+            svg.append("rect").attr("rx","10").attr("ry","10")
+                .attr("height","155").attr("width","250")
+                .attr("fill",color).attr("stroke",stroke).attr("stroke-width","2.5");
+            //appending text;
+            svg.append("text").text(value)
+                .attr("x","95%").attr("y","20%").attr("text-anchor","end").attr("dy","0.35em")
+                .classed("label",true);
+            //appending head text;
+            svg.append("foreignObject")
+            .attr("x","5").attr("y","10").attr("width","150").attr("height","70").append("xhtml:div").text(head).classed("headTitle",true);
         }
 
         public update(options: VisualUpdateOptions) {
             let dv = options.dataViews;
             let COL = dv[0].categorical.values[0].values;
-            let VL = dv[0].categorical.categories[0].values;
-            let HD = dv[0].categorical.categories[1].values;
+            let HD = dv[0].categorical.categories[0].values;
+            let VL = dv[0].categorical.categories[1].values;
             let ID = dv[0].categorical.categories[2].values;
             
             for(let i=0;i<COL.length;i++){
-                this.createChart(5);
+                this.createChart(<number>COL[i],<string>HD[i],<number>VL[i],<string>ID[i]);
             }
         }
 
