@@ -43,6 +43,7 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
             //creating an Container element
             this.Container=d3.select(this.target).append("div").classed('container-fluid',true);
             this.row=d3.select(".container-fluid").append("div").classed('row',true);
+            
             //Appending the values heading now
             this.row.append("div").classed("col-3",true).attr("id","col-1").append("h5").text("Recruit").classed("head head1",true);
             this.row.append("div").classed("col-3",true).attr("id","col-2").append("h5").text("Develop").classed("head head2",true);
@@ -51,7 +52,6 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
         }
 
         public createChart(col : number,head : string, value : number, id : string){
-            let newCol = d3.select("#col-"+col).append("div").attr("id",id); //This is the column used to recognise specific chart
             var color;
             var stroke
             switch(col){
@@ -75,26 +75,42 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
                     color="rgba(0,0,0,0)";
                     stroke="";
             }
+            //This is the column used to recognise specific chart
+            let newCol = d3.select("#col-"+col).append("div").classed("SVGconatiner",true).attr("id",id).attr("style","padding:10px;"); 
             //making new chart
             let svg = newCol.append("svg")
-                        .attr("width","250")
-                        .attr("height","160")
+                        .attr("width","220")
+                        .attr("height","130")
                         .attr("xmlns","http://www.w3.org/2000/svg");
 
             //Appending Rectangle
             svg.append("rect").attr("rx","10").attr("ry","10")
-                .attr("height","155").attr("width","250")
-                .attr("fill",color).attr("stroke",stroke).attr("stroke-width","2.5");
+                .attr("height","130").attr("width","220")
+                .attr("fill",color);//.attr("stroke",stroke).attr("stroke-width","2.5");
             //appending text;
             svg.append("text").text(value)
                 .attr("x","95%").attr("y","20%").attr("text-anchor","end").attr("dy","0.35em")
                 .classed("label",true);
             //appending head text;
             svg.append("foreignObject")
-            .attr("x","5").attr("y","10").attr("width","150").attr("height","70").append("xhtml:div").text(head).classed("headTitle",true);
+            .attr("x","10").attr("y","10").attr("width","150").attr("height","70").append("xhtml:div").text(head).classed("headTitle",true);
+
+            //appending progress bars
+            if(col!=2){
+                svg.append("foreignObject")
+                .attr("x","10").attr("y","60%").attr("width","190").attr("height","70").append("xhtml:div")
+                .classed("progress",true).append("div").classed("progress-bar progress-bar-selected",true)
+                .attr({"aria-valuenow":"40","aria-valuemin":"0","aria-valuemax":"100","style":"width:40%"});
+                //Second Progress bar
+                svg.append("foreignObject")
+                .attr("x","10").attr("y","80%").attr("width","190").attr("height","70").append("xhtml:div")
+                .classed("progress",true).append("div").classed("progress-bar progress-bar-success",true)
+                .attr({"aria-valuenow":"40","aria-valuemin":"0","aria-valuemax":"100","style":"width:40%"});
+            }
         }
 
         public update(options: VisualUpdateOptions) {
+            //Removing elements
             let dv = options.dataViews;
             let COL = dv[0].categorical.values[0].values;
             let HD = dv[0].categorical.categories[0].values;

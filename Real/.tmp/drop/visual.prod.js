@@ -628,7 +628,6 @@ var powerbi;
                         this.row.append("div").classed("col-3", true).attr("id", "col-4").append("h5").text("Grow").classed("head head4", true);
                     }
                     Visual.prototype.createChart = function (col, head, value, id) {
-                        var newCol = d3.select("#col-" + col).append("div").attr("id", id); //This is the column used to recognise specific chart
                         var color;
                         var stroke;
                         switch (col) {
@@ -652,24 +651,39 @@ var powerbi;
                                 color = "rgba(0,0,0,0)";
                                 stroke = "";
                         }
+                        //This is the column used to recognise specific chart
+                        var newCol = d3.select("#col-" + col).append("div").classed("SVGconatiner", true).attr("id", id).attr("style", "padding:10px;");
                         //making new chart
                         var svg = newCol.append("svg")
-                            .attr("width", "250")
-                            .attr("height", "160")
+                            .attr("width", "220")
+                            .attr("height", "130")
                             .attr("xmlns", "http://www.w3.org/2000/svg");
                         //Appending Rectangle
                         svg.append("rect").attr("rx", "10").attr("ry", "10")
-                            .attr("height", "155").attr("width", "250")
-                            .attr("fill", color).attr("stroke", stroke).attr("stroke-width", "2.5");
+                            .attr("height", "130").attr("width", "220")
+                            .attr("fill", color); //.attr("stroke",stroke).attr("stroke-width","2.5");
                         //appending text;
                         svg.append("text").text(value)
                             .attr("x", "95%").attr("y", "20%").attr("text-anchor", "end").attr("dy", "0.35em")
                             .classed("label", true);
                         //appending head text;
                         svg.append("foreignObject")
-                            .attr("x", "5").attr("y", "10").attr("width", "150").attr("height", "70").append("xhtml:div").text(head).classed("headTitle", true);
+                            .attr("x", "10").attr("y", "10").attr("width", "150").attr("height", "70").append("xhtml:div").text(head).classed("headTitle", true);
+                        //appending progress bars
+                        if (col != 2) {
+                            svg.append("foreignObject")
+                                .attr("x", "10").attr("y", "60%").attr("width", "190").attr("height", "70").append("xhtml:div")
+                                .classed("progress", true).append("div").classed("progress-bar progress-bar-selected", true)
+                                .attr({ "aria-valuenow": "40", "aria-valuemin": "0", "aria-valuemax": "100", "style": "width:40%" });
+                            //Second Progress bar
+                            svg.append("foreignObject")
+                                .attr("x", "10").attr("y", "80%").attr("width", "190").attr("height", "70").append("xhtml:div")
+                                .classed("progress", true).append("div").classed("progress-bar progress-bar-success", true)
+                                .attr({ "aria-valuenow": "40", "aria-valuemin": "0", "aria-valuemax": "100", "style": "width:40%" });
+                        }
                     };
                     Visual.prototype.update = function (options) {
+                        //Removing elements
                         var dv = options.dataViews;
                         var COL = dv[0].categorical.values[0].values;
                         var HD = dv[0].categorical.categories[0].values;
