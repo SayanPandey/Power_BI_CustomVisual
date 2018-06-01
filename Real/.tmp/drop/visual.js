@@ -649,10 +649,10 @@ var powerbi;
                                 break;
                             case 4:
                                 color = "white";
-                                stroke = "rgb(50, 64, 255,0.6)";
+                                stroke = "#3300FF";
                                 break;
                             default:
-                                color = "rgba(0,0,0,0)";
+                                color = "white";
                                 stroke = "";
                         }
                         //This is the column used to recognise specific chart
@@ -663,27 +663,18 @@ var powerbi;
                             .attr("width", "220")
                             .attr("height", "130")
                             .attr("xmlns", "http://www.w3.org/2000/svg");
-                        //Appending Rectangle
-                        var textcolor = "black";
-                        if (col == 2) {
-                            var temp = color; //This code actually revesrses the color scheme for column 2
-                            color = stroke;
-                            stroke = temp;
-                            textcolor = "white";
-                        }
-                        //appending the rectangle
+                        //Appending svG
                         svg.append("rect").attr("rx", "10").attr("ry", "10")
                             .attr("height", "90").attr("width", "220")
                             .attr("fill", color).attr("stroke", stroke).attr("stroke-width", "2.5");
                         //appending text;
                         svg.append("text").text(value)
                             .attr("x", "95%").attr("y", "20%").attr("text-anchor", "end").attr("dy", "0.35em")
-                            .classed("label", true).attr("fill", textcolor);
+                            .classed("label", true);
                         //appending head text;
                         svg.append("foreignObject")
                             .attr("x", "10").attr("y", "10").attr("width", "150").attr("height", "70")
-                            .append("xhtml:div").text(head).classed("headTitle", true)
-                            .attr("style", "color:" + textcolor);
+                            .append("xhtml:div").text(head).classed("headTitle", true);
                         //appending progress bars
                         if (col != 2) {
                             svg.append("foreignObject")
@@ -708,7 +699,22 @@ var powerbi;
                         for (var i = 0; i < COL.length; i++) {
                             this.createChart(COL[i], HD[i], VL[i], ID[i]);
                         }
+                        //Functions for events
+                        function activate(x) {
+                            //Block to ACTIVATE
+                            var svG = $(x).find("svg");
+                            var fill = svG.find("rect").attr("stroke");
+                            svG.find("rect").attr("fill", fill);
+                            svG.find("text").attr("fill", "white");
+                            svG.find("div").attr({ "style": "color:white" });
+                        }
                         //Setting event handlers
+                        $(".SVGcontainer").click(function () {
+                            //Block to make it active
+                            $(this).removeClass("inactive grey").addClass("active").unbind("mouseleave");
+                            //block to make $(this) to an active form
+                            activate(this);
+                        });
                         //Partial display
                         $(".inactive").mouseenter(function () {
                             $(this).removeClass("grey");
@@ -716,6 +722,7 @@ var powerbi;
                         $(".inactive").mouseleave(function () {
                             $(this).addClass("grey");
                         });
+                        //Tiles on click increases length
                     };
                     return Visual;
                 }());
