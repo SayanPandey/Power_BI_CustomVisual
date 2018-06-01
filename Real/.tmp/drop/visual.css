@@ -8193,6 +8193,7 @@
   border-top: none;
   border-bottom-left-radius: 30px;
   border-bottom-right-radius: 30px;
+  min-height: 100vh;
 }
 .visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG .col-3 {
   padding: 0px;
@@ -8252,5 +8253,18 @@
   -webkit-filter: grayscale(100%);
   /* Safari 6.0 - 9.0 */
   filter: grayscale(100%);
-  opacity: 0.7;
+}
+.visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG .strong-grey {
+  -webkit-filter: grayscale(100%);
+  /* Safari 6.0 - 9.0 */
+  filter: grayscale(100%);
+  opacity: 0.1;
+}
+.visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG .node1 {
+  position: absolute;
+}
+.visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG .node2 {
+  position: absolute;
+  right: 200px;
+  bottom: 500px;
 }

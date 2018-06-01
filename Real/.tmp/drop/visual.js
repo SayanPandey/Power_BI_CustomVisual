@@ -701,12 +701,18 @@ var powerbi;
                         }
                         //Functions for events
                         function activate(x) {
+                            //Block to disable other activation
+                            var group = $(".col-3").find(".SVGcontainer").addClass("strong-grey");
+                            group.find("rect").attr("fill", "white");
+                            group.find("text").attr("fill", "black");
+                            group.find("div").attr({ "style": "text-shadow:none" });
                             //Block to ACTIVATE
+                            $(x).removeClass("strong-grey");
                             var svG = $(x).find("svg");
                             var fill = svG.find("rect").attr("stroke");
                             svG.find("rect").attr("fill", fill);
-                            svG.find("text").attr("fill", "white");
-                            svG.find("div").attr({ "style": "color:white" });
+                            svG.find("text").attr("fill", "white").attr({ "style": "text-shadow:black 0px 0px 3px" });
+                            svG.find("div").attr({ "style": "color:white;text-shadow:black 0px 0px 3px" });
                         }
                         //Setting event handlers
                         $(".SVGcontainer").click(function () {
@@ -722,7 +728,6 @@ var powerbi;
                         $(".inactive").mouseleave(function () {
                             $(this).addClass("grey");
                         });
-                        //Tiles on click increases length
                     };
                     return Visual;
                 }());

@@ -127,15 +127,19 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
 
             //Functions for events
             function activate(x: SVGElement){
-
-
+                //Block to disable other activation
+                let group = $(".col-3").find(".SVGcontainer").addClass("strong-grey");
+                group.find("rect").attr("fill","white");
+                group.find("text").attr("fill","black");
+                group.find("div").attr({"style":"text-shadow:none"})
 
                 //Block to ACTIVATE
+                    $(x).removeClass("strong-grey");
                     let svG=$(x).find("svg");
                     let fill=svG.find("rect").attr("stroke");
                     svG.find("rect").attr("fill",fill);
-                    svG.find("text").attr("fill","white");
-                    svG.find("div").attr({"style":"color:white"});
+                    svG.find("text").attr("fill","white").attr({"style":"text-shadow:black 0px 0px 3px"});
+                    svG.find("div").attr({"style":"color:white;text-shadow:black 0px 0px 3px"});
             }
 
             //Setting event handlers
@@ -157,9 +161,6 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
                 function (this): void {
                     $(this).addClass("grey");
             });
-
-            //Tiles on click increases length
-
 
         }
 
