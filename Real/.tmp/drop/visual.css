@@ -8226,6 +8226,9 @@
 }
 .visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG .row {
   padding-bottom: 5px;
+  position: relative;
+  min-width: 100%;
+  min-height: 100%;
 }
 .visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG svg {
   position: relative;
@@ -8259,13 +8262,13 @@
   filter: grayscale(100%);
   opacity: 0.1;
 }
-.visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG #connecting {
+.visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG .connecting {
   position: absolute;
   z-index: -50;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100vh;
+  top: 0px;
+  left: 0px;
+  min-width: 100%;
+  min-height: 100%;
 }
 .visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG #line {
   stroke-width: 2px;
@@ -8285,4 +8288,9 @@
 .visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG #two {
   top: 200px;
   right: 50px;
+}
+.visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG path {
+  stroke: #616A6B !important;
+  stroke-width: 1.5 !important;
+  position: relative !important;
 }

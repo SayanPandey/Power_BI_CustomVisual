@@ -42,7 +42,7 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
             this.target = options.element;
             //creating an Container element
             this.Container=d3.select(this.target).append("div").classed('container-fluid',true);
-            this.row=d3.select(".container-fluid").append("div").classed('row',true);
+            this.row=d3.select(".container-fluid").append("div").classed('row',true).attr("id","row1");
             
             //Appending the values heading now
             this.row.append("div").classed("col-3",true).attr("id","col-1").append("h5").text("Recruit").classed("head head1",true);
@@ -81,13 +81,13 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
                         .attr("id",id).attr("style","padding:10px;"); 
             //making new chart
             let svg = newCol.append("svg")
-                        .attr("width","220")
+                        .attr("width","80%")
                         .attr("height","130")
                         .attr("xmlns","http://www.w3.org/2000/svg");
 
             //Appending svG
             svg.append("rect").attr("rx","10").attr("ry","10")
-                .attr("height","90").attr("width","220")
+                .attr("height","90").attr("width","100%")
                 .attr("fill",color).attr("stroke",stroke).attr("stroke-width","2.5");
             //appending text;
             svg.append("text").text(value)
@@ -95,7 +95,7 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
                 .classed("label",true);
             //appending head text;
             svg.append("foreignObject")
-            .attr("x","10").attr("y","10").attr("width","150").attr("height","70")
+            .attr("x","10").attr("y","10").attr("width","68%").attr("height","70%")
             .append("xhtml:div").text(head).classed("headTitle",true);
 
             //appending progress bars
@@ -113,24 +113,37 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
         }
 
         //create line function()
-        public createLine(){
-            // d3.select("#HomepageVisit").append("svg").attr({"id":"line","width":"5px","height":"5px"}).append("line")
-            //     .attr("id","line");
-            d3.select(this.target).append("svg").attr("id","connecting").append("path").attr("id","line");
-            var line = $('#line');
-            var div1 = $('#GuidedExperienceVisits');
-            var div2 = $('#DevChat');
+        public createLine(id1:string,id2:string,x:number){
+            var row=d3.select("#row1").append("svg").attr("class","connecting").append("path").attr({"id":"line"+x,"fill":"transparent"});
+            var line = $('#line'+x);
+            var div1 = $('#'+id1);
+            var div2 = $('#'+id2);
 
-            var x1 = div1.offset().left + (div1.width()-20);
+            //Center for the first block
+            var x1 = div1.offset().left + (div1.width()/2);
             var y1 = div1.offset().top + (div1.height()/2);
-            var x2 = div2.offset().left+40;
+
+            //Line to of Second block
+            var x2l = div2.offset().left;
+            var x2 = div2.offset().left+(div1.width()/2);
             var y2 = div2.offset().top + (div2.height()/2);
-            var c1x = div2.offset().left; var c2x=c1x;
-            var c1y=(y1+y2)/2+50; var c2y=c1y-100;
-            line.attr("d","M"+x1+","+y1+" C"+c1x+","+" "+c1y+" "+c2x+","+c2y+" "+x2+","+y2);
+            
+            //First breakpoint horizontal
+            var hor1=div1.offset().left + (div1.width());
+
+            //Creating curve from div1 to div 2
+            var path="M"+x1+" "+y1; //selecting centroid of div1
+                path+=" H "+hor1;   //creating hori line to first break point
+                path+="M"+hor1+" "+y1;  //shifing the center to the end point
+                path+=" L "+x2l+" "+y2; //Line
+                path+="M"+x2l+" "+y2    //Centershift
+                path+=" L "+x2+" "+y2;  //Final lining
+               
+            line.attr("d",path);
         }
 
         public update(options: VisualUpdateOptions) {
+            
             //Removing elements
             $(".col-3").find('div').remove();
             let dv = options.dataViews;
@@ -142,7 +155,11 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
             for(let i=0;i<COL.length;i++){
                 this.createChart(<number>COL[i],<string>HD[i],<number>VL[i],<string>ID[i]);
             }
-            this.createLine();
+            this.createLine("GuidedExperienceVisits","DevChat",1);
+            this.createLine("DevChat","AzureMarketplaceApps",2);
+            this.createLine("PlaybookDownloads","DevChat",3);
+            
+
             //Functions for events
             function activate(x: SVGElement){
                 //Block to disable other activation
@@ -155,11 +172,22 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
                     $(x).removeClass("strong-grey");
                     let svG=$(x).find("svg");
                     let fill=svG.find("rect").attr("stroke");
-                    svG.find("rect").attr("fill",fill);
-                    svG.find("text").attr("fill","white").attr({"style":"text-shadow:black 0px 0px 3px"});
-                    svG.find("div").attr({"style":"color:white;text-shadow:black 0px 0px 3px"});
+
+                    //Exception coloring for the 2nd column
+                    if($(x).parent().attr("id")=="col-2"){
+                        svG.find("rect").attr("fill",fill);
+                        svG.find("text").attr("fill","white").attr({"style":"text-shadow:black 0px 0px 3px"});
+                        svG.find("div").attr({"style":"color:white;text-shadow:black 0px 0px 3px"});    
+                    }
                     
             }
+
+            //Viewport scrolling 
+            var innerHeight=window.innerHeight;
+            var rowHeight=$("#row1").height();
+            if(rowHeight>innerHeight)
+                $(this.target).css({"overflow-y":"scroll"});
+
 
             //Setting event handlers
             $(".SVGcontainer").click(
