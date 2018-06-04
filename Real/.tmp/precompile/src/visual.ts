@@ -112,6 +112,24 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
             }
         }
 
+        //create line function()
+        public createLine(){
+            // d3.select("#HomepageVisit").append("svg").attr({"id":"line","width":"5px","height":"5px"}).append("line")
+            //     .attr("id","line");
+            d3.select(this.target).append("svg").attr("id","connecting").append("path").attr("id","line");
+            var line = $('#line');
+            var div1 = $('#GuidedExperienceVisits');
+            var div2 = $('#DevChat');
+
+            var x1 = div1.offset().left + (div1.width()-20);
+            var y1 = div1.offset().top + (div1.height()/2);
+            var x2 = div2.offset().left+40;
+            var y2 = div2.offset().top + (div2.height()/2);
+            var c1x = div2.offset().left; var c2x=c1x;
+            var c1y=(y1+y2)/2+50; var c2y=c1y-100;
+            line.attr("d","M"+x1+","+y1+" C"+c1x+","+" "+c1y+" "+c2x+","+c2y+" "+x2+","+y2);
+        }
+
         public update(options: VisualUpdateOptions) {
             //Removing elements
             $(".col-3").find('div').remove();
@@ -124,7 +142,7 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
             for(let i=0;i<COL.length;i++){
                 this.createChart(<number>COL[i],<string>HD[i],<number>VL[i],<string>ID[i]);
             }
-
+            this.createLine();
             //Functions for events
             function activate(x: SVGElement){
                 //Block to disable other activation
@@ -140,6 +158,7 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
                     svG.find("rect").attr("fill",fill);
                     svG.find("text").attr("fill","white").attr({"style":"text-shadow:black 0px 0px 3px"});
                     svG.find("div").attr({"style":"color:white;text-shadow:black 0px 0px 3px"});
+                    
             }
 
             //Setting event handlers

@@ -8193,7 +8193,6 @@
   border-top: none;
   border-bottom-left-radius: 30px;
   border-bottom-right-radius: 30px;
-  min-height: 100vh;
 }
 .visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG .col-3 {
   padding: 0px;
@@ -8260,11 +8259,30 @@
   filter: grayscale(100%);
   opacity: 0.1;
 }
-.visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG .node1 {
+.visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG #connecting {
+  position: absolute;
+  z-index: -50;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+}
+.visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG #line {
+  stroke-width: 2px;
+  z-index: 50;
+  stroke: #000000;
+}
+.visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG .point {
+  width: 10px;
+  height: 10px;
+  background: red;
   position: absolute;
 }
-.visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG .node2 {
-  position: absolute;
-  right: 200px;
-  bottom: 500px;
+.visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG #one {
+  top: 20px;
+  left: 50px;
+}
+.visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG #two {
+  top: 200px;
+  right: 50px;
 }

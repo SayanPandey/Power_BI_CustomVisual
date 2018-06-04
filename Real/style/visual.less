@@ -6,7 +6,6 @@
     border-top: none;
     border-bottom-left-radius: 30px;
     border-bottom-right-radius: 30px;
-    min-height: 100vh;
 }
 .col-3{
     padding: 0px;
@@ -76,11 +75,34 @@ foreignObject{
     filter: grayscale(100%);
     opacity:0.1;
 }
-.node1{
-    position:absolute;
-    }
-    .node2{
-    position:absolute;
-    right:200px;
-    bottom:500px;
-    }
+#connecting{
+    position: absolute;
+    z-index:-50;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+  }
+  
+  #line{
+    stroke-width:2px;
+    z-index:50;
+    stroke:rgb(0,0,0);
+  }
+  
+  .point{
+    width: 10px;
+    height: 10px;
+    background: red;
+    position: absolute;
+  }
+  
+  #one{
+    top: 20px;
+    left: 50px;
+  }
+  
+  #two{
+    top: 200px;
+    right: 50px;
+  }

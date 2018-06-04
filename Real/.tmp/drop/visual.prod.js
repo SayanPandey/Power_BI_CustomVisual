@@ -688,6 +688,24 @@ var powerbi;
                                 .attr({ "aria-valuenow": "40", "aria-valuemin": "0", "aria-valuemax": "100", "style": "width:40%" });
                         }
                     };
+                    //create line function()
+                    Visual.prototype.createLine = function () {
+                        // d3.select("#HomepageVisit").append("svg").attr({"id":"line","width":"5px","height":"5px"}).append("line")
+                        //     .attr("id","line");
+                        d3.select(this.target).append("svg").attr("id", "connecting").append("path").attr("id", "line");
+                        var line = $('#line');
+                        var div1 = $('#GuidedExperienceVisits');
+                        var div2 = $('#DevChat');
+                        var x1 = div1.offset().left + (div1.width() - 20);
+                        var y1 = div1.offset().top + (div1.height() / 2);
+                        var x2 = div2.offset().left + 40;
+                        var y2 = div2.offset().top + (div2.height() / 2);
+                        var c1x = div2.offset().left;
+                        var c2x = c1x;
+                        var c1y = (y1 + y2) / 2 + 50;
+                        var c2y = c1y - 100;
+                        line.attr("d", "M" + x1 + "," + y1 + " C" + c1x + "," + " " + c1y + " " + c2x + "," + c2y + " " + x2 + "," + y2);
+                    };
                     Visual.prototype.update = function (options) {
                         //Removing elements
                         $(".col-3").find('div').remove();
@@ -699,6 +717,7 @@ var powerbi;
                         for (var i = 0; i < COL.length; i++) {
                             this.createChart(COL[i], HD[i], VL[i], ID[i]);
                         }
+                        this.createLine();
                         //Functions for events
                         function activate(x) {
                             //Block to disable other activation
