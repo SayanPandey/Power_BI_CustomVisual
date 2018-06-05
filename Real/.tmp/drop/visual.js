@@ -630,6 +630,11 @@ var powerbi;
                         this.row.append("div").classed("col-3", true).attr("id", "col-3").append("h5").text("Launch").classed("head head3", true);
                         this.row.append("div").classed("col-3", true).attr("id", "col-4").append("h5").text("Grow").classed("head head4", true);
                     }
+                    //Utility function to remove special characters
+                    Visual.prototype.removeSpl = function (x) {
+                        x = x.replace(/[&\/\\#,+()$~%.'":*?<>{}\s]/g, '');
+                        return x;
+                    };
                     //Utility function to create chart
                     Visual.prototype.createChart = function (col, head, value, id) {
                         var color;
@@ -712,23 +717,77 @@ var powerbi;
                         path += " L " + x2 + " " + y2; //Final lining
                         line.attr("d", path);
                     };
-                    Visual.prototype.update = function (options) {
-                        //Removing elements
-                        $(".col-3").find('div').remove();
+                    //Data inserting code
+                    Visual.prototype.getViewModel = function (options) {
                         //Fetching data
                         var dv = options.dataViews;
+                        //Creating unique identities
+                        //Making a viewmodel instance
+                        var count = 0;
+                        var DefaultTiles = {
+                            Tiles: []
+                        };
+                        //Default Void Check
+                        if (!dv
+                            || !dv[0]
+                            || !dv[0].categorical
+                            || !dv[0].categorical.categories
+                            || !dv[0].categorical.categories[0].source
+                            || !dv[0].categorical.values
+                            || !dv[0].metadata)
+                            return DefaultTiles;
+                        //Assigning Quick references
                         var Recruit = dv[0].categorical.categories[0].values;
                         var Develop = dv[0].categorical.categories[1].values;
                         var Launch = dv[0].categorical.categories[2].values;
                         var Grow = dv[0].categorical.categories[3].values;
                         var Metric = dv[0].categorical.values[0].values;
-                        //Creating unique identities
-                        // for(let i=0;i<COL.length;i++){
-                        //     this.createChart(<number>COL[i],<string>HD[i],<number>VL[i],<string>ID[i]);
-                        // }
-                        // this.createLine("GuidedExperienceVisits","DevChat",1);
-                        // this.createLine("DevChat","AzureMarketplaceApps",2);
-                        // this.createLine("PlaybookDownloads","DevChat",3);
+                        //Inserting Default View
+                        for (var i = 0; i < Metric.length; i++) {
+                            var r = Recruit[i];
+                            var d = Develop[i];
+                            var l = Launch[i];
+                            var g = Grow[i];
+                            var col = 0;
+                            var head = '';
+                            if (r == null || d == null || l == null || g == null) {
+                                if (r != null) {
+                                    col = 1, head = r;
+                                }
+                                else if (d != null) {
+                                    col = 2;
+                                    head = d;
+                                }
+                                else if (l != null) {
+                                    col = 3;
+                                    head = l;
+                                }
+                                else if (g != null) {
+                                    col = 4;
+                                    head = g;
+                                }
+                                //Assigning to the object
+                                DefaultTiles.Tiles.push({
+                                    col: col,
+                                    head: head,
+                                    id: this.removeSpl(head),
+                                    value: Metric[i]
+                                });
+                            }
+                        }
+                        //Returning the view model
+                        return DefaultTiles;
+                    };
+                    Visual.prototype.update = function (options) {
+                        //Removing elements
+                        $(".col-3").find('div').remove();
+                        //Getting Default inputs
+                        var Default = this.getViewModel(options);
+                        console.log(Default);
+                        //Creating Rectangles
+                        for (var i = 0; i < Default.Tiles.length; i++) {
+                            this.createChart(Default.Tiles[i].col, Default.Tiles[i].head, Default.Tiles[i].value, Default.Tiles[i].id);
+                        }
                         //Functions for events
                         function activate(x) {
                             //Block to disable other activation

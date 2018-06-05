@@ -25,6 +25,18 @@
  */
 module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
 
+    //Interface for TILES on Default LOAD
+    interface Tile {
+        col:number,
+        head:string,
+        id:string,
+        value:number
+    }
+    //Its Rendering form
+    interface ViewModel{
+        Tiles:Tile[]    //Stores a Tile type array
+    }
+
     export class Visual implements IVisual {
 
         //Property declaration
@@ -51,6 +63,11 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
             this.row.append("div").classed("col-3",true).attr("id","col-4").append("h5").text("Grow").classed("head head4",true);
         }
 
+        //Utility function to remove special characters
+        public removeSpl(x:string): string{
+            x = x.replace(/[&\/\\#,+()$~%.'":*?<>{}\s]/g, '');
+            return x;
+        }
         //Utility function to create chart
         public createChart(col : number,head : string, value : number, id : string){
             var color;
@@ -142,28 +159,77 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
             line.attr("d",path);
         }
 
-        public update(options: VisualUpdateOptions) {
-            
-            //Removing elements
-            $(".col-3").find('div').remove();
+        //Data inserting code
+        private getViewModel(options:VisualUpdateOptions):ViewModel{
             //Fetching data
-            let dv = options.dataViews;
+            let dv=options.dataViews;
+
+             //Creating unique identities
+                //Making a viewmodel instance
+            var count:number=0;
+            let DefaultTiles : ViewModel={
+                Tiles:[]
+            };
+
+            //Default Void Check
+            if (!dv
+                || !dv[0]
+                || !dv[0].categorical
+                || !dv[0].categorical.categories
+                || !dv[0].categorical.categories[0].source
+                || !dv[0].categorical.values
+                || !dv[0].metadata)
+                return DefaultTiles;
+            
+            //Assigning Quick references
             let Recruit = dv[0].categorical.categories[0].values;
             let Develop = dv[0].categorical.categories[1].values;
             let Launch = dv[0].categorical.categories[2].values;
             let Grow = dv[0].categorical.categories[3].values;
             let Metric=dv[0].categorical.values[0].values
-            
-            //Creating unique identities
 
+             //Inserting Default View
+             for(let i=0;i<Metric.length;i++){
+                let r=Recruit[i];
+                let d=Develop[i];
+                let l=Launch[i];
+                let g=Grow[i];
+                let col=0;
+                let head='';
+
+                if(r==null || d==null || l==null || g==null){
+                    if(r!=null){col=1,head=<string>r}
+                    else if(d!=null){col=2;head=<string>d}
+                    else if(l!=null){col=3;head=<string>l}
+                    else if(g!=null){col=4;head=<string>g}
+
+                    //Assigning to the object
+                    DefaultTiles.Tiles.push({
+                        col: col,
+                        head: <string>head,
+                        id: this.removeSpl(<string>head),
+                        value: <number>Metric[i]
+
+                    });
+                }
+            }
+            //Returning the view model
+            return DefaultTiles;
+        }
+
+        public update(options: VisualUpdateOptions) {
             
+            //Removing elements
+            $(".col-3").find('div').remove();
             
-            // for(let i=0;i<COL.length;i++){
-            //     this.createChart(<number>COL[i],<string>HD[i],<number>VL[i],<string>ID[i]);
-            // }
-            // this.createLine("GuidedExperienceVisits","DevChat",1);
-            // this.createLine("DevChat","AzureMarketplaceApps",2);
-            // this.createLine("PlaybookDownloads","DevChat",3);
+            //Getting Default inputs
+            let Default=this.getViewModel(options);
+            console.log(Default);
+
+            //Creating Rectangles
+            for(let i=0;i<Default.Tiles.length;i++){
+                this.createChart(<number>Default.Tiles[i].col,<string>Default.Tiles[i].head,<number>Default.Tiles[i].value,<string>Default.Tiles[i].id);
+            }
             
 
             //Functions for events
