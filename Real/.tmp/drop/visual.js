@@ -715,17 +715,20 @@ var powerbi;
                     Visual.prototype.update = function (options) {
                         //Removing elements
                         $(".col-3").find('div').remove();
+                        //Fetching data
                         var dv = options.dataViews;
-                        var COL = dv[0].categorical.values[0].values;
-                        var HD = dv[0].categorical.categories[0].values;
-                        var VL = dv[0].categorical.categories[1].values;
-                        var ID = dv[0].categorical.categories[2].values;
-                        for (var i = 0; i < COL.length; i++) {
-                            this.createChart(COL[i], HD[i], VL[i], ID[i]);
-                        }
-                        this.createLine("GuidedExperienceVisits", "DevChat", 1);
-                        this.createLine("DevChat", "AzureMarketplaceApps", 2);
-                        this.createLine("PlaybookDownloads", "DevChat", 3);
+                        var Recruit = dv[0].categorical.categories[0].values;
+                        var Develop = dv[0].categorical.categories[1].values;
+                        var Launch = dv[0].categorical.categories[2].values;
+                        var Grow = dv[0].categorical.categories[3].values;
+                        var Metric = dv[0].categorical.values[0].values;
+                        //Creating unique identities
+                        // for(let i=0;i<COL.length;i++){
+                        //     this.createChart(<number>COL[i],<string>HD[i],<number>VL[i],<string>ID[i]);
+                        // }
+                        // this.createLine("GuidedExperienceVisits","DevChat",1);
+                        // this.createLine("DevChat","AzureMarketplaceApps",2);
+                        // this.createLine("PlaybookDownloads","DevChat",3);
                         //Functions for events
                         function activate(x) {
                             //Block to disable other activation

@@ -1,14 +1,34 @@
 {
     "dataRoles": [
         {
-            "displayName": "Category Data",
-            "name": "category",
+            "displayName": "Recruit",
+            "name": "Recruit",
             "kind": "Grouping"
         },
         {
-            "displayName": "Measure Data",
-            "name": "measure",
-            "kind": "Measure"
+            "displayName": "Develop",
+            "name": "Develop",
+            "kind": "Grouping"
+        },
+        {
+            "displayName": "Launch",
+            "name": "Launch",
+            "kind": "Grouping"
+        },
+        {
+            "displayName": "Grow",
+            "name": "Grow",
+            "kind": "Grouping"
+        },
+        {
+            "displayName": "Mertic",
+            "name": "Metric",
+            "kind": "Measure",
+            "requiredTypes": [
+                {
+                    "numeric": true
+                }
+            ]
         }
     ],
     "objects": {
@@ -60,11 +80,49 @@
     },
     "dataViewMappings": [
         {
+            "conditions": [
+                {
+                    "Recruit":{
+                        "max":1
+                    },
+                    "Develop":{
+                        "max":1
+                    },
+                    "Launch":{
+                        "max":1
+                    },
+                    "Grow":{
+                        "max":1
+                    },
+                    "Metric":{
+                        "max":1
+                    }   
+                }
+            ],
             "categorical": {
                 "categories": {
-                    "for": {
-                        "in": "category"
-                    },
+                    "select": [
+                        {
+                            "for": {
+                                "in": "Recruit"
+                            }
+                        },
+                        {
+                            "for": {
+                                "in": "Develop"
+                            }
+                        },
+                        {
+                            "for": {
+                                "in": "Launch"
+                            }
+                        },
+                        {
+                            "for": {
+                                "in": "Grow"
+                            }
+                        }
+                    ],
                     "dataReductionAlgorithm": {
                         "top": {}
                     }
@@ -73,7 +131,7 @@
                     "select": [
                         {
                             "bind": {
-                                "to": "measure"
+                                "to": "Metric"
                             }
                         }
                     ]

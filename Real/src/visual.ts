@@ -146,18 +146,24 @@ module powerbi.extensibility.visual {
             
             //Removing elements
             $(".col-3").find('div').remove();
+            //Fetching data
             let dv = options.dataViews;
-            let COL = dv[0].categorical.values[0].values;
-            let HD = dv[0].categorical.categories[0].values;
-            let VL = dv[0].categorical.categories[1].values;
-            let ID = dv[0].categorical.categories[2].values;
+            let Recruit = dv[0].categorical.categories[0].values;
+            let Develop = dv[0].categorical.categories[1].values;
+            let Launch = dv[0].categorical.categories[2].values;
+            let Grow = dv[0].categorical.categories[3].values;
+            let Metric=dv[0].categorical.values[0].values
             
-            for(let i=0;i<COL.length;i++){
-                this.createChart(<number>COL[i],<string>HD[i],<number>VL[i],<string>ID[i]);
-            }
-            this.createLine("GuidedExperienceVisits","DevChat",1);
-            this.createLine("DevChat","AzureMarketplaceApps",2);
-            this.createLine("PlaybookDownloads","DevChat",3);
+            //Creating unique identities
+
+            
+            
+            // for(let i=0;i<COL.length;i++){
+            //     this.createChart(<number>COL[i],<string>HD[i],<number>VL[i],<string>ID[i]);
+            // }
+            // this.createLine("GuidedExperienceVisits","DevChat",1);
+            // this.createLine("DevChat","AzureMarketplaceApps",2);
+            // this.createLine("PlaybookDownloads","DevChat",3);
             
 
             //Functions for events
