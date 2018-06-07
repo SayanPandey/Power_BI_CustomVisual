@@ -8275,22 +8275,11 @@
   z-index: 50;
   stroke: #000000;
 }
-.visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG .point {
-  width: 10px;
-  height: 10px;
-  background: red;
-  position: absolute;
-}
-.visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG #one {
-  top: 20px;
-  left: 50px;
-}
-.visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG #two {
-  top: 200px;
-  right: 50px;
-}
 .visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG path {
   stroke: #616A6B !important;
   stroke-width: 1.5 !important;
   position: relative !important;
+}
+.visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG #col-2 .active {
+  fill: green;
 }

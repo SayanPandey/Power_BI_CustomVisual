@@ -619,6 +619,10 @@ var powerbi;
             (function (chart774830980A704407B8EAE534A05D1ED8) {
                 var Visual = (function () {
                     function Visual(options) {
+                        //Certain global variables facilitating connection
+                        this.prevp = "All";
+                        this.forp = "All";
+                        this.pointer = "All";
                         this.host = options.host;
                         this.target = options.element;
                         //creating an Container element
@@ -629,6 +633,8 @@ var powerbi;
                         this.row.append("div").classed("col-3", true).attr("id", "col-2").append("h5").text("Develop").classed("head head2", true);
                         this.row.append("div").classed("col-3", true).attr("id", "col-3").append("h5").text("Launch").classed("head head3", true);
                         this.row.append("div").classed("col-3", true).attr("id", "col-4").append("h5").text("Grow").classed("head head4", true);
+                        //Initialising Connection Identity
+                        this.ConnectIdentity = [];
                     }
                     //Utility function to remove special characters
                     Visual.prototype.removeSpl = function (x) {
@@ -694,9 +700,9 @@ var powerbi;
                         }
                     };
                     //create line function()
-                    Visual.prototype.createLine = function (id1, id2, x) {
-                        var row = d3.select("#row1").append("svg").attr("class", "connecting").append("path").attr({ "id": "line" + x, "fill": "transparent" });
-                        var line = $('#line' + x);
+                    Visual.prototype.createLine = function (id1, id2, lineId) {
+                        var row = d3.select("#row1").append("svg").attr("class", "connecting").append("path").attr({ "id": lineId, "fill": "transparent" });
+                        var line = $('#' + lineId);
                         var div1 = $('#' + id1);
                         var div2 = $('#' + id2);
                         //Center for the first block
@@ -710,7 +716,7 @@ var powerbi;
                         var hor1 = div1.offset().left + (div1.width());
                         //Creating curve from div1 to div 2
                         var path = "M" + x1 + " " + y1; //selecting centroid of div1
-                        path += " H " + hor1; //creating hori line to first break point
+                        path += " H " + hor1; //creating horizontal line to first break point
                         path += "M" + hor1 + " " + y1; //shifing the center to the end point
                         path += " L " + x2l + " " + y2; //Line
                         path += "M" + x2l + " " + y2; //Centershift
@@ -742,12 +748,15 @@ var powerbi;
                         var Launch = dv[0].categorical.categories[2].values;
                         var Grow = dv[0].categorical.categories[3].values;
                         var Metric = dv[0].categorical.values[0].values;
+                        //Clearing the connection array
+                        this.ConnectIdentity = [];
                         //Inserting Default View
                         for (var i = 0; i < Metric.length; i++) {
                             var r = Recruit[i];
                             var d = Develop[i];
                             var l = Launch[i];
                             var g = Grow[i];
+                            var num = Metric[i];
                             var col = 0;
                             var head = '';
                             if (r == null || d == null || l == null || g == null) {
@@ -771,27 +780,80 @@ var powerbi;
                                     col: col,
                                     head: head,
                                     id: this.removeSpl(head),
-                                    value: Metric[i]
+                                    value: Metric[i],
+                                });
+                            }
+                            else {
+                                //Pushing specific connection defining objects
+                                this.ConnectIdentity.push({
+                                    Recruit: this.removeSpl(r),
+                                    Develop: this.removeSpl(d),
+                                    Launch: this.removeSpl(l),
+                                    grow: this.removeSpl(g),
+                                    value: num
                                 });
                             }
                         }
                         //Returning the view model
                         return DefaultTiles;
                     };
+                    Visual.prototype.getConnection = function (id, col) {
+                        //Traversing and creating connection
+                        if (this.forp == null)
+                            return null; //Recursion ending case
+                        //Applying the specific pointer
+                        switch (col) {
+                            case 1:
+                                this.pointer = "Recruit";
+                                this.prevp = null;
+                                this.forp = "Develop";
+                                break;
+                            case 2:
+                                this.pointer = "Develop";
+                                this.prevp = "Recruit";
+                                this.forp = "Launch";
+                                break;
+                            case 3:
+                                this.pointer = "Launch";
+                                this.prevp = "Develop";
+                                this.forp = "Grow";
+                                break;
+                            case 4:
+                                this.pointer = "Grow";
+                                this.prevp = "Launch";
+                                this.forp = null;
+                                break;
+                        }
+                        console.log(this.ConnectIdentity);
+                        //Aceessing the connection list
+                        debugger;
+                        for (var i = 0; i < this.ConnectIdentity.length; i++) {
+                            if (id == this.ConnectIdentity[i][this.pointer]) {
+                                if (!document.getElementById(this.ConnectIdentity[i][this.pointer] + this.ConnectIdentity[i][this.forp]) && this.ConnectIdentity[i][this.forp] != "All") {
+                                    this.createLine(this.ConnectIdentity[i][this.pointer], this.ConnectIdentity[i][this.forp], this.ConnectIdentity[i][this.pointer] + this.ConnectIdentity[i][this.forp]);
+                                    $("#" + this.ConnectIdentity[i][this.forp]).removeClass("grey strong-grey inactive").addClass("active");
+                                }
+                                else {
+                                    $("#" + this.ConnectIdentity[i][this.pointer]).removeClass("grey strong-grey inactive").addClass("active").find("text").text(this.ConnectIdentity[i].value);
+                                }
+                            }
+                        }
+                    };
+                    //Update function
                     Visual.prototype.update = function (options) {
                         //Removing elements
                         $(".col-3").find('div').remove();
                         //Getting Default inputs
                         var Default = this.getViewModel(options);
-                        console.log(Default);
-                        //Creating Rectangles
+                        //Creating Default Rectangles
                         for (var i = 0; i < Default.Tiles.length; i++) {
                             this.createChart(Default.Tiles[i].col, Default.Tiles[i].head, Default.Tiles[i].value, Default.Tiles[i].id);
                         }
+                        this.getConnection("DevChat", 2);
                         //Functions for events
                         function activate(x) {
                             //Block to disable other activation
-                            var group = $(".col-3").find(".SVGcontainer").addClass("strong-grey");
+                            var group = $(".col-3").find(".SVGcontainer").fadeOut("fast").addClass("strong-grey").fadeIn("fast");
                             group.find("rect").attr("fill", "white");
                             group.find("text").attr("fill", "black");
                             group.find("div").attr({ "style": "text-shadow:none" });

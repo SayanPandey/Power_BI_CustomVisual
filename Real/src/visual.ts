@@ -38,8 +38,11 @@ module powerbi.extensibility.visual {
     }
     //Below interface is used to update values in runtime
     interface Connection {
-        fromId: string,
-        connect?: Tile[]
+        Recruit:string,
+        Develop:string,
+        Launch:string,
+        grow:string,
+        value:number
     }
 
     export class Visual implements IVisual {
@@ -48,7 +51,6 @@ module powerbi.extensibility.visual {
         private host: IVisualHost;
         private Container: d3.Selection<SVGElement>;
         private row: d3.Selection<SVGElement>;
-        private barGroup: d3.Selection<SVGAElement>;
         private target;
         private Data: DataView;
         private newCol: d3.Selection<SVGAElement>;
@@ -141,9 +143,9 @@ module powerbi.extensibility.visual {
         }
 
         //create line function()
-        public createLine(id1: string, id2: string, x: number) {
-            var row = d3.select("#row1").append("svg").attr("class", "connecting").append("path").attr({ "id": "line" + x, "fill": "transparent" });
-            var line = $('#line' + x);
+        public createLine(id1: string, id2: string, lineId: string) {
+            var row = d3.select("#row1").append("svg").attr("class", "connecting").append("path").attr({ "id": lineId, "fill": "transparent" });
+            var line = $('#'+lineId);
             var div1 = $('#' + id1);
             var div2 = $('#' + id2);
 
@@ -161,7 +163,7 @@ module powerbi.extensibility.visual {
 
             //Creating curve from div1 to div 2
             var path = "M" + x1 + " " + y1; //selecting centroid of div1
-            path += " H " + hor1;   //creating hori line to first break point
+            path += " H " + hor1;   //creating horizontal line to first break point
             path += "M" + hor1 + " " + y1;  //shifing the center to the end point
             path += " L " + x2l + " " + y2; //Line
             path += "M" + x2l + " " + y2    //Centershift
@@ -198,13 +200,16 @@ module powerbi.extensibility.visual {
             let Launch = dv[0].categorical.categories[2].values;
             let Grow = dv[0].categorical.categories[3].values;
             let Metric = dv[0].categorical.values[0].values
-
+            
+            //Clearing the connection array
+            this.ConnectIdentity =[];
             //Inserting Default View
             for (let i = 0; i < Metric.length; i++) {
                 let r = Recruit[i];
                 let d = Develop[i];
                 let l = Launch[i];
                 let g = Grow[i];
+                let num = Metric[i];
                 let col = 0;
                 let head = '';
 
@@ -222,10 +227,15 @@ module powerbi.extensibility.visual {
                         id: this.removeSpl(<string>head),
                         value: <number>Metric[i],
                     });
-
-                    //Pushing specific id of tiles
+                }
+                else{
+                    //Pushing specific connection defining objects
                     this.ConnectIdentity.push({
-                        fromId :this.removeSpl(<string>head),
+                        Recruit:this.removeSpl(<string>r),
+                        Develop:this.removeSpl(<string>d),
+                        Launch:this.removeSpl(<string>l),
+                        grow:this.removeSpl(<string>g),
+                        value:<number>num
                     });
                 }
             }
@@ -233,52 +243,56 @@ module powerbi.extensibility.visual {
             return DefaultTiles;
         }
 
-        //Utility function to read connections
-        private getConnection(options: VisualUpdateOptions){
-            //Fetching data
-            let dv = options.dataViews;
+        //Certain global variables facilitating connection
+        public prevp="All";
+        public forp="All";
+        public pointer="All";
 
-            //Creating unique identities
-            //Making a viewmodel instance
-            //Default Void Check
-            if (!dv
-                || !dv[0]
-                || !dv[0].categorical
-                || !dv[0].categorical.categories
-                || !dv[0].categorical.categories[0].source
-                || !dv[0].categorical.values
-                || !dv[0].metadata)
-                return null;
-            
-            //Assigning Quick references
-            let Recruit = dv[0].categorical.categories[0].values;
-            let Develop = dv[0].categorical.categories[1].values;
-            let Launch = dv[0].categorical.categories[2].values;
-            let Grow = dv[0].categorical.categories[3].values;
-            let Metric = dv[0].categorical.values[0].values
-            
-            //Traversing the input again
-                for(let i=0;i<Metric.length;i++){
+        public getConnection(id:string,col:number){
+            //Traversing and creating connection
+            if(this.forp==null)
+                return null; //Recursion ending case
 
-                    let r = Recruit[i];
-                    let d = Develop[i];
-                    let l = Launch[i];
-                    let g = Grow[i];
-                    let col = 0;
-                    let head = '';
+            //Applying the specific pointer
+            switch(col){
+                case 1:
+                    this.pointer="Recruit";
+                    this.prevp=null;
+                    this.forp="Develop";
+                    break;
+                case 2:
+                    this.pointer="Develop";
+                    this.prevp="Recruit";
+                    this.forp="Launch";
+                    break;
+                case 3:
+                    this.pointer="Launch";
+                    this.prevp="Develop";
+                    this.forp="Grow";
+                    break;
+                case 4:
+                    this.pointer="Grow";
+                    this.prevp="Launch";
+                    this.forp=null;
+                    break;
+            }
+            console.log(this.ConnectIdentity);
+            //Aceessing the connection list
 
-                if (r != "All") { col = 1, head = <string>r }
-                    else if (d != "All") { col = 2; head = <string>d }
-                    else if (l != "All") { col = 3; head = <string>l }
-                    else if (g != "All") { col = 4; head = <string>g }
-            
-            //Traversing the exact 
-
-               
+            debugger;
+            for(let i=0;i<this.ConnectIdentity.length;i++){
+                if(id==this.ConnectIdentity[i][this.pointer]){
+                    if(!document.getElementById(this.ConnectIdentity[i][this.pointer]+this.ConnectIdentity[i][this.forp]) && this.ConnectIdentity[i][this.forp]!="All"){
+                        this.createLine(this.ConnectIdentity[i][this.pointer],this.ConnectIdentity[i][this.forp],this.ConnectIdentity[i][this.pointer]+this.ConnectIdentity[i][this.forp]);
+                        $("#"+this.ConnectIdentity[i][this.forp]).removeClass("grey strong-grey inactive").addClass("active");
+                    }
+                    else{
+                       $("#"+this.ConnectIdentity[i][this.pointer]).removeClass("grey strong-grey inactive").addClass("active").find("text").text(this.ConnectIdentity[i].value);
+                    }
+                }
             }
         }
-
-
+       //Update function
         public update(options: VisualUpdateOptions) {
 
             //Removing elements
@@ -291,6 +305,13 @@ module powerbi.extensibility.visual {
             for (let i = 0; i < Default.Tiles.length; i++) {
                 this.createChart(<number>Default.Tiles[i].col, <string>Default.Tiles[i].head, <number>Default.Tiles[i].value, <string>Default.Tiles[i].id);
             }
+
+            this.getConnection("DevChat",2);
+
+
+
+
+
             //Functions for events
             function activate(x: SVGElement) {
                 //Block to disable other activation
