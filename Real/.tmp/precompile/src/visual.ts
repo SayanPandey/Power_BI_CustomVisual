@@ -76,7 +76,7 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
             this.ConnectIdentity = [];
         }
 
-        //Utility function to remove special characters
+        //Utility function to remove special characters / ID making function
         public removeSpl(x: string): string {
             x = x.replace(/[&\/\\#,+()$~%.'":*?<>{}\s]/g, '');
             return x;
@@ -243,60 +243,60 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
             return DefaultTiles;
         }
 
-        //Certain global variables facilitating connection
-        public prevp="All";
-        public forp="All";
-        public pointer="All";
+        //Creating connection recursively
+        public getConnection(id:string, col:number,pointer:string){
 
-        public getConnection(id:string,col:number){
-            //Traversing and creating connection
-            if(this.forp==null)
+            if(pointer==null)
                 return null; //Recursion ending case
-
+            let forp='All';
+            let prevp='All';
             //Applying the specific pointer
             switch(col){
                 case 1:
-                    this.pointer="Recruit";
-                    this.prevp=null;
-                    this.forp="Develop";
+                    pointer="Recruit";
+                    prevp=null;
+                    forp="Develop";
                     break;
                 case 2:
-                    this.pointer="Develop";
-                    this.prevp="Recruit";
-                    this.forp="Launch";
+                    pointer="Develop";
+                    prevp="Recruit";
+                    forp="Launch";
                     break;
                 case 3:
-                    this.pointer="Launch";
-                    this.prevp="Develop";
-                    this.forp="Grow";
+                    pointer="Launch";
+                    prevp="Develop";
+                    forp="grow";
                     break;
                 case 4:
-                    this.pointer="Grow";
-                    this.prevp="Launch";
-                    this.forp=null;
+                    pointer="grow";
+                    prevp="Launch";
+                    forp=null;
                     break;
             }
-            console.log(this.ConnectIdentity);
-            //Aceessing the connection list
 
-            debugger;
+            //Aceessing the connection list
             for(let i=0;i<this.ConnectIdentity.length;i++){
-                if(id==this.ConnectIdentity[i][this.pointer]){
-                    if(!document.getElementById(this.ConnectIdentity[i][this.pointer]+this.ConnectIdentity[i][this.forp]) && this.ConnectIdentity[i][this.forp]!="All"){
-                        this.createLine(this.ConnectIdentity[i][this.pointer],this.ConnectIdentity[i][this.forp],this.ConnectIdentity[i][this.pointer]+this.ConnectIdentity[i][this.forp]);
-                        $("#"+this.ConnectIdentity[i][this.forp]).removeClass("grey strong-grey inactive").addClass("active");
+                if(id==this.ConnectIdentity[i][pointer]){
+                    if(!document.getElementById(this.ConnectIdentity[i][pointer]+this.ConnectIdentity[i][forp]) && this.ConnectIdentity[i][forp]!="All"){
+                        if(this.ConnectIdentity[i][forp]!=undefined)
+                        this.createLine(this.ConnectIdentity[i][pointer],this.ConnectIdentity[i][forp],this.ConnectIdentity[i][pointer]+this.ConnectIdentity[i][forp]);
+                        $("#"+this.ConnectIdentity[i][forp]).removeClass("grey strong-grey inactive").addClass("active");
+                        //Calling recursion function
+                        this.getConnection(this.ConnectIdentity[i][forp],col+1,forp);
                     }
-                    else{
-                       $("#"+this.ConnectIdentity[i][this.pointer]).removeClass("grey strong-grey inactive").addClass("active").find("text").text(this.ConnectIdentity[i].value);
+                    else if(this.ConnectIdentity[i][forp]=="All" || col==1){
+                       $("#"+this.ConnectIdentity[i][pointer]).removeClass("grey strong-grey inactive").find("text").text(this.ConnectIdentity[i].value);
+                       $("#"+this.ConnectIdentity[i][pointer]).addClass("active");
                     }
                 }
             }
         }
        //Update function
         public update(options: VisualUpdateOptions) {
-
+            
             //Removing elements
             $(".col-3").find('div').remove();
+            $("#row1").find('svg').remove();
 
             //Getting Default inputs
             let Default = this.getViewModel(options);
@@ -306,14 +306,13 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
                 this.createChart(<number>Default.Tiles[i].col, <string>Default.Tiles[i].head, <number>Default.Tiles[i].value, <string>Default.Tiles[i].id);
             }
 
-            this.getConnection("DevChat",2);
-
-
-
-
+            //Storing the context in a variable
+            var Context=this
 
             //Functions for events
             function activate(x: SVGElement) {
+                //Removing lines
+                $("#row1").find('path').parent().remove();
                 //Block to disable other activation
                 let group = $(".col-3").find(".SVGcontainer").fadeOut("fast").addClass("strong-grey").fadeIn("fast");
                 group.find("rect").attr("fill", "white");
@@ -322,16 +321,24 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
 
                 //Block to ACTIVATE
                 $(x).removeClass("strong-grey");
-                let svG = $(x).find("svg");
-                let fill = svG.find("rect").attr("stroke");
-
-                //Exception coloring for the 2nd column
-                if ($(x).parent().attr("id") == "col-2") {
-                    svG.find("rect").attr("fill", fill);
-                    svG.find("text").attr("fill", "white").attr({ "style": "text-shadow:black 0px 0px 3px" });
-                    svG.find("div").attr({ "style": "color:white;text-shadow:black 0px 0px 3px" });
+                let id=$(x).attr("id");
+                let col=$(x).parent().attr("id");
+                let ColNum:number;
+                switch(col){
+                    case 'col-1':
+                        ColNum=1;
+                        break;
+                    case 'col-2':
+                        ColNum=2;
+                        break;
+                    case 'col-3':
+                        ColNum=3;
+                        break;
+                    case 'col-3':
+                        ColNum=3;
+                        break;
                 }
-
+                Context.getConnection(id,ColNum,'All');
             }
 
             //Viewport scrolling 

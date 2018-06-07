@@ -8280,6 +8280,22 @@
   stroke-width: 1.5 !important;
   position: relative !important;
 }
-.visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG #col-2 .active {
+.visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG #col-2 .active rect {
   fill: green;
+}
+.visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG #col-2 .active text {
+  fill: white;
+}
+.visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG #col-2 .active div {
+  color: white;
+}
+.visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG svg {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: dash 1s linear forwards;
+}
+@keyframes dash {
+  to {
+    stroke-dashoffset: 0;
+  }
 }

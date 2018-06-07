@@ -97,6 +97,27 @@ path{
     stroke-width: 1.5 !important;
     position:relative !important;
 }
-#col-2 .active{
+
+//Column 2 activated classes
+#col-2 .active rect{
     fill:green;
+}
+#col-2 .active text{
+    fill:white;
+}
+#col-2 .active div{
+    color:white;
+}
+
+//SVG Keyframe animation
+svg {
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    animation: dash 1s linear forwards;
+}
+
+@keyframes dash {
+    to {
+        stroke-dashoffset: 0;
+    }
 }
