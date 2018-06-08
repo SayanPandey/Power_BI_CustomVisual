@@ -175,6 +175,36 @@ module powerbi.extensibility.visual {
             line.attr("d", path);
         }
 
+        //Create Backward line function
+        public createLineBackward(id1: string, id2: string, lineId: string) {
+            var row = d3.select("#row1").append("svg").attr("class", "connecting").append("path").attr({ "id": lineId, "fill": "transparent","class":"path"});
+            var line = $('#'+lineId);
+            var div1 = $('#' + id1);
+            var div2 = $('#' + id2);
+
+            //Center for the first block
+            var x1 = div1.offset().left + (div1.width() / 2);
+            var y1 = div1.offset().top + (div1.height() / 2);
+
+            //Line to of Second block
+            var x2l = div2.offset().left+(div2.width()) ;
+            var x2 = div2.offset().left + (div1.width() / 2);
+            var y2 = div2.offset().top + (div2.height() / 2);
+
+            //First breakpoint horizontal
+            var hor1 = div1.offset().left;
+
+            //Creating curve from div1 to div 2
+            var path = "M" + x1 + " " + y1; //selecting centroid of div1
+            path += " H " + hor1;   //creating horizontal line to first break point
+            path += "M" + hor1 + " " + y1;  //shifing the center to the end point
+            path += " L " + x2l + " " + y2; //Line
+            path += "M" + x2l + " " + y2    //Centershift
+            path += " L " + x2 + " " + y2;  //Final lining
+
+            line.attr("d", path);
+        }
+
         //Data inserting code
         private getViewModel(options: VisualUpdateOptions): ViewModel {
             //Fetching data
@@ -202,10 +232,12 @@ module powerbi.extensibility.visual {
             let Develop = dv[0].categorical.categories[1].values;
             let Launch = dv[0].categorical.categories[2].values;
             let Grow = dv[0].categorical.categories[3].values;
+            let Direction=dv[0].categorical.categories[4].values
             let Metric = dv[0].categorical.values[0].values
             
             //Clearing the connection array
             this.ConnectIdentity =[];
+            this.ConnectionIdentityBackwards=[];
             //Inserting Default View
             for (let i = 0; i < Metric.length; i++) {
                 let r = Recruit[i];
@@ -233,13 +265,28 @@ module powerbi.extensibility.visual {
                 }
                 else{
                     //Pushing specific connection defining objects
-                    this.ConnectIdentity.push({
-                        Recruit:this.removeSpl(<string>r),
-                        Develop:this.removeSpl(<string>d),
-                        Launch:this.removeSpl(<string>l),
-                        grow:this.removeSpl(<string>g),
-                        value:<number>num
-                    });
+
+                    if(Direction[i]=="Forward"){
+                        //Pushing Forward Data
+                        this.ConnectIdentity.push({
+                            Recruit:this.removeSpl(<string>r),
+                            Develop:this.removeSpl(<string>d),
+                            Launch:this.removeSpl(<string>l),
+                            grow:this.removeSpl(<string>g),
+                            value:<number>num
+                        });
+                    }
+                    else if(Direction[i]=="Backward"){
+                        //Pushing Backward Data
+                        this.ConnectionIdentityBackwards.push({
+                            Recruit:this.removeSpl(<string>r),
+                            Develop:this.removeSpl(<string>d),
+                            Launch:this.removeSpl(<string>l),
+                            grow:this.removeSpl(<string>g),
+                            value:<number>num
+                        });
+                    }
+                    
                 }
             }
             //Returning the view model
@@ -253,8 +300,12 @@ module powerbi.extensibility.visual {
                 "height":"130"
             },500);
             $("#"+id).find(".progress").slideDown(500);
-
+            
+            //Unbinding the mouse move
+            $("#"+id).unbind("mouseenter").unbind("mouseleave");;
         }
+
+        //Using DFS Algorithm in Directed Graph
         //Creating connection recursively
         public getConnection(id:string, col:number,pointer:string){
 
@@ -290,18 +341,83 @@ module powerbi.extensibility.visual {
             for(let i=0;i<this.ConnectIdentity.length;i++){
                 if(id==this.ConnectIdentity[i][pointer]){
                     if(!document.getElementById(this.ConnectIdentity[i][pointer]+this.ConnectIdentity[i][forp]) && this.ConnectIdentity[i][forp]!="All"){
-                        if(this.ConnectIdentity[i][forp]!=undefined)
-                        this.createLine(this.ConnectIdentity[i][pointer],this.ConnectIdentity[i][forp],this.ConnectIdentity[i][pointer]+this.ConnectIdentity[i][forp]);
+
+                        //Making Current tile active
                         $("#"+this.ConnectIdentity[i][forp]).removeClass("grey strong-grey inactive").addClass("active");
                         //Making it superactive except column 2
                         if(col!=2)
                             this.superActivate(this.ConnectIdentity[i][pointer]);
+
+                        if(this.ConnectIdentity[i][forp]!=undefined)
+                            this.createLine(this.ConnectIdentity[i][pointer],this.ConnectIdentity[i][forp],this.ConnectIdentity[i][pointer]+this.ConnectIdentity[i][forp]);
+                        else
+                            break; //possibly for 4th column recursion ending
+
                         //Calling recursion function
                         this.getConnection(this.ConnectIdentity[i][forp],col+1,forp);
                     }
                     else if(this.ConnectIdentity[i][forp]=="All" || col==1){
                        $("#"+this.ConnectIdentity[i][pointer]).removeClass("grey strong-grey inactive").find("text").text(this.ConnectIdentity[i].value);
-                       $("#"+this.ConnectIdentity[i][pointer]).addClass("active");
+                       $("#"+this.ConnectIdentity[i][pointer]);
+                    }
+                }
+            }
+        }
+
+        //Using DFS Algorithm in Directed Graph
+        //Creating connection Backwards recursively
+        public getConnectionBackward(id:string, col:number,pointer:string){
+
+            if(pointer==null)
+                return null; //Recursion ending case
+            let forp='All';
+            let prevp='All';
+            //Applying the specific pointer
+            switch(col){
+                case 1:
+                    pointer="Recruit";
+                    prevp=null;
+                    forp="Develop";
+                    break;
+                case 2:
+                    pointer="Develop";
+                    prevp="Recruit";
+                    forp="Launch";
+                    break;
+                case 3:
+                    pointer="Launch";
+                    prevp="Develop";
+                    forp="grow";
+                    break;
+                case 4:
+                    pointer="grow";
+                    prevp="Launch";
+                    forp=null;
+                    break;
+            }
+
+            //Aceessing the connection list
+            for(let i=0;i<this.ConnectionIdentityBackwards.length;i++){
+                if(id==this.ConnectionIdentityBackwards[i][pointer]){
+                    if(!document.getElementById(this.ConnectionIdentityBackwards[i][pointer]+this.ConnectionIdentityBackwards[i][prevp]) && this.ConnectionIdentityBackwards[i][prevp]!="All"){
+
+                        //Making Current tile active
+                        $("#"+this.ConnectionIdentityBackwards[i][prevp]).removeClass("grey strong-grey inactive").addClass("active");
+                        //Making it superactive except column 2
+                        if(col!=2)
+                            this.superActivate(this.ConnectionIdentityBackwards[i][pointer]);
+
+                        if(this.ConnectIdentity[i][prevp]!=undefined)
+                            this.createLineBackward(this.ConnectionIdentityBackwards[i][pointer],this.ConnectionIdentityBackwards[i][prevp],this.ConnectionIdentityBackwards[i][pointer]+this.ConnectionIdentityBackwards[i][prevp]);
+                        else
+                            break; //possibly for 1st column recursion ending
+
+                        //Calling recursion function
+                        this.getConnection(this.ConnectionIdentityBackwards[i][prevp],col-1,prevp);
+                    }
+                    else if(this.ConnectionIdentityBackwards[i][prevp]=="All" || col==1){
+                       $("#"+this.ConnectionIdentityBackwards[i][pointer]).removeClass("grey strong-grey inactive").find("text").text(this.ConnectionIdentityBackwards[i].value);
+                       $("#"+this.ConnectionIdentityBackwards[i][pointer]);
                     }
                 }
             }
@@ -311,7 +427,7 @@ module powerbi.extensibility.visual {
             
             //Removing elements
             $(".col-3").find('div').remove();
-            $("#row1").find('svg').remove();
+            $(".connecting").remove();
 
             //Getting Default inputs
             let Default = this.getViewModel(options);
@@ -322,7 +438,7 @@ module powerbi.extensibility.visual {
             }
 
             //Storing the context in a variable
-            var Context=this
+            var Context=this;
 
             //Functions for events
             function activate(x: SVGElement) {
@@ -353,7 +469,8 @@ module powerbi.extensibility.visual {
                         ColNum=3;
                         break;
                 }
-                Context.getConnection(id,ColNum,'All');
+               // Context.getConnection(id,ColNum,'All');
+                Context.getConnectionBackward(id,ColNum,'All');
             }
 
             //Viewport scrolling 

@@ -8280,11 +8280,6 @@
 .visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG #col-2 .active div {
   color: white;
 }
-.visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG path {
-  stroke-dasharray: 200%;
-  stroke-dashoffset: 200%;
-  animation: dash 1.5s linear forwards;
-}
 @keyframes dash {
   to {
     stroke-dashoffset: 0;
