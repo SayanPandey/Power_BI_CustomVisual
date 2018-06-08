@@ -631,6 +631,8 @@ var powerbi;
                         this.row.append("div").classed("col-3", true).attr("id", "col-4").append("h5").text("Grow").classed("head head4", true);
                         //Initialising Connection Identity
                         this.ConnectIdentity = [];
+                        //Initialising backward Connection Identity
+                        this.ConnectionIdentityBackwards = [];
                     }
                     //Utility function to remove special characters / ID making function
                     Visual.prototype.removeSpl = function (x) {
@@ -697,7 +699,7 @@ var powerbi;
                     };
                     //create line function()
                     Visual.prototype.createLine = function (id1, id2, lineId) {
-                        var row = d3.select("#row1").append("svg").attr("class", "connecting").append("path").attr({ "id": lineId, "fill": "transparent" });
+                        var row = d3.select("#row1").append("svg").attr("class", "connecting").append("path").attr({ "id": lineId, "fill": "transparent", "class": "path" });
                         var line = $('#' + lineId);
                         var div1 = $('#' + id1);
                         var div2 = $('#' + id2);
@@ -793,6 +795,14 @@ var powerbi;
                         //Returning the view model
                         return DefaultTiles;
                     };
+                    //Super activation for Tiles having progressbars
+                    Visual.prototype.superActivate = function (id) {
+                        //Searching for svg and increasing its length
+                        $("#" + id).find("rect").animate({
+                            "height": "130"
+                        }, 500);
+                        $("#" + id).find(".progress").slideDown(500);
+                    };
                     //Creating connection recursively
                     Visual.prototype.getConnection = function (id, col, pointer) {
                         if (pointer == null)
@@ -829,6 +839,9 @@ var powerbi;
                                     if (this.ConnectIdentity[i][forp] != undefined)
                                         this.createLine(this.ConnectIdentity[i][pointer], this.ConnectIdentity[i][forp], this.ConnectIdentity[i][pointer] + this.ConnectIdentity[i][forp]);
                                     $("#" + this.ConnectIdentity[i][forp]).removeClass("grey strong-grey inactive").addClass("active");
+                                    //Making it superactive except column 2
+                                    if (col != 2)
+                                        this.superActivate(this.ConnectIdentity[i][pointer]);
                                     //Calling recursion function
                                     this.getConnection(this.ConnectIdentity[i][forp], col + 1, forp);
                                 }
@@ -857,7 +870,7 @@ var powerbi;
                             //Removing lines
                             $("#row1").find('path').parent().remove();
                             //Block to disable other activation
-                            var group = $(".col-3").find(".SVGcontainer").fadeOut("fast").addClass("strong-grey").fadeIn("fast");
+                            var group = $(".col-3").find(".SVGcontainer").addClass("strong-grey");
                             group.find("rect").attr("fill", "white");
                             group.find("text").attr("fill", "black");
                             group.find("div").attr({ "style": "text-shadow:none" });
