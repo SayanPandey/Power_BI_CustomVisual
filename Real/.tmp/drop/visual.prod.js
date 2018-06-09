@@ -633,8 +633,6 @@ var powerbi;
                         this.ConnectIdentity = [];
                         //Initialising backward Connection Identity
                         this.ConnectionIdentityBackwards = [];
-                        //Initializing Filter with Dynamic Programming approach
-                        this.Filter = [];
                     }
                     //Utility function to remove special characters / ID making function
                     Visual.prototype.removeSpl = function (x) {
@@ -849,7 +847,7 @@ var powerbi;
                     };
                     //Using DFS Algorithm in Directed Graph
                     //Creating connection recursively using Dynamic Programming
-                    Visual.prototype.getConnection = function (id, click, col, pointer) {
+                    Visual.prototype.getConnection = function (id, click, col, pointer, Filter) {
                         if (pointer == null)
                             return null; //Recursion ending case
                         var forp = 'All';
@@ -883,7 +881,7 @@ var powerbi;
                             //Pushing values in Filter First step of DP
                             for (var i = 0; i < this.ConnectIdentity.length; i++)
                                 if (id == this.ConnectIdentity[i][pointer]) {
-                                    this.Filter.push({
+                                    Filter.push({
                                         Recruit: this.ConnectIdentity[i].Recruit,
                                         Develop: this.ConnectIdentity[i].Develop,
                                         Launch: this.ConnectIdentity[i].Launch,
@@ -893,40 +891,40 @@ var powerbi;
                                 }
                         }
                         else {
-                            for (var i = 0; i < this.Filter.length; i++) {
-                                if (id != this.Filter[i][pointer])
-                                    this.Filter.splice(i, 1);
+                            for (var i = 0; i < Filter.length; i++) {
+                                if (id != Filter[i][pointer])
+                                    Filter.slice(i, 1);
                             }
                         }
                         //Setting the click to false so that next iteration is not pushed
                         click = false;
                         //Aceessing the connection list
-                        for (var i = 0; i < this.Filter.length; i++) {
-                            if (id == this.Filter[i][pointer]) {
+                        for (var i = 0; i < Filter.length; i++) {
+                            if (id == Filter[i][pointer]) {
                                 //Checking if a line exists or not // Id of line is in form Id(div1)+Id(div2)
-                                if (this.Filter[i][forp] != undefined && !document.getElementById(this.Filter[i][pointer] + this.Filter[i][forp]) && this.Filter[i][forp] != "All") {
+                                if (Filter[i][forp] != undefined && !document.getElementById(Filter[i][pointer] + Filter[i][forp]) && Filter[i][forp] != "All") {
                                     //Making Current tile active
-                                    $("#" + this.Filter[i][pointer]).removeClass("grey strong-grey inactive").addClass("active");
+                                    $("#" + Filter[i][pointer]).removeClass("grey strong-grey inactive").addClass("active");
                                     //Making it superactive except column 2
                                     if (col != 2)
-                                        this.superActivate(this.Filter[i][pointer]);
-                                    if (this.Filter[i][forp] != undefined) {
-                                        this.createLine(this.Filter[i][pointer], this.Filter[i][forp], this.Filter[i][pointer] + this.Filter[i][forp]);
+                                        this.superActivate(Filter[i][pointer]);
+                                    if (Filter[i][forp] != undefined) {
+                                        this.createLine(Filter[i][pointer], Filter[i][forp], Filter[i][pointer] + Filter[i][forp]);
                                         //Calling recursion function
-                                        this.getConnection(this.Filter[i][forp], click, col + 1, forp);
+                                        this.getConnection(Filter[i][forp], click, col + 1, forp, Filter);
                                     }
                                 }
-                                else if (this.Filter[i][forp] == "All" || this.Filter[i][forp] == undefined) {
-                                    $("#" + this.Filter[i][pointer]).removeClass("grey strong-grey inactive").find("text").text(this.Filter[i].value);
-                                    if (this.Filter[i][forp] == undefined)
-                                        this.superActivate(this.Filter[i][pointer]);
+                                else if (Filter[i][forp] == "All" || Filter[i][forp] == undefined) {
+                                    $("#" + Filter[i][pointer]).removeClass("grey strong-grey inactive").find("text").text(Filter[i].value);
+                                    if (Filter[i][forp] == undefined)
+                                        this.superActivate(Filter[i][pointer]);
                                 }
                             }
                         }
                     };
-                    //Using DFS Algorithm in Directed Graph
-                    //Creating connection Backwards recursively using Dynamic Programming
-                    Visual.prototype.getConnectionBackward = function (id, click, col, pointer) {
+                    // Using DFS Algorithm in Directed Graph
+                    // Creating connection Backwards recursively using Dynamic Programming
+                    Visual.prototype.getConnectionBackward = function (id, click, col, pointer, Filter) {
                         if (pointer == null)
                             return null; //Recursion ending case
                         var forp = 'All';
@@ -960,7 +958,7 @@ var powerbi;
                             //Pushing values in Filter First step of DP
                             for (var i = 0; i < this.ConnectionIdentityBackwards.length; i++)
                                 if (id == this.ConnectionIdentityBackwards[i][pointer]) {
-                                    this.Filter.push({
+                                    Filter.push({
                                         Recruit: this.ConnectionIdentityBackwards[i].Recruit,
                                         Develop: this.ConnectionIdentityBackwards[i].Develop,
                                         Launch: this.ConnectionIdentityBackwards[i].Launch,
@@ -970,33 +968,33 @@ var powerbi;
                                 }
                         }
                         else {
-                            for (var i = 0; i < this.Filter.length; i++) {
-                                if (id != this.Filter[i][pointer])
-                                    this.Filter.splice(i, 1);
+                            for (var i = 0; i < Filter.length; i++) {
+                                if (id != Filter[i][pointer])
+                                    Filter.slice(i, 1);
                             }
                         }
                         //Setting the click to false so that next iteration is not pushed
                         click = false;
                         //Aceessing the connection list
-                        for (var i = 0; i < this.Filter.length; i++) {
-                            if (id == this.Filter[i][pointer]) {
+                        for (var i = 0; i < Filter.length; i++) {
+                            if (id == Filter[i][pointer]) {
                                 //Checking if a line exists or not // Id of line is in form Id(div1)+Id(div2)
-                                if (this.Filter[i][prevp] != undefined && !document.getElementById(this.Filter[i][pointer] + this.Filter[i][prevp]) && this.Filter[i][prevp] != "All") {
+                                if (Filter[i][prevp] != undefined && !document.getElementById(Filter[i][pointer] + Filter[i][prevp]) && Filter[i][prevp] != "All") {
                                     //Making Current tile active
-                                    $("#" + this.Filter[i][pointer]).removeClass("grey strong-grey inactive").addClass("active");
+                                    $("#" + Filter[i][pointer]).removeClass("grey strong-grey inactive").addClass("active");
                                     //Making it superactive except column 2
                                     if (col != 2)
-                                        this.superActivate(this.Filter[i][pointer]);
-                                    if (this.Filter[i][prevp] != undefined) {
-                                        this.createLineBackward(this.Filter[i][pointer], this.Filter[i][prevp], this.Filter[i][pointer] + this.Filter[i][prevp]);
+                                        this.superActivate(Filter[i][pointer]);
+                                    if (Filter[i][prevp] != undefined) {
+                                        this.createLineBackward(Filter[i][pointer], Filter[i][prevp], Filter[i][pointer] + Filter[i][prevp]);
                                         //Calling recursion function
-                                        this.getConnectionBackward(this.Filter[i][prevp], click, col - 1, prevp);
+                                        this.getConnectionBackward(Filter[i][prevp], click, col - 1, prevp, Filter);
                                     }
                                 }
-                                else if (this.Filter[i][prevp] == "All" || this.Filter[i][prevp] == undefined) {
-                                    $("#" + this.Filter[i][pointer]).removeClass("grey strong-grey inactive").find("text").text(this.Filter[i].value);
-                                    if (this.Filter[i][prevp] == undefined)
-                                        this.superActivate(this.Filter[i][pointer]);
+                                else if (Filter[i][prevp] == "All" || Filter[i][prevp] == undefined) {
+                                    $("#" + Filter[i][pointer]).removeClass("grey strong-grey inactive").find("text").text(Filter[i].value);
+                                    if (Filter[i][prevp] == undefined)
+                                        this.superActivate(Filter[i][pointer]);
                                 }
                             }
                         }
@@ -1043,13 +1041,14 @@ var powerbi;
                                     ColNum = 4;
                                     break;
                             }
-                            //clearing the filter
-                            Context.Filter = [];
+                            //Creating and clearing the filter
+                            var Filter;
+                            Filter = [];
                             //Making Forward Connection
-                            Context.getConnection(id, true, ColNum, 'All');
+                            Context.getConnection(id, true, ColNum, 'All', Filter);
                             //clearing the filter agin for backward Connections
-                            Context.Filter = [];
-                            Context.getConnectionBackward(id, true, ColNum, 'All');
+                            Filter = [];
+                            Context.getConnectionBackward(id, true, ColNum, 'All', Filter);
                             //Putting the default value
                             for (var i = 0; i < Default.Tiles.length; i++) {
                                 if (Default.Tiles[i].col == ColNum && Default.Tiles[i].id == id) {

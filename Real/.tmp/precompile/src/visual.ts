@@ -59,8 +59,6 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
         //Establishing connection b/w unique identities
         private ConnectIdentity: Connection[];
         private ConnectionIdentityBackwards: Connection[];
-        //Filter To increase performance
-        private Filter : Connection[];
 
         constructor(options: VisualConstructorOptions) {
             this.host = options.host;
@@ -79,8 +77,6 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
             this.ConnectIdentity = [];
             //Initialising backward Connection Identity
             this.ConnectionIdentityBackwards=[];
-            //Initializing Filter with Dynamic Programming approach
-            this.Filter=[];
         }
 
         //Utility function to remove special characters / ID making function
@@ -311,11 +307,10 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
 
         //Using DFS Algorithm in Directed Graph
         //Creating connection recursively using Dynamic Programming
-        public getConnection(id:string,click:boolean, col:number,pointer:string){
-
+        public getConnection(id:string,click:boolean, col:number,pointer:string,Filter:Connection[]){
             if(pointer==null)
                 return null; //Recursion ending case
-
+                
             let forp='All';
             let prevp='All';
             //Applying the specific pointer
@@ -348,7 +343,7 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
                 //Pushing values in Filter First step of DP
                 for(let i=0;i<this.ConnectIdentity.length;i++)
                     if(id==this.ConnectIdentity[i][pointer]){
-                        this.Filter.push({
+                        Filter.push({
                             Recruit:this.ConnectIdentity[i].Recruit,
                             Develop:this.ConnectIdentity[i].Develop,
                             Launch:this.ConnectIdentity[i].Launch,
@@ -358,45 +353,45 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
                     }
             }
             else{
-                for(let i=0;i<this.Filter.length;i++){
-                    if(id!=this.Filter[i][pointer])
-                    this.Filter.splice(i,1);
+                for(let i=0;i<Filter.length;i++){
+                    if(id!=Filter[i][pointer])
+                    Filter.slice(i,1);
                 }
             }
 
             //Setting the click to false so that next iteration is not pushed
             click=false;
             //Aceessing the connection list
-            for(let i=0;i<this.Filter.length;i++){
-                if(id==this.Filter[i][pointer]){
+            for(let i=0;i<Filter.length;i++){
+                if(id==Filter[i][pointer]){
 
                     //Checking if a line exists or not // Id of line is in form Id(div1)+Id(div2)
-                    if(this.Filter[i][forp]!=undefined && !document.getElementById(this.Filter[i][pointer]+this.Filter[i][forp]) && this.Filter[i][forp]!="All"){
+                    if(Filter[i][forp]!=undefined && !document.getElementById(Filter[i][pointer]+Filter[i][forp]) && Filter[i][forp]!="All"){
 
                         //Making Current tile active
-                        $("#"+this.Filter[i][pointer]).removeClass("grey strong-grey inactive").addClass("active");
+                        $("#"+Filter[i][pointer]).removeClass("grey strong-grey inactive").addClass("active");
                         //Making it superactive except column 2
                         if(col!=2)
-                            this.superActivate(this.Filter[i][pointer]);
+                            this.superActivate(Filter[i][pointer]);
 
-                        if(this.Filter[i][forp]!=undefined){
-                            this.createLine(this.Filter[i][pointer],this.Filter[i][forp],this.Filter[i][pointer]+this.Filter[i][forp]);
+                        if(Filter[i][forp]!=undefined){
+                            this.createLine(Filter[i][pointer],Filter[i][forp],Filter[i][pointer]+Filter[i][forp]);
                             //Calling recursion function
-                            this.getConnection(this.Filter[i][forp],click,col+1,forp);
+                            this.getConnection(Filter[i][forp],click,col+1,forp,Filter);
                         }
                     }
-                    else if(this.Filter[i][forp]=="All"|| this.Filter[i][forp]==undefined){
-                       $("#"+this.Filter[i][pointer]).removeClass("grey strong-grey inactive").find("text").text(this.Filter[i].value);
-                       if(this.Filter[i][forp]==undefined)
-                            this.superActivate(this.Filter[i][pointer]);
+                    else if(Filter[i][forp]=="All"|| Filter[i][forp]==undefined){
+                       $("#"+Filter[i][pointer]).removeClass("grey strong-grey inactive").find("text").text(Filter[i].value);
+                       if(Filter[i][forp]==undefined)
+                            this.superActivate(Filter[i][pointer]);
                     }
                 }
             }
         }
 
-        //Using DFS Algorithm in Directed Graph
-        //Creating connection Backwards recursively using Dynamic Programming
-        public getConnectionBackward(id:string,click:boolean, col:number,pointer:string){
+        // Using DFS Algorithm in Directed Graph
+        // Creating connection Backwards recursively using Dynamic Programming
+        public getConnectionBackward(id:string,click:boolean, col:number,pointer:string,Filter:Connection[]){
 
             if(pointer==null)
                 return null; //Recursion ending case
@@ -433,7 +428,7 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
                 //Pushing values in Filter First step of DP
                 for(let i=0;i<this.ConnectionIdentityBackwards.length;i++)
                     if(id==this.ConnectionIdentityBackwards[i][pointer]){
-                        this.Filter.push({
+                        Filter.push({
                             Recruit:this.ConnectionIdentityBackwards[i].Recruit,
                             Develop:this.ConnectionIdentityBackwards[i].Develop,
                             Launch:this.ConnectionIdentityBackwards[i].Launch,
@@ -443,41 +438,42 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
                     }
             }
             else{
-                for(let i=0;i<this.Filter.length;i++){
-                    if(id!=this.Filter[i][pointer])
-                    this.Filter.splice(i,1);
+                for(let i=0;i<Filter.length;i++){
+                    if(id!=Filter[i][pointer])
+                    Filter.slice(i,1);
                 }
             }
 
             //Setting the click to false so that next iteration is not pushed
             click=false;
             //Aceessing the connection list
-            for(let i=0;i<this.Filter.length;i++){
-                if(id==this.Filter[i][pointer]){
+            for(let i=0;i<Filter.length;i++){
+                if(id==Filter[i][pointer]){
 
                     //Checking if a line exists or not // Id of line is in form Id(div1)+Id(div2)
-                    if(this.Filter[i][prevp]!=undefined && !document.getElementById(this.Filter[i][pointer]+this.Filter[i][prevp]) && this.Filter[i][prevp]!="All"){
+                    if(Filter[i][prevp]!=undefined && !document.getElementById(Filter[i][pointer]+Filter[i][prevp]) && Filter[i][prevp]!="All"){
 
                         //Making Current tile active
-                        $("#"+this.Filter[i][pointer]).removeClass("grey strong-grey inactive").addClass("active");
+                        $("#"+Filter[i][pointer]).removeClass("grey strong-grey inactive").addClass("active");
                         //Making it superactive except column 2
                         if(col!=2)
-                            this.superActivate(this.Filter[i][pointer]);
+                            this.superActivate(Filter[i][pointer]);
 
-                        if(this.Filter[i][prevp]!=undefined){
-                            this.createLineBackward(this.Filter[i][pointer],this.Filter[i][prevp],this.Filter[i][pointer]+this.Filter[i][prevp]);
+                        if(Filter[i][prevp]!=undefined){
+                            this.createLineBackward(Filter[i][pointer],Filter[i][prevp],Filter[i][pointer]+Filter[i][prevp]);
                             //Calling recursion function
-                            this.getConnectionBackward(this.Filter[i][prevp],click,col-1,prevp);
+                            this.getConnectionBackward(Filter[i][prevp],click,col-1,prevp,Filter);
                         }
                     }
-                    else if(this.Filter[i][prevp]=="All"|| this.Filter[i][prevp]==undefined){
-                       $("#"+this.Filter[i][pointer]).removeClass("grey strong-grey inactive").find("text").text(this.Filter[i].value);
-                       if(this.Filter[i][prevp]==undefined)
-                            this.superActivate(this.Filter[i][pointer]);
+                    else if(Filter[i][prevp]=="All"|| Filter[i][prevp]==undefined){
+                       $("#"+Filter[i][pointer]).removeClass("grey strong-grey inactive").find("text").text(Filter[i].value);
+                       if(Filter[i][prevp]==undefined)
+                            this.superActivate(Filter[i][pointer]);
                     }
                 }
             }
         }
+
        //Update function
         public update(options: VisualUpdateOptions) {
             
@@ -506,6 +502,7 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
                 group.find("rect").attr("fill", "white");
                 group.find("text").attr("fill", "black");
                 group.find("div").attr({ "style": "text-shadow:none" })
+                
 
                 //Block to ACTIVATE
                 $(x).removeClass("strong-grey");
@@ -527,14 +524,15 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
                         break;
                 }
 
-                //clearing the filter
-                Context.Filter=[];
+                //Creating and clearing the filter
+                let Filter : Connection[];
+                Filter=[];
                 //Making Forward Connection
-                Context.getConnection(id,true,ColNum,'All');
+                Context.getConnection(id,true,ColNum,'All',Filter);
 
                 //clearing the filter agin for backward Connections
-                Context.Filter=[];
-                Context.getConnectionBackward(id,true,ColNum,'All');
+                Filter=[];
+                Context.getConnectionBackward(id,true,ColNum,'All',Filter);
 
                //Putting the default value
                for (let i = 0; i < Default.Tiles.length; i++) {
