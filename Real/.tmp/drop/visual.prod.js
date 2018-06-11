@@ -630,7 +630,7 @@ var powerbi;
                         this.row.append("div").classed("col-3", true).attr("id", "col-3").append("h5").text("Launch").classed("head head3", true);
                         this.row.append("div").classed("col-3", true).attr("id", "col-4").append("h5").text("Grow").classed("head head4", true);
                         //Initialising Connection Identity
-                        this.ConnectIdentity = [];
+                        this.ConnectionIdentity = [];
                         //Initialising backward Connection Identity
                         this.ConnectionIdentityBackwards = [];
                     }
@@ -694,6 +694,10 @@ var powerbi;
                             .attr("x", "10").attr("y", "80%").attr("width", "190").attr("height", "70").append("xhtml:div")
                             .classed("progress", true).append("div").classed("progress-bar progress-bar-success", true)
                             .attr({ "aria-valuenow": "40", "aria-valuemin": "0", "aria-valuemax": "100", "style": "width:40%" });
+                        //Fixing a hidden input fields at column 4 to add up values of more than one path
+                        if (col == 4) {
+                            d3.select("#" + id).append("input").attr({ 'type': 'hidden', 'value': '0' });
+                        }
                     };
                     //create line function()
                     Visual.prototype.createLine = function (id1, id2, lineId) {
@@ -770,7 +774,7 @@ var powerbi;
                         var Direction = dv[0].categorical.categories[4].values;
                         var Metric = dv[0].categorical.values[0].values;
                         //Clearing the connection array
-                        this.ConnectIdentity = [];
+                        this.ConnectionIdentity = [];
                         this.ConnectionIdentityBackwards = [];
                         //Inserting Default View
                         for (var i = 0; i < Metric.length; i++) {
@@ -809,7 +813,7 @@ var powerbi;
                                 //Pushing specific connection defining objects
                                 if (Direction[i] == "Forward") {
                                     //Pushing Forward Data
-                                    this.ConnectIdentity.push({
+                                    this.ConnectionIdentity.push({
                                         Recruit: this.removeSpl(r),
                                         Develop: this.removeSpl(d),
                                         Launch: this.removeSpl(l),
@@ -843,12 +847,22 @@ var powerbi;
                         $("#" + id).unbind("mouseenter").unbind("mouseleave");
                         ;
                     };
+                    //Utility Function to sum up values of ending column tiles in case of multiple connections
+                    Visual.prototype.tileAggregate = function (id, value) {
+                        debugger;
+                        var vValue = $("#" + id).find('input').val();
+                        var Value = parseInt(vValue);
+                        value = value + Value;
+                        $("#" + id).find('input').val(value);
+                        return value;
+                    };
                     //Using DFS Algorithm in Directed Graph
                     //Creating connection recursively using Dynamic Programming
                     Visual.prototype.getConnection = function (id, click, col, pointer, Filter) {
                         if (pointer == null)
                             return null; //Recursion ending case
                         //Getting a temporary filter to facilitate Dynamic Programming
+                        //This Temporary Filter will be used to splice off the  not required data points for a level of recursion
                         var TempFilter;
                         TempFilter = Filter.slice(0);
                         var forp = 'All';
@@ -880,23 +894,26 @@ var powerbi;
                         //Getting the first connection
                         if (click == true) {
                             //Pushing values in Filter First step of DP
-                            for (var i = 0; i < this.ConnectIdentity.length; i++)
-                                if (id == this.ConnectIdentity[i][pointer] && (this.ConnectIdentity[i][prevp] == "All" || col == 1)) {
+                            for (var i = 0; i < this.ConnectionIdentity.length; i++)
+                                if (id == this.ConnectionIdentity[i][pointer] && (this.ConnectionIdentity[i][prevp] == "All" || col == 1)) {
                                     Filter.push({
-                                        Recruit: this.ConnectIdentity[i].Recruit,
-                                        Develop: this.ConnectIdentity[i].Develop,
-                                        Launch: this.ConnectIdentity[i].Launch,
-                                        grow: this.ConnectIdentity[i].grow,
-                                        value: this.ConnectIdentity[i].value
+                                        Recruit: this.ConnectionIdentity[i].Recruit,
+                                        Develop: this.ConnectionIdentity[i].Develop,
+                                        Launch: this.ConnectionIdentity[i].Launch,
+                                        grow: this.ConnectionIdentity[i].grow,
+                                        value: this.ConnectionIdentity[i].value
                                     });
                                 }
+                            //Pushing a Shallow array
                             TempFilter = Filter.slice(0);
                         }
                         else {
-                            debugger;
+                            //Clearing out not mathing Data Points
                             for (var i = 0; i < TempFilter.length; i++) {
                                 if (id != TempFilter[i][pointer]) {
+                                    //Removing the Unmatched Identities
                                     TempFilter.splice(i, 1);
+                                    //Since clearing out resizes interface automatically so setting i yo i-1 guarantees that no data point will be overlooked 
                                     i = i - 1;
                                 }
                             }
@@ -911,7 +928,6 @@ var powerbi;
                                     //Making it superactive except clicked column
                                     if (!click)
                                         this.superActivate(Filter[i][pointer]);
-                                    debugger;
                                     click = false; //Setting further clicks to false
                                     if (Filter[i][forp] != undefined) {
                                         this.createLine(Filter[i][pointer], Filter[i][forp], Filter[i][pointer] + Filter[i][forp]);
@@ -920,7 +936,18 @@ var powerbi;
                                     }
                                 }
                                 else if (Filter[i][forp] == "All" || Filter[i][forp] == undefined) {
-                                    $("#" + Filter[i][pointer]).removeClass("grey strong-grey inactive").find("text").text(Filter[i].value);
+                                    //Code to add the value of 4th node Since the value form the back end is aggregated
+                                    //get a temporary variable within the scope to store value
+                                    var Quantity = void 0;
+                                    if (col == 4 && click == false) {
+                                        Quantity = this.tileAggregate(Filter[i][pointer], Filter[i].value);
+                                    }
+                                    else {
+                                        //Fixing the value for other tiles
+                                        Quantity = Filter[i].value;
+                                    }
+                                    //Code below is to activate a end node
+                                    $("#" + Filter[i][pointer]).removeClass("grey strong-grey inactive").find("text").text(Quantity);
                                     if (Filter[i][forp] == undefined)
                                         this.superActivate(Filter[i][pointer]);
                                 }
@@ -974,10 +1001,10 @@ var powerbi;
                                         value: this.ConnectionIdentityBackwards[i].value
                                     });
                                 }
+                            //Pushing into a Shallow array
                             TempFilter = Filter.slice(0);
                         }
                         else {
-                            debugger;
                             for (var i = 0; i < TempFilter.length; i++) {
                                 if (id != TempFilter[i][pointer]) {
                                     TempFilter.splice(i, 1);
@@ -995,7 +1022,6 @@ var powerbi;
                                     //Making it superactive except clicked column
                                     if (!click)
                                         this.superActivate(Filter[i][pointer]);
-                                    debugger;
                                     click = false; //Setting further clicks to false
                                     if (Filter[i][prevp] != undefined) {
                                         this.createLineBackward(Filter[i][pointer], Filter[i][prevp], Filter[i][pointer] + Filter[i][prevp]);
@@ -1052,6 +1078,8 @@ var powerbi;
                                     ColNum = 4;
                                     break;
                             }
+                            //Clearing 4th column hidden input fields
+                            $("#col-4").find('input').val(0);
                             //Creating and clearing the filter
                             var Filter;
                             Filter = [];
