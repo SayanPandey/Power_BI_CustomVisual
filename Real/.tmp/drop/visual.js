@@ -633,6 +633,8 @@ var powerbi;
                         this.ConnectionIdentity = [];
                         //Initialising backward Connection Identity
                         this.ConnectionIdentityBackwards = [];
+                        //Initializing the selection Manager to filter next data points
+                        this.selectionManager = this.host.createSelectionManager();
                     }
                     //Utility function to remove special characters / ID making function
                     Visual.prototype.removeSpl = function (x) {
@@ -640,10 +642,10 @@ var powerbi;
                         return x;
                     };
                     //Utility function to create chart
-                    Visual.prototype.createChart = function (col, head, value, id) {
+                    Visual.prototype.createChart = function (Tile) {
                         var color;
                         var stroke;
-                        switch (col) {
+                        switch (Tile.col) {
                             case 1:
                                 color = "white";
                                 stroke = "orange";
@@ -665,8 +667,11 @@ var powerbi;
                                 stroke = "";
                         }
                         //This is the column used to recognise specific chart
-                        var newCol = d3.select("#col-" + col).append("div").classed("SVGcontainer grey inactive", true)
-                            .attr("id", id).attr("style", "padding:10px;");
+                        var newCol = d3.select("#col-" + Tile.col).append("div").classed("SVGcontainer grey inactive", true)
+                            .attr("id", Tile.id).attr("style", "padding:10px;")
+                            .on("click", function () {
+                            this.selectionManager.select(Tile.identity);
+                        });
                         //making new chart
                         var svg = newCol.append("svg")
                             .attr("width", "80%")
@@ -677,13 +682,13 @@ var powerbi;
                             .attr("height", "90").attr("width", "100%")
                             .attr("fill", color).attr("stroke", stroke).attr("stroke-width", "2.5");
                         //appending text;
-                        svg.append("text").text(value)
+                        svg.append("text").text(Tile.value)
                             .attr("x", "95%").attr("y", "20%").attr("text-anchor", "end").attr("dy", "0.35em")
                             .classed("label", true);
                         //appending head text;
                         svg.append("foreignObject")
                             .attr("x", "10").attr("y", "10").attr("width", "68%").attr("height", "70%")
-                            .append("xhtml:div").text(head).classed("headTitle", true);
+                            .append("xhtml:div").text(Tile.head).classed("headTitle", true);
                         //appending progress bars
                         svg.append("foreignObject")
                             .attr("x", "10").attr("y", "60%").attr("width", "190").attr("height", "70").append("xhtml:div")
@@ -694,10 +699,8 @@ var powerbi;
                             .attr("x", "10").attr("y", "80%").attr("width", "190").attr("height", "70").append("xhtml:div")
                             .classed("progress", true).append("div").classed("progress-bar progress-bar-success", true)
                             .attr({ "aria-valuenow": "40", "aria-valuemin": "0", "aria-valuemax": "100", "style": "width:40%" });
-                        //Fixing a hidden input fields at column 4 to add up values of more than one path
-                        if (col == 4) {
-                            d3.select("#" + id).append("input").attr({ 'type': 'hidden', 'value': '0' });
-                        }
+                        //Fixing a hidden input fields  to add up values of more than one path joining it
+                        d3.select("#" + Tile.id).append("input").attr({ 'type': 'hidden', 'value': '0' });
                     };
                     //create line function()
                     Visual.prototype.createLine = function (id1, id2, lineId) {
@@ -807,6 +810,9 @@ var powerbi;
                                     head: head,
                                     id: this.removeSpl(head),
                                     value: Metric[i],
+                                    identity: this.host.createSelectionIdBuilder()
+                                        .withMeasure(head)
+                                        .createSelectionId()
                                 });
                             }
                             else {
@@ -849,7 +855,6 @@ var powerbi;
                     };
                     //Utility Function to sum up values of ending column tiles in case of multiple connections
                     Visual.prototype.tileAggregate = function (id, value) {
-                        debugger;
                         var vValue = $("#" + id).find('input').val();
                         var Value = parseInt(vValue);
                         value = value + Value;
@@ -936,15 +941,11 @@ var powerbi;
                                     }
                                 }
                                 else if (Filter[i][forp] == "All" || Filter[i][forp] == undefined) {
-                                    //Code to add the value of 4th node Since the value form the back end is aggregated
                                     //get a temporary variable within the scope to store value
                                     var Quantity = void 0;
-                                    if (col == 4 && click == false) {
+                                    if (click == false) {
+                                        //Getting the best known updated value
                                         Quantity = this.tileAggregate(Filter[i][pointer], Filter[i].value);
-                                    }
-                                    else {
-                                        //Fixing the value for other tiles
-                                        Quantity = Filter[i].value;
                                     }
                                     //Code below is to activate a end node
                                     $("#" + Filter[i][pointer]).removeClass("grey strong-grey inactive").find("text").text(Quantity);
@@ -1030,7 +1031,13 @@ var powerbi;
                                     }
                                 }
                                 else if (Filter[i][prevp] == "All" || Filter[i][prevp] == undefined) {
-                                    $("#" + Filter[i][pointer]).removeClass("grey strong-grey inactive").find("text").text(Filter[i].value);
+                                    //get a temporary variable within the scope to store value
+                                    var Quantity = void 0;
+                                    if (click == false) {
+                                        //Getting the best known updated value
+                                        Quantity = this.tileAggregate(Filter[i][pointer], Filter[i].value);
+                                    }
+                                    $("#" + Filter[i][pointer]).removeClass("grey strong-grey inactive").find("text").text(Quantity);
                                     if (Filter[i][prevp] == undefined)
                                         this.superActivate(Filter[i][pointer]);
                                 }
@@ -1046,7 +1053,7 @@ var powerbi;
                         var Default = this.getViewModel(options);
                         //Creating Default Rectangles
                         for (var i = 0; i < Default.Tiles.length; i++) {
-                            this.createChart(Default.Tiles[i].col, Default.Tiles[i].head, Default.Tiles[i].value, Default.Tiles[i].id);
+                            this.createChart(Default.Tiles[i]);
                         }
                         //Storing the context in a variable
                         var Context = this;
@@ -1079,7 +1086,7 @@ var powerbi;
                                     break;
                             }
                             //Clearing 4th column hidden input fields
-                            $("#col-4").find('input').val(0);
+                            $(".col-3").find('input').val(0);
                             //Creating and clearing the filter
                             var Filter;
                             Filter = [];

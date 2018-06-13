@@ -8189,7 +8189,6 @@
   }
 }
 .visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG .container-fluid {
-  border: solid 3px#BFC9CA;
   border-top: none;
   border-bottom-left-radius: 30px;
   border-bottom-right-radius: 30px;
@@ -8257,9 +8256,6 @@
   filter: grayscale(100%);
 }
 .visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG .strong-grey {
-  -webkit-filter: grayscale(100%);
-  /* Safari 6.0 - 9.0 */
-  filter: grayscale(100%);
   opacity: 0.1;
 }
 .visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG .connecting {
