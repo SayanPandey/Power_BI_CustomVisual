@@ -3,8 +3,6 @@
 /*Base container and heads CSS*/
 .container-fluid{
     border-top: none;
-    border-bottom-left-radius: 30px;
-    border-bottom-right-radius: 30px;
 }
 .col-3{
     padding: 0px;
@@ -12,7 +10,7 @@
 .head{
     text-align: center;
     padding:5px;
-    font-weight: 400;
+    font-weight: 500;
     max-width:100%;
 }
 .headTitle{
@@ -22,26 +20,50 @@
 
 }
 .head1{
-    background-color: #FDEDEC;
-    padding-bottom:5px;
+    font:'Segoe UI';
+    padding:5px;
+    color:#F15C03;
 }
 .head2{
-    background-color: #e6ffe6;
-    padding-bottom:5px;
+    font:'Segoe UI';
+    padding:5px;
+    color:#17A517;
 }
 .head3{
-    background-color: rgb(179, 255, 255,0.5);
-    padding-bottom:5px;
+    font:'Segoe UI';
+    padding:5px;
+    color:#2BADE0;
 }
 .head4{
-    background-color: rgb(179, 179, 255,0.4);
-    padding-bottom:5px;
+    font:'Segoe UI';
+    padding:5px;
+    color:#6634C6;
 }
-.row{
+
+.row2{
+    max-width: 80%;
+    position:relative;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 10px;
+    min-height:10vh;
+    -webkit-box-shadow: 0px 5px 22px 0px rgba(0,0,0,0.75);
+    -moz-box-shadow: 0px 5px 22px 0px rgba(0,0,0,0.75);
+    box-shadow: 0px 5px 22px 0px rgba(0,0,0,0.75);
+}
+.row2 .col-8{
+    font-size:12px;
+    font-family: "Segoe UI", Regular;
+    padding-left:5px;
+    padding-top:5px;
     padding-bottom:5px;
-    position: relative;
-    min-width: 100%;
-    min-height: 100%;
+    background-color: white;
+    border-top-left-radius: inherit;
+    border-bottom-left-radius: inherit;
+}
+.row2 .col-4{
+    border-top-right-radius: inherit;
+    border-bottom-right-radius: inherit;
 }
 
 //SVG CSS
@@ -53,11 +75,12 @@ svg{
     margin-right:auto;
 }
 .label{
-    font-size: 2em;
+    font-size: 25px;
     text-shadow: 0px 1px 6px rgba(255,255,255,0.75)
 }
 foreignObject{
     text-align: left;
+    font-size: 12px;
 }
 .progress{
     border-radius: 0px;
@@ -84,21 +107,9 @@ foreignObject{
     min-height: 100%;
 }
 path{
-    stroke:#B2BABB !important;
     stroke-width: 1.5 !important;
     position:relative !important;
     z-index: -50;
-}
-
-//Column 2 activated classes
-#col-2 .active rect{
-    fill:green;
-}
-#col-2 .active text{
-    fill:white;
-}
-#col-2 .active div{
-    color:white;
 }
 
 //Path animation
@@ -111,4 +122,7 @@ path {
     to {
         stroke-dashoffset: 0;
     }
+}
+.SVGcontainer{
+    min-height:20vh;
 }

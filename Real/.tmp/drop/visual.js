@@ -648,63 +648,53 @@ var powerbi;
                         switch (Tile.col) {
                             case 1:
                                 color = "white";
-                                stroke = "orange";
+                                stroke = "#F15C03";
                                 break;
                             case 2:
                                 color = "white";
-                                stroke = "#18a518";
+                                stroke = "#17A517";
                                 break;
                             case 3:
                                 color = "white";
-                                stroke = "#04D9DF";
+                                stroke = "#2BADE0";
                                 break;
                             case 4:
                                 color = "white";
-                                stroke = "#3300FF";
+                                stroke = "#6634C6";
                                 break;
                             default:
                                 color = "white";
                                 stroke = "";
                         }
+                        //Storing the context
+                        var Context = this;
                         //This is the column used to recognise specific chart
                         var newCol = d3.select("#col-" + Tile.col).append("div").classed("SVGcontainer grey inactive", true)
                             .attr("id", Tile.id).attr("style", "padding:10px;")
                             .on("click", function () {
-                            this.selectionManager.select(Tile.identity);
+                            Context.selectionManager.select(Tile.identity);
                         });
                         //making new chart
-                        var svg = newCol.append("svg")
-                            .attr("width", "80%")
-                            .attr("height", "130")
-                            .attr("xmlns", "http://www.w3.org/2000/svg");
-                        //Appending svG
-                        svg.append("rect").attr("rx", "10").attr("ry", "10")
-                            .attr("height", "90").attr("width", "100%")
-                            .attr("fill", color).attr("stroke", stroke).attr("stroke-width", "2.5");
-                        //appending text;
-                        svg.append("text").text(Tile.value)
-                            .attr("x", "95%").attr("y", "20%").attr("text-anchor", "end").attr("dy", "0.35em")
-                            .classed("label", true);
-                        //appending head text;
-                        svg.append("foreignObject")
-                            .attr("x", "10").attr("y", "10").attr("width", "68%").attr("height", "70%")
-                            .append("xhtml:div").text(Tile.head).classed("headTitle", true);
-                        //appending progress bars
-                        svg.append("foreignObject")
-                            .attr("x", "10").attr("y", "60%").attr("width", "190").attr("height", "70").append("xhtml:div")
-                            .classed("progress", true).append("div").classed("progress-bar progress-bar-selected", true)
-                            .attr({ "aria-valuenow": "40", "aria-valuemin": "0", "aria-valuemax": "100", "style": "width:40%" });
-                        //Second Progress bar
-                        svg.append("foreignObject")
-                            .attr("x", "10").attr("y", "80%").attr("width", "190").attr("height", "70").append("xhtml:div")
-                            .classed("progress", true).append("div").classed("progress-bar progress-bar-success", true)
-                            .attr({ "aria-valuenow": "40", "aria-valuemin": "0", "aria-valuemax": "100", "style": "width:40%" });
+                        var block = newCol.append("div").classed("row row2", true)
+                            .style({
+                            "border": "solid 2px " + stroke
+                        }); //The New Mockup design longs for perfect design that will be easy to achieve with divs than svg
+                        var leftSide = block.append("div").classed("col-8", true);
+                        var rightSide = block.append("div").classed("col-4", true)
+                            .style({
+                            "background-color": stroke,
+                            "color": color
+                        });
+                        leftSide.text(Tile.head);
+                        rightSide.text(Tile.value);
                         //Fixing a hidden input fields  to add up values of more than one path joining it
                         d3.select("#" + Tile.id).append("input").attr({ 'type': 'hidden', 'value': '0' });
                     };
                     //create line function()
                     Visual.prototype.createLine = function (id1, id2, lineId) {
-                        var row = d3.select("#row1").append("svg").attr("class", "connecting").append("path").attr({ "id": lineId, "fill": "transparent", "class": "path" });
+                        //Finding the color of the line
+                        var color = $("#" + id1).find(".col-4").css("background-color");
+                        var row = d3.select("#row1").append("svg").attr("class", "connecting").append("path").attr({ "id": lineId, "fill": "transparent", "class": "path", "stroke": color });
                         var line = $('#' + lineId);
                         var div1 = $('#' + id1);
                         var div2 = $('#' + id2);
@@ -728,7 +718,8 @@ var powerbi;
                     };
                     //Create Backward line function
                     Visual.prototype.createLineBackward = function (id1, id2, lineId) {
-                        var row = d3.select("#row1").append("svg").attr("class", "connecting").append("path").attr({ "id": lineId, "fill": "transparent", "class": "path" });
+                        var color = $("#" + id1).find(".col-4").css("background-color");
+                        var row = d3.select("#row1").append("svg").attr("class", "connecting").append("path").attr({ "id": lineId, "fill": "transparent", "class": "path", "stroke": color });
                         var line = $('#' + lineId);
                         var div1 = $('#' + id1);
                         var div2 = $('#' + id2);
@@ -776,6 +767,7 @@ var powerbi;
                         var Grow = dv[0].categorical.categories[3].values;
                         var Direction = dv[0].categorical.categories[4].values;
                         var Metric = dv[0].categorical.values[0].values;
+                        //let Link= dv[0].categorical.categories[5].values;
                         //Clearing the connection array
                         this.ConnectionIdentity = [];
                         this.ConnectionIdentityBackwards = [];
@@ -811,6 +803,7 @@ var powerbi;
                                     id: this.removeSpl(head),
                                     value: Metric[i],
                                     identity: this.host.createSelectionIdBuilder()
+                                        .withCategory(dv[0].categorical.categories[col - 1], i)
                                         .withMeasure(head)
                                         .createSelectionId()
                                 });
@@ -844,11 +837,11 @@ var powerbi;
                     };
                     //Super activation for Tiles having progressbars
                     Visual.prototype.superActivate = function (id) {
-                        //Searching for svg and increasing its length
-                        $("#" + id).find("rect").animate({
-                            "height": "130"
-                        }, 500);
-                        $("#" + id).find(".progress").slideDown(500);
+                        // //Searching for svg and increasing its length
+                        // $("#"+id).find("rect").animate({
+                        //     "height":"110"
+                        // },500);
+                        // $("#"+id).find(".progress").slideDown(500);
                         //Unbinding the mouse move
                         $("#" + id).unbind("mouseenter").unbind("mouseleave");
                         ;
@@ -948,7 +941,7 @@ var powerbi;
                                         Quantity = this.tileAggregate(Filter[i][pointer], Filter[i].value);
                                     }
                                     //Code below is to activate a end node
-                                    $("#" + Filter[i][pointer]).removeClass("grey strong-grey inactive").find("text").text(Quantity);
+                                    $("#" + Filter[i][pointer]).removeClass("grey strong-grey inactive").find(".col-4").text(Quantity);
                                     if (Filter[i][forp] == undefined)
                                         this.superActivate(Filter[i][pointer]);
                                 }
@@ -1037,7 +1030,7 @@ var powerbi;
                                         //Getting the best known updated value
                                         Quantity = this.tileAggregate(Filter[i][pointer], Filter[i].value);
                                     }
-                                    $("#" + Filter[i][pointer]).removeClass("grey strong-grey inactive").find("text").text(Quantity);
+                                    $("#" + Filter[i][pointer]).removeClass("grey strong-grey inactive").find(".col-4").text(Quantity);
                                     if (Filter[i][prevp] == undefined)
                                         this.superActivate(Filter[i][pointer]);
                                 }
@@ -1063,9 +1056,9 @@ var powerbi;
                             $("#row1").find('path').parent().remove();
                             //Block to disable other activation
                             var group = $(".col-3").find(".SVGcontainer").addClass("strong-grey");
-                            group.find("rect").attr("fill", "white");
-                            group.find("text").attr("fill", "black");
-                            group.find("div").attr({ "style": "text-shadow:none" });
+                            // group.find("rect").attr("fill", "white");
+                            // group.find("text").attr("fill", "black");
+                            // group.find("div").attr({ "style": "text-shadow:none" })
                             //Block to ACTIVATE
                             $(x).removeClass("strong-grey");
                             var id = $(x).attr("id");
@@ -1098,7 +1091,7 @@ var powerbi;
                             //Putting the default value
                             for (var i = 0; i < Default.Tiles.length; i++) {
                                 if (Default.Tiles[i].col == ColNum && Default.Tiles[i].id == id) {
-                                    $(x).find("text").text(Default.Tiles[i].value);
+                                    $(x).find(".col-4").text(Default.Tiles[i].value);
                                     break;
                                 }
                             }

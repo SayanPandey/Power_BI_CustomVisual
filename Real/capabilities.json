@@ -34,6 +34,11 @@
                     "numeric": true
                 }
             ]
+        },
+        {
+            "displayName": "Link",
+            "name": "Link",
+            "kind": "Grouping"
         }
     ],
     "objects": {
@@ -104,6 +109,9 @@
                     },
                     "Direction":{
                         "max":1
+                    },
+                    "Link":{
+                        "max":1
                     }
                 }
             ],
@@ -134,6 +142,11 @@
                             "for": {
                                 "in": "Direction"
                             }
+                        },
+                        {
+                            "for": {
+                                "in": "Link"
+                            }
                         }
                     ],
                     "dataReductionAlgorithm": {
@@ -152,4 +165,5 @@
             }
         }
     ]
+    
 }

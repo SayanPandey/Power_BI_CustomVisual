@@ -8190,8 +8190,6 @@
 }
 .visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG .container-fluid {
   border-top: none;
-  border-bottom-left-radius: 30px;
-  border-bottom-right-radius: 30px;
 }
 .visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG .col-3 {
   padding: 0px;
@@ -8199,7 +8197,7 @@
 .visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG .head {
   text-align: center;
   padding: 5px;
-  font-weight: 400;
+  font-weight: 500;
   max-width: 100%;
 }
 .visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG .headTitle {
@@ -8208,26 +8206,49 @@
   font-weight: 500;
 }
 .visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG .head1 {
-  background-color: #FDEDEC;
-  padding-bottom: 5px;
+  font: 'Segoe UI';
+  padding: 5px;
+  color: #F15C03;
 }
 .visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG .head2 {
-  background-color: #e6ffe6;
-  padding-bottom: 5px;
+  font: 'Segoe UI';
+  padding: 5px;
+  color: #17A517;
 }
 .visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG .head3 {
-  background-color: #b3ffff;
-  padding-bottom: 5px;
+  font: 'Segoe UI';
+  padding: 5px;
+  color: #2BADE0;
 }
 .visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG .head4 {
-  background-color: #b3b3ff;
-  padding-bottom: 5px;
+  font: 'Segoe UI';
+  padding: 5px;
+  color: #6634C6;
 }
-.visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG .row {
-  padding-bottom: 5px;
+.visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG .row2 {
+  max-width: 80%;
   position: relative;
-  min-width: 100%;
-  min-height: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 10px;
+  min-height: 10vh;
+  -webkit-box-shadow: 0px 5px 22px 0px rgba(0, 0, 0, 0.75);
+  -moz-box-shadow: 0px 5px 22px 0px rgba(0, 0, 0, 0.75);
+  box-shadow: 0px 5px 22px 0px rgba(0, 0, 0, 0.75);
+}
+.visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG .row2 .col-8 {
+  font-size: 12px;
+  font-family: "Segoe UI", Regular;
+  padding-left: 5px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  background-color: white;
+  border-top-left-radius: inherit;
+  border-bottom-left-radius: inherit;
+}
+.visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG .row2 .col-4 {
+  border-top-right-radius: inherit;
+  border-bottom-right-radius: inherit;
 }
 .visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG svg {
   position: relative;
@@ -8237,11 +8258,12 @@
   margin-right: auto;
 }
 .visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG .label {
-  font-size: 2em;
+  font-size: 25px;
   text-shadow: 0px 1px 6px rgba(255, 255, 255, 0.75);
 }
 .visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG foreignObject {
   text-align: left;
+  font-size: 12px;
 }
 .visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG .progress {
   border-radius: 0px;
@@ -8267,19 +8289,9 @@
   min-height: 100%;
 }
 .visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG path {
-  stroke: #B2BABB !important;
   stroke-width: 1.5 !important;
   position: relative !important;
   z-index: -50;
-}
-.visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG #col-2 .active rect {
-  fill: green;
-}
-.visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG #col-2 .active text {
-  fill: white;
-}
-.visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG #col-2 .active div {
-  color: white;
 }
 .visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG path {
   stroke-dasharray: 200%;
@@ -8290,4 +8302,7 @@
   to {
     stroke-dashoffset: 0;
   }
+}
+.visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG .SVGcontainer {
+  min-height: 20vh;
 }
