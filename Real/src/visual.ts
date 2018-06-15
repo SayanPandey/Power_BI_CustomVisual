@@ -124,7 +124,7 @@ module powerbi.extensibility.visual {
             //Storing the context
             let Context=this;
             //This is the column used to recognise specific chart
-            let newCol = d3.select("#col-" + Tile.col).append("div").classed("SVGcontainer grey inactive", true)
+            let newCol = d3.select("#col-" + Tile.col).append("div").classed("SVGcontainer inactive", true)
                 .attr("id", Tile.id).attr("style", "padding:10px;")
                 .on("click",function(){
                     Context.selectionManager.select(Tile.identity);
@@ -556,11 +556,15 @@ module powerbi.extensibility.visual {
                 //Removing lines
                 $("#row1").find('path').parent().remove();
                 //Block to disable other activation
-                debugger;
-                $(".col-3").find(".SVGcontainer").toggleClass(function() {
-                    if ( $( this ).parent().is( ".active" ) ) {
-                      return "inactive grey";
-                    } else {
+                $("#row1").find('.col-3').find(".SVGcontainer").addClass("strong-grey inactive");
+
+                $(x).toggleClass(function() {
+                    if ( $( this ).is( ".active" ) ) {
+                        console.log("active returned");
+                      return "inactive";
+                    } 
+                    else {
+                        console.log("active returned");
                       return "active";
                     }
                   });
@@ -625,14 +629,14 @@ module powerbi.extensibility.visual {
 
                 })
             //Partial display
-            $(".inactive").mouseenter(
-                function (this): void {
-                    $(this).removeClass("grey");
-                });
-            $(".inactive").mouseleave(
-                function (this): void {
-                    $(this).addClass("grey");
-                });
+            // $(".inactive").mouseenter(
+            //     function (this): void {
+            //         $(this).removeClass("grey");
+            //     });
+            // $(".inactive").mouseleave(
+            //     function (this): void {
+            //         $(this).addClass("grey");
+            //     });
 
         }
 
