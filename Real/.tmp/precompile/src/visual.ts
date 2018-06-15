@@ -33,7 +33,7 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
         value: number,
 
         //Below is the identity element to interact with other visuals
-        identity:powerbi.visuals.ISelectionId;
+        identity:powerbi.visuals.ISelectionId
     }
     //Its Rendering form
     interface ViewModel {
@@ -57,6 +57,9 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
         private target;
         private Data: DataView;
         private newCol: d3.Selection<SVGAElement>;
+
+        //Basically used to reset the visual
+        private Clicked:string;
 
         //Defining global connection instance
         //Establishing connection b/w unique identities
@@ -124,7 +127,8 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
             let newCol = d3.select("#col-" + Tile.col).append("div").classed("SVGcontainer grey inactive", true)
                 .attr("id", Tile.id).attr("style", "padding:10px;")
                 .on("click",function(){
-                    Context.selectionManager.select(Tile.identity)   
+                    Context.selectionManager.select(Tile.identity);
+                    Context.Clicked=Tile.id;
                 });
 
             //making new chart
@@ -134,7 +138,11 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
                 }); //The New Mockup design longs for perfect design that will be easy to achieve with divs than svg
 
             let leftSide=block.append("div").classed("col-8",true);
-            let rightSide=block.append("div").classed("col-4",true)
+            let rightSide=block.append("div").classed("col-4",true).style({
+                "-webkit-box-shadow": "0px 0px 0px 1px"+stroke,
+                "-moz-box-shadow":"0px 0px 0px 1px"+stroke,
+                "box-shadow":"0px 0px 0px 1px"+stroke
+                })
             .style({
                 "background-color":stroke,
                 "color":color
@@ -526,7 +534,9 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
 
        //Update function
         public update(options: VisualUpdateOptions) {
-            
+
+            //Clearing selection manager
+            this.selectionManager.clear();
             //Removing elements
             $(".col-3").find('div').remove();
             $(".connecting").remove();
@@ -546,12 +556,15 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
                 //Removing lines
                 $("#row1").find('path').parent().remove();
                 //Block to disable other activation
-                let group = $(".col-3").find(".SVGcontainer").addClass("strong-grey");
-                // group.find("rect").attr("fill", "white");
-                // group.find("text").attr("fill", "black");
-                // group.find("div").attr({ "style": "text-shadow:none" })
+                debugger;
+                $(".col-3").find(".SVGcontainer").toggleClass(function() {
+                    if ( $( this ).parent().is( ".active" ) ) {
+                      return "inactive grey";
+                    } else {
+                      return "active";
+                    }
+                  });
                 
-
                 //Block to ACTIVATE
                 $(x).removeClass("strong-grey");
                 let id=$(x).attr("id");
@@ -577,9 +590,9 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
 
                 //Creating and clearing the filter
                 let Filter : Connection[];
-                Filter=[];
-                //Making Forward Connection
-                Context.getConnection(id,true,ColNum,'All',Filter);
+                // Filter=[];
+                // //Making Forward Connection
+                // Context.getConnection(id,true,ColNum,'All',Filter);
 
                 //clearing the filter agin for backward Connections
                 Filter=[];

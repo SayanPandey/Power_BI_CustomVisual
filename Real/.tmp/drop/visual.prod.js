@@ -673,6 +673,7 @@ var powerbi;
                             .attr("id", Tile.id).attr("style", "padding:10px;")
                             .on("click", function () {
                             Context.selectionManager.select(Tile.identity);
+                            Context.Clicked = Tile.id;
                         });
                         //making new chart
                         var block = newCol.append("div").classed("row row2", true)
@@ -680,7 +681,11 @@ var powerbi;
                             "border": "solid 2px " + stroke
                         }); //The New Mockup design longs for perfect design that will be easy to achieve with divs than svg
                         var leftSide = block.append("div").classed("col-8", true);
-                        var rightSide = block.append("div").classed("col-4", true)
+                        var rightSide = block.append("div").classed("col-4", true).style({
+                            "-webkit-box-shadow": "0px 0px 0px 1px" + stroke,
+                            "-moz-box-shadow": "0px 0px 0px 1px" + stroke,
+                            "box-shadow": "0px 0px 0px 1px" + stroke
+                        })
                             .style({
                             "background-color": stroke,
                             "color": color
@@ -1039,6 +1044,8 @@ var powerbi;
                     };
                     //Update function
                     Visual.prototype.update = function (options) {
+                        //Clearing selection manager
+                        this.selectionManager.clear();
                         //Removing elements
                         $(".col-3").find('div').remove();
                         $(".connecting").remove();
@@ -1055,10 +1062,15 @@ var powerbi;
                             //Removing lines
                             $("#row1").find('path').parent().remove();
                             //Block to disable other activation
-                            var group = $(".col-3").find(".SVGcontainer").addClass("strong-grey");
-                            // group.find("rect").attr("fill", "white");
-                            // group.find("text").attr("fill", "black");
-                            // group.find("div").attr({ "style": "text-shadow:none" })
+                            debugger;
+                            $(".col-3").find(".SVGcontainer").toggleClass(function () {
+                                if ($(this).parent().is(".active")) {
+                                    return "inactive grey";
+                                }
+                                else {
+                                    return "active";
+                                }
+                            });
                             //Block to ACTIVATE
                             $(x).removeClass("strong-grey");
                             var id = $(x).attr("id");
@@ -1082,9 +1094,9 @@ var powerbi;
                             $(".col-3").find('input').val(0);
                             //Creating and clearing the filter
                             var Filter;
-                            Filter = [];
-                            //Making Forward Connection
-                            Context.getConnection(id, true, ColNum, 'All', Filter);
+                            // Filter=[];
+                            // //Making Forward Connection
+                            // Context.getConnection(id,true,ColNum,'All',Filter);
                             //clearing the filter agin for backward Connections
                             Filter = [];
                             Context.getConnectionBackward(id, true, ColNum, 'All', Filter);

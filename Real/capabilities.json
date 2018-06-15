@@ -36,9 +36,9 @@
             ]
         },
         {
-            "displayName": "Link",
-            "name": "Link",
-            "kind": "Grouping"
+            "displayName": "VALUE",
+            "name": "VALUE",
+            "kind": "Measure"
         }
     ],
     "objects": {
@@ -104,13 +104,16 @@
                     "Grow":{
                         "max":1
                     },
-                    "Metric":{
-                        "max":1
-                    },
                     "Direction":{
                         "max":1
                     },
                     "Link":{
+                        "max":1
+                    },
+                    "Metric":{
+                        "max":1
+                    },
+                    "VALUE":{
                         "max":1
                     }
                 }
@@ -142,11 +145,6 @@
                             "for": {
                                 "in": "Direction"
                             }
-                        },
-                        {
-                            "for": {
-                                "in": "Link"
-                            }
                         }
                     ],
                     "dataReductionAlgorithm": {
@@ -159,11 +157,29 @@
                             "bind": {
                                 "to": "Metric"
                             }
+                        },
+                        {
+                            "bind": {
+                                "to": "VALUE"
+                            }
                         }
                     ]
                 }
             }
         }
-    ]
-    
+    ],
+    "sorting": {
+        "implicit": {
+            "clauses": [
+                {
+                    "role": "category",
+                    "direction": 1
+                },
+                {
+                    "role": "measure",
+                    "direction": 2
+                }
+            ]
+        }
+    }
 }
