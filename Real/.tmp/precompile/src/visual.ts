@@ -148,7 +148,8 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
                 "color":color
             });
             leftSide.text(Tile.head);
-            rightSide.text(Tile.value);
+            rightSide.html('<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAFSSURBVDhPvZQ/S0JhGMVvVjpZEBHi0JAEUkF7UWjUEra0ONTWVjS0tTQVUfRHaNZPoIZEDvUBQqgIau6r3NvvzdONixTvi+KBH5dzHs9zX7l6vb4qCIKY7/sbUIIy7JPFNXYTxQEW1OEalmAejuAJ1vUxe1HahEvZUGRJeIYxRXaiUOKUOdmImJ3CmqydKFzBomxE5BewImsnCruwIxsReZ3TT8naidIB7MlGRG4ezISsnSicwJZsKE42RN6EaUV2opii9AEJRd/CF6Ei6yaKx7At+/NDv4cZRW6iOALvsmZhFt+UdRcLhlnQkjV+El+VdZNO04DwSZMN4h+4HsKo4v9FIQ+PcEep459CFmdmXhIvXG8grVGnGJqHcAsZRX+KheblUYBXWFD8K8JlqMlai04a3rhBTFFbhOdgvuaZK/Q+YVar2iKYY7jaBeNa1Ut53hclfpQ3GGMeDwAAAABJRU5ErkJggg==">');
+            rightSide.append("div").text(Tile.value);
             
             
             //Fixing a hidden input fields  to add up values of more than one path joining it
@@ -524,7 +525,7 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
                             //Getting the best known updated value
                             Quantity=<number>this.tileAggregate(Filter[i][pointer],Filter[i].value);
                         }
-                        $("#"+Filter[i][pointer]).removeClass("grey strong-grey inactive").find(".col-4").text(Quantity);
+                        $("#"+Filter[i][pointer]).removeClass("grey strong-grey inactive").find(".col-4").find("div").text(Quantity);
                         if(Filter[i][prevp]==undefined)
                                 this.superActivate(Filter[i][pointer]);
                     }
@@ -605,7 +606,7 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
                //Putting the default value
                for (let i = 0; i < Default.Tiles.length; i++) {
                     if(Default.Tiles[i].col==ColNum && Default.Tiles[i].id==id){
-                        $(x).find(".col-4").text(Default.Tiles[i].value);
+                        $(x).find(".col-4").find("div").text(Default.Tiles[i].value);
                         break;
                     }
                 }
