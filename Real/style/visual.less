@@ -46,7 +46,7 @@
     margin-left: auto;
     margin-right: auto;
     border-radius: 10px;
-    min-height:12vh;
+    min-height:15vh;
     -webkit-box-shadow: 0px 0px 24px 0px rgba(0,0,0,0.3);
     -moz-box-shadow: 0px 0px 24px 0px rgba(0,0,0,0.3);
     box-shadow: 0px 0px 24px 0px rgba(0,0,0,0.3);
@@ -62,8 +62,10 @@
     border-bottom-left-radius: inherit;
 }
 .row2 .col-4{
+    font-size:18px;
     border-top-right-radius: inherit;
     border-bottom-right-radius: inherit;
+    text-align: center;
 }
 
 //SVG CSS
@@ -84,7 +86,8 @@ foreignObject{
 }
 .progress{
     border-radius: 0px;
-    display:none;
+    max-height:5px;
+    
 }
 .progress-bar-selected{
     background-color: green;
@@ -114,11 +117,17 @@ path {
     stroke-dashoffset: 200%;
     animation: dash 1.5s linear forwards;
 }
-@keyframes dash {
+@keyframes dash {   
     to {
         stroke-dashoffset: 0;
     }
 }
 .SVGcontainer{
-    min-height:20vh;
+    min-height:30vh;
+}
+//Progress
+.progtitle{
+    padding:2px;
+    font-size: 10px;
+    display: none;
 }

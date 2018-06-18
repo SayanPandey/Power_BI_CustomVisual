@@ -682,16 +682,44 @@ var powerbi;
                         }); //The New Mockup design longs for perfect design that will be easy to achieve with divs than svg
                         var leftSide = block.append("div").classed("col-8", true);
                         var rightSide = block.append("div").classed("col-4", true).style({
-                            "-webkit-box-shadow": "0px 0px 0px 1px" + stroke,
-                            "-moz-box-shadow": "0px 0px 0px 1px" + stroke,
-                            "box-shadow": "0px 0px 0px 1px" + stroke
+                            "-webkit-box-shadow": "0px 0px 0px 1.5px" + stroke,
+                            "-moz-box-shadow": "0px 0px 0px 1.5px" + stroke,
+                            "box-shadow": "0px 0px 0px 1.5px" + stroke
                         })
                             .style({
                             "background-color": stroke,
                             "color": color
                         });
-                        leftSide.text(Tile.head);
-                        rightSide.html('<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAFSSURBVDhPvZQ/S0JhGMVvVjpZEBHi0JAEUkF7UWjUEra0ONTWVjS0tTQVUfRHaNZPoIZEDvUBQqgIau6r3NvvzdONixTvi+KBH5dzHs9zX7l6vb4qCIKY7/sbUIIy7JPFNXYTxQEW1OEalmAejuAJ1vUxe1HahEvZUGRJeIYxRXaiUOKUOdmImJ3CmqydKFzBomxE5BewImsnCruwIxsReZ3TT8naidIB7MlGRG4ezISsnSicwJZsKE42RN6EaUV2opii9AEJRd/CF6Ei6yaKx7At+/NDv4cZRW6iOALvsmZhFt+UdRcLhlnQkjV+El+VdZNO04DwSZMN4h+4HsKo4v9FIQ+PcEep459CFmdmXhIvXG8grVGnGJqHcAsZRX+KheblUYBXWFD8K8JlqMlai04a3rhBTFFbhOdgvuaZK/Q+YVar2iKYY7jaBeNa1Ut53hclfpQ3GGMeDwAAAABJRU5ErkJggg==">');
+                        leftSide.text(Tile.head).append('br');
+                        leftSide.append('br');
+                        //appending progress bars
+                        //1st Progress bar
+                        var ProgTitle1 = leftSide.append("div").classed("progtitle", true).attr("id", "pt1").text("Of Selected");
+                        ProgTitle1.append("div").classed("metric", true).attr({
+                            style: "float:right"
+                        }).text("40%");
+                        ProgTitle1.append("div").classed("progress", true).append("div").classed("progress-bar", true).attr({
+                            role: "progressbar",
+                            'aria-valuenow': "40",
+                            'aria-valuemin': "0",
+                            'aria-valuemax': "100",
+                            style: "width:40%"
+                        });
+                        //ProgTitle1.append('br');
+                        //Second one
+                        var ProgTitle2 = leftSide.append("div").classed("progtitle", true).attr("id", "pt2").text("Total Value");
+                        ProgTitle2.append("div").classed("metric", true).attr({
+                            style: "float:right"
+                        }).text("80%");
+                        ProgTitle2.append("div").classed("progress", true).append("div").classed("progress-bar", true).attr({
+                            role: "progressbar",
+                            'aria-valuenow': "40",
+                            'aria-valuemin': "0",
+                            'aria-valuemax': "100",
+                            style: "width:80%; background-color:" + stroke
+                        });
+                        ProgTitle2.append('br');
+                        rightSide.html('<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAYAAADEtGw7AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAF3SURBVEhLxZS/K0VxGIdPLq7B4Copg0xKSq6VRWFgMrKZKBlISZQ7XYtBNkalJAt3kFUpSqaLyGKw+QsM53jer0/3drpXne+JPPV07+d9z/ueb+f+CP6VKIoGwzBcxHWcJjeqlQ4WtLDoFC9xBefxCK9xXJf5w+ICC7YVK1AbwlscVckPBssszynGoD5G/1DRDwbf9LYGen14oegHg4/2nBVjUB+hf6zoB4MlHFCMQX0J1xT9YPCBk/UoxqC3gDuKfjBYxrxiDOobWFT0g8FhvFGsQK0LX7BDJX8Ytu9rv6KDvMojKiimgyVTeK7oIL9ju2I6WJDndCeKDmo/fr8TwcJmluzjpkoO8hXOKiaHoU7cwlcscoMmtRzU7MM7o37H65wdQK36cEEG7Y/nCZd536ZWXbimF3fxGSdVroXmHh5gVqVEcIButNNPqFTFmjTsl5ZRyQtm7U/pXrEKxRn8sDunlflPXlu18huKWYq5X7BBK/+CIPgCK5i7ktP1SeYAAAAASUVORK5CYII=">');
                         rightSide.append("div").text(Tile.value);
                         //Fixing a hidden input fields  to add up values of more than one path joining it
                         d3.select("#" + Tile.id).append("input").attr({ 'type': 'hidden', 'value': '0' });
@@ -843,14 +871,25 @@ var powerbi;
                     };
                     //Super activation for Tiles having progressbars
                     Visual.prototype.superActivate = function (id) {
-                        // //Searching for svg and increasing its length
-                        // $("#"+id).find("rect").animate({
-                        //     "height":"110"
-                        // },500);
-                        // $("#"+id).find(".progress").slideDown(500);
-                        //Unbinding the mouse move
-                        $("#" + id).unbind("mouseenter").unbind("mouseleave");
-                        ;
+                        $("#" + id).find(".progtitle").slideDown(500);
+                        var color = $("#" + id).find(".col-4").css("background-color");
+                        d3.select("#" + id).select(".col-8").style({
+                            "-webkit-box-shadow": "none",
+                            "-moz-box-shadow": "none",
+                            "box-shadow": "none",
+                            "background-color": "white",
+                            "color": "black"
+                        });
+                    };
+                    //Utility function to deactivate
+                    Visual.prototype.deActivate = function (x) {
+                        $(x).find(".progtitle").slideUp(500);
+                        var color = $(x).find(".col-4").css("background-color");
+                        d3.select(x).select(".col-8").style({
+                            "box-shadow": "0px 0px 0px 1.5px" + color,
+                            "background-color": color,
+                            "color": "white"
+                        });
                     };
                     //Utility Function to sum up values of ending column tiles in case of multiple connections
                     Visual.prototype.tileAggregate = function (id, value) {
@@ -1020,7 +1059,7 @@ var powerbi;
                                     //Making Current tile active
                                     $("#" + Filter[i][pointer]).removeClass("grey strong-grey inactive").addClass("active");
                                     //Making it superactive except clicked column
-                                    if (!click)
+                                    if (this.Clicked != Filter[i][pointer])
                                         this.superActivate(Filter[i][pointer]);
                                     click = false; //Setting further clicks to false
                                     if (Filter[i][prevp] != undefined) {
@@ -1064,16 +1103,6 @@ var powerbi;
                             $("#row1").find('path').parent().remove();
                             //Block to disable other activation
                             $("#row1").find('.col-3').find(".SVGcontainer").addClass("strong-grey inactive");
-                            $(x).toggleClass(function () {
-                                if ($(this).is(".active")) {
-                                    console.log("active returned");
-                                    return "inactive";
-                                }
-                                else {
-                                    console.log("active returned");
-                                    return "active";
-                                }
-                            });
                             //Block to ACTIVATE
                             $(x).removeClass("strong-grey");
                             var id = $(x).attr("id");
@@ -1107,6 +1136,7 @@ var powerbi;
                             for (var i = 0; i < Default.Tiles.length; i++) {
                                 if (Default.Tiles[i].col == ColNum && Default.Tiles[i].id == id) {
                                     $(x).find(".col-4").find("div").text(Default.Tiles[i].value);
+                                    Context.deActivate(x);
                                     break;
                                 }
                             }
