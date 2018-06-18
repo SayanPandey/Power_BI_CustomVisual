@@ -700,7 +700,7 @@ var powerbi;
                         leftSide.append('br');
                         //appending progress bars
                         //1st Progress bar
-                        var ProgTitle1 = leftSide.append("div").classed("progtitle", true).attr("id", "pt1").text("Of Selected");
+                        var ProgTitle1 = leftSide.append("div").classed("progtitle", true).text("Of Selected");
                         ProgTitle1.append("div").classed("metric", true).attr({
                             style: "float:right"
                         }).text("40%");
@@ -713,7 +713,7 @@ var powerbi;
                         });
                         //ProgTitle1.append('br');
                         //Second one
-                        var ProgTitle2 = leftSide.append("div").classed("progtitle", true).attr("id", "pt2").text("Total Value");
+                        var ProgTitle2 = leftSide.append("div").classed("progtitle", true).text("Total Value");
                         ProgTitle2.append("div").classed("metric", true).attr({
                             style: "float:right"
                         }).text("80%");
@@ -903,6 +903,12 @@ var powerbi;
                         progbar.select(".total").style({
                             width: percent_Total + "%",
                         });
+                        //making the change visible on the text
+                        var text = d3.select("#" + id).selectAll(".progtitle").select(".metric");
+                        //Value for ofSelected
+                        $(text[0][0]).text(percent_ofSelected.toFixed(2) + "%");
+                        //Value for Total
+                        $(text[0][1]).text(percent_Total.toFixed(2) + "%");
                     };
                     //Utility function to deactivate
                     Visual.prototype.deActivate = function (x) {

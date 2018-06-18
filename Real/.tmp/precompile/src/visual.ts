@@ -159,7 +159,7 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
             leftSide.append('br');
             //appending progress bars
             //1st Progress bar
-            let ProgTitle1=leftSide.append("div").classed("progtitle",true).attr("id","pt1").text("Of Selected");
+            let ProgTitle1=leftSide.append("div").classed("progtitle",true).text("Of Selected");
             ProgTitle1.append("div").classed("metric",true).attr({
                 style:"float:right"
             }).text("40%");
@@ -172,7 +172,7 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
             });
             //ProgTitle1.append('br');
             //Second one
-            let ProgTitle2=leftSide.append("div").classed("progtitle",true).attr("id","pt2").text("Total Value");
+            let ProgTitle2=leftSide.append("div").classed("progtitle",true).text("Total Value");
             ProgTitle2.append("div").classed("metric",true).attr({
                 style:"float:right"
             }).text("80%");
@@ -382,6 +382,14 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
             progbar.select(".total").style({
               width:percent_Total+"%",
             });
+
+            //making the change visible on the text
+            let text=d3.select("#"+id).selectAll(".progtitle").select(".metric");
+            
+            //Value for ofSelected
+            $(text[0][0]).text(percent_ofSelected.toFixed(2)+"%");
+            //Value for Total
+            $(text[0][1]).text(percent_Total.toFixed(2)+"%");
         }
 
         //Utility function to deactivate
