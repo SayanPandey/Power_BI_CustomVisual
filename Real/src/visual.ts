@@ -62,7 +62,8 @@ module powerbi.extensibility.visual {
         private Clicked:string;
         private clickedValue:number;
         private clickedColor:number;
-
+        private clickCount:number;
+        private ClickedNow:string;
         //Defining global connection instance
         //Establishing connection b/w unique identities
         private ConnectionIdentity: Connection[];
@@ -90,6 +91,9 @@ module powerbi.extensibility.visual {
             this.ConnectionIdentityBackwards=[];
             //Initializing the selection Manager to filter next data points
             this.selectionManager= this.host.createSelectionManager();
+
+            //Initializing clickcount to zero
+            this.clickCount=0;
         }
 
         //Utility function to remove special characters / ID making function
@@ -413,6 +417,13 @@ module powerbi.extensibility.visual {
                 color:"Black",
                 "background-color":"white"
             });
+            
+            //Fixing here defaults value
+            for(let i=0;i<deactTile[0].length;i++){
+                let vValue=$(deactTile[0][i]).find('.default').val();
+                let Value:number=parseInt(vValue);
+                $(deactTile[0][i]).find('.col-4').find('div').text(Value);
+            }
         }
         //Utility Function to sum up values of ending column tiles in case of multiple connections
         public tileAggregate(id:string,value:number){
@@ -629,6 +640,8 @@ module powerbi.extensibility.visual {
 
             //Clearing selection manager
             this.selectionManager.clear();
+            //clearing clickcount
+            this.clickCount=0;
             //Removing elements
             $(".col-3").find('div').remove();
             $(".connecting").remove();
@@ -708,13 +721,30 @@ module powerbi.extensibility.visual {
             //Setting event handlers
             $(".SVGcontainer").click(
                 function (this): void {
-
-                    //Block to make it active
-                    $(this).removeClass("inactive grey").addClass("active").unbind("mouseleave");
-                    //block to make $(this) to an active form
-                    activate(this);
-
+                    
+                    //Checking the click and taking measures
+                    let id=$(this).attr("id");
+                    if(Context.clickCount==0){
+                        Context.clickCount=1;
+                        Context.ClickedNow=id;
+                        //Block to make it active
+                        $(this).removeClass("inactive").addClass("active");
+                        //block to make $(this) to an active form
+                        activate(this);
+                    }
+                    else if(Context.clickCount==1 && Context.ClickedNow==id){
+                        Context.clickCount=0; 
+                        Context.update(options);
+                    }
+                    else{
+                        //Block to make it active
+                        $(this).removeClass("inactive").addClass("active");
+                        //block to make $(this) to an active form
+                        activate(this);
+                        Context.clickCount=0;
+                    }
                 })
+
             //Partial display
             // $(".inactive").mouseenter(
             //     function (this): void {
