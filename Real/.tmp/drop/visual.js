@@ -674,13 +674,19 @@ var powerbi;
                             .on("click", function () {
                             Context.selectionManager.select(Tile.identity);
                             Context.Clicked = Tile.id;
+                            Context.clickedValue = Tile.value;
+                            Context.clickedColor = stroke;
                         });
                         //making new chart
                         var block = newCol.append("div").classed("row row2", true)
                             .style({
                             "border": "solid 2px " + stroke
                         }); //The New Mockup design longs for perfect design that will be easy to achieve with divs than svg
-                        var leftSide = block.append("div").classed("col-8", true);
+                        var leftSide = block.append("div").classed("col-8", true).style({
+                            "-webkit-box-shadow": "0px 0px 0px 1.5px" + stroke,
+                            "-moz-box-shadow": "0px 0px 0px 1.5px" + stroke,
+                            "box-shadow": "0px 0px 0px 1.5px" + stroke
+                        });
                         var rightSide = block.append("div").classed("col-4", true).style({
                             "-webkit-box-shadow": "0px 0px 0px 1.5px" + stroke,
                             "-moz-box-shadow": "0px 0px 0px 1.5px" + stroke,
@@ -698,7 +704,7 @@ var powerbi;
                         ProgTitle1.append("div").classed("metric", true).attr({
                             style: "float:right"
                         }).text("40%");
-                        ProgTitle1.append("div").classed("progress", true).append("div").classed("progress-bar", true).attr({
+                        ProgTitle1.append("div").classed("progress", true).append("div").classed("progress-bar ofselected", true).attr({
                             role: "progressbar",
                             'aria-valuenow': "40",
                             'aria-valuemin': "0",
@@ -711,7 +717,7 @@ var powerbi;
                         ProgTitle2.append("div").classed("metric", true).attr({
                             style: "float:right"
                         }).text("80%");
-                        ProgTitle2.append("div").classed("progress", true).append("div").classed("progress-bar", true).attr({
+                        ProgTitle2.append("div").classed("progress", true).append("div").classed("progress-bar total", true).attr({
                             role: "progressbar",
                             'aria-valuenow': "40",
                             'aria-valuemin': "0",
@@ -722,7 +728,9 @@ var powerbi;
                         rightSide.html('<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAYAAADEtGw7AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAF3SURBVEhLxZS/K0VxGIdPLq7B4Copg0xKSq6VRWFgMrKZKBlISZQ7XYtBNkalJAt3kFUpSqaLyGKw+QsM53jer0/3drpXne+JPPV07+d9z/ueb+f+CP6VKIoGwzBcxHWcJjeqlQ4WtLDoFC9xBefxCK9xXJf5w+ICC7YVK1AbwlscVckPBssszynGoD5G/1DRDwbf9LYGen14oegHg4/2nBVjUB+hf6zoB4MlHFCMQX0J1xT9YPCBk/UoxqC3gDuKfjBYxrxiDOobWFT0g8FhvFGsQK0LX7BDJX8Ytu9rv6KDvMojKiimgyVTeK7oIL9ju2I6WJDndCeKDmo/fr8TwcJmluzjpkoO8hXOKiaHoU7cwlcscoMmtRzU7MM7o37H65wdQK36cEEG7Y/nCZd536ZWXbimF3fxGSdVroXmHh5gVqVEcIButNNPqFTFmjTsl5ZRyQtm7U/pXrEKxRn8sDunlflPXlu18huKWYq5X7BBK/+CIPgCK5i7ktP1SeYAAAAASUVORK5CYII=">');
                         rightSide.append("div").text(Tile.value);
                         //Fixing a hidden input fields  to add up values of more than one path joining it
-                        d3.select("#" + Tile.id).append("input").attr({ 'type': 'hidden', 'value': '0' });
+                        d3.select("#" + Tile.id).append("input").attr({ 'type': 'hidden', 'value': '0', 'class': 'runtime' });
+                        //Fixing another hidden input fields  to store the default values
+                        d3.select("#" + Tile.id).append("input").attr({ 'type': 'hidden', 'value': Tile.value, 'class': 'default' });
                     };
                     //create line function()
                     Visual.prototype.createLine = function (id1, id2, lineId) {
@@ -873,30 +881,55 @@ var powerbi;
                     Visual.prototype.superActivate = function (id) {
                         $("#" + id).find(".progtitle").slideDown(500);
                         var color = $("#" + id).find(".col-4").css("background-color");
-                        d3.select("#" + id).select(".col-8").style({
-                            "-webkit-box-shadow": "none",
-                            "-moz-box-shadow": "none",
-                            "box-shadow": "none",
+                        var progbar = d3.select("#" + id).select(".col-8").style({
                             "background-color": "white",
                             "color": "black"
+                        });
+                        //Now calculating the values of the progress bars
+                        //Looking for of selected value
+                        var vValue2 = $("#" + id).find('.runtime').val();
+                        var Value2 = parseInt(vValue2);
+                        var percent_ofSelected = (Value2 / this.clickedValue) * 100;
+                        //Looking for of total value
+                        var vValue = $("#" + id).find('.default').val();
+                        var Value = parseInt(vValue);
+                        var percent_Total = (Value / this.clickedValue) * 100;
+                        //Fixing the size of the progress bar Ofselected
+                        progbar.select(".ofselected").style({
+                            width: percent_ofSelected + "%",
+                            "background-color": this.clickedColor
+                        });
+                        //Fixing the size of the progress bar Total
+                        progbar.select(".total").style({
+                            width: percent_Total + "%",
                         });
                     };
                     //Utility function to deactivate
                     Visual.prototype.deActivate = function (x) {
-                        $(x).find(".progtitle").slideUp(500);
+                        $(x).find(".progtitle").hide();
                         var color = $(x).find(".col-4").css("background-color");
                         d3.select(x).select(".col-8").style({
-                            "box-shadow": "0px 0px 0px 1.5px" + color,
                             "background-color": color,
                             "color": "white"
                         });
                     };
+                    //Utility Function to deactivate all nodes
+                    Visual.prototype.deactivateAll = function () {
+                        var deactTile = d3.selectAll(".inactive");
+                        deactTile.selectAll(".progtitle").style({
+                            display: "none"
+                        });
+                        deactTile.selectAll(".col-8").style({
+                            color: "Black",
+                            "background-color": "white"
+                        });
+                    };
                     //Utility Function to sum up values of ending column tiles in case of multiple connections
                     Visual.prototype.tileAggregate = function (id, value) {
-                        var vValue = $("#" + id).find('input').val();
+                        var vValue = $("#" + id).find('.runtime').val();
                         var Value = parseInt(vValue);
                         value = value + Value;
-                        $("#" + id).find('input').val(value);
+                        $("#" + id).find('.runtime').val(value);
                         return value;
                     };
                     //Using DFS Algorithm in Directed Graph
@@ -1123,7 +1156,7 @@ var powerbi;
                                     break;
                             }
                             //Clearing 4th column hidden input fields
-                            $(".col-3").find('input').val(0);
+                            $(".col-3").find('.runtime').val(0);
                             //Creating and clearing the filter
                             var Filter;
                             // Filter=[];
@@ -1132,6 +1165,9 @@ var powerbi;
                             //clearing the filter agin for backward Connections
                             Filter = [];
                             Context.getConnectionBackward(id, true, ColNum, 'All', Filter);
+                            //Now refresing dimmed tiles
+                            //function call to deactivate all tiles
+                            Context.deactivateAll();
                             //Putting the default value
                             for (var i = 0; i < Default.Tiles.length; i++) {
                                 if (Default.Tiles[i].col == ColNum && Default.Tiles[i].id == id) {

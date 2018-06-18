@@ -58,8 +58,10 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
         private Data: DataView;
         private newCol: d3.Selection<SVGAElement>;
 
-        //Basically used to reset the visual
+        //Basically used to reset the visual and track Global calculation
         private Clicked:string;
+        private clickedValue:number;
+        private clickedColor:number;
 
         //Defining global connection instance
         //Establishing connection b/w unique identities
@@ -129,6 +131,8 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
                 .on("click",function(){
                     Context.selectionManager.select(Tile.identity);
                     Context.Clicked=Tile.id;
+                    Context.clickedValue=Tile.value;
+                    Context.clickedColor=stroke;
                 });
 
             //making new chart
@@ -137,7 +141,11 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
                     "border":"solid 2px "+stroke
                 }); //The New Mockup design longs for perfect design that will be easy to achieve with divs than svg
 
-            let leftSide=block.append("div").classed("col-8",true);
+            let leftSide=block.append("div").classed("col-8",true).style({
+                "-webkit-box-shadow": "0px 0px 0px 1.5px"+stroke,
+                "-moz-box-shadow":"0px 0px 0px 1.5px"+stroke,
+                "box-shadow":"0px 0px 0px 1.5px"+stroke
+                });
             let rightSide=block.append("div").classed("col-4",true).style({
                 "-webkit-box-shadow": "0px 0px 0px 1.5px"+stroke,
                 "-moz-box-shadow":"0px 0px 0px 1.5px"+stroke,
@@ -155,7 +163,7 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
             ProgTitle1.append("div").classed("metric",true).attr({
                 style:"float:right"
             }).text("40%");
-            ProgTitle1.append("div").classed("progress",true).append("div").classed("progress-bar",true).attr({
+            ProgTitle1.append("div").classed("progress",true).append("div").classed("progress-bar ofselected",true).attr({
                 role:"progressbar",
                 'aria-valuenow':"40",
                 'aria-valuemin':"0",
@@ -168,7 +176,7 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
             ProgTitle2.append("div").classed("metric",true).attr({
                 style:"float:right"
             }).text("80%");
-            ProgTitle2.append("div").classed("progress",true).append("div").classed("progress-bar",true).attr({
+            ProgTitle2.append("div").classed("progress",true).append("div").classed("progress-bar total",true).attr({
                 role:"progressbar",
                 'aria-valuenow':"40",
                 'aria-valuemin':"0",
@@ -181,7 +189,10 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
             
             
             //Fixing a hidden input fields  to add up values of more than one path joining it
-            d3.select("#"+Tile.id).append("input").attr({'type':'hidden','value':'0'});
+            d3.select("#"+Tile.id).append("input").attr({'type':'hidden','value':'0','class':'runtime'});
+
+            //Fixing another hidden input fields  to store the default values
+            d3.select("#"+Tile.id).append("input").attr({'type':'hidden','value':Tile.value,'class':'default'});
         }
 
         //create line function()
@@ -344,32 +355,63 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
         public superActivate(id : string){
             $("#"+id).find(".progtitle").slideDown(500);
             let color=$("#"+id).find(".col-4").css("background-color");
-             d3.select("#"+id).select(".col-8").style({
-                 "-webkit-box-shadow": "none",
-                 "-moz-box-shadow":"none",
-                 "box-shadow":"none",
+            let progbar=d3.select("#"+id).select(".col-8").style({
                  "background-color":"white",
                  "color":"black"
              });
+
+            //Now calculating the values of the progress bars
+
+            //Looking for of selected value
+            let vValue2=$("#"+id).find('.runtime').val();
+            let Value2:number=parseInt(vValue2);
+            let percent_ofSelected:number=(Value2/this.clickedValue)*100;
+
+            //Looking for of total value
+            let vValue=$("#"+id).find('.default').val();
+            let Value:number=parseInt(vValue);
+            let percent_Total:number=(Value/this.clickedValue)*100;
+            
+            //Fixing the size of the progress bar Ofselected
+            progbar.select(".ofselected").style({
+              width:percent_ofSelected+"%",
+              "background-color":this.clickedColor
+            });
+
+            //Fixing the size of the progress bar Total
+            progbar.select(".total").style({
+              width:percent_Total+"%",
+            });
         }
 
         //Utility function to deactivate
         public deActivate(x:SVGElement){
-            $(x).find(".progtitle").slideUp(500);
+            
+            $(x).find(".progtitle").hide();
             let color=$(x).find(".col-4").css("background-color");
             d3.select(x).select(".col-8").style({
-                "box-shadow":"0px 0px 0px 1.5px"+color,
                 "background-color":color,
                 "color":"white"
             });
         }
 
+        //Utility Function to deactivate all nodes
+        public deactivateAll(){
+            let deactTile=d3.selectAll(".inactive");
+            deactTile.selectAll(".progtitle").style({
+                display:"none"
+            });
+            deactTile.selectAll(".col-8").style({
+                color:"Black",
+                "background-color":"white"
+            });
+        }
         //Utility Function to sum up values of ending column tiles in case of multiple connections
         public tileAggregate(id:string,value:number){
-            let vValue=$("#"+id).find('input').val();
+            let vValue=$("#"+id).find('.runtime').val();
             let Value:number=parseInt(vValue);
             value=value+Value;
-            $("#"+id).find('input').val(value);
+            $("#"+id).find('.runtime').val(value);
             return value;
         }
 
@@ -597,6 +639,7 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
             function activate(x: SVGElement) {
                 //Removing lines
                 $("#row1").find('path').parent().remove();
+                
                 //Block to disable other activation
                 $("#row1").find('.col-3').find(".SVGcontainer").addClass("strong-grey inactive");
 
@@ -621,7 +664,7 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
                 }
 
                 //Clearing 4th column hidden input fields
-                $(".col-3").find('input').val(0);
+                $(".col-3").find('.runtime').val(0);
 
                 //Creating and clearing the filter
                 let Filter : Connection[];
@@ -632,6 +675,10 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
                 //clearing the filter agin for backward Connections
                 Filter=[];
                 Context.getConnectionBackward(id,true,ColNum,'All',Filter);
+
+                //Now refresing dimmed tiles
+                //function call to deactivate all tiles
+                Context.deactivateAll();
 
                //Putting the default value
                for (let i = 0; i < Default.Tiles.length; i++) {
