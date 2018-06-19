@@ -721,27 +721,27 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
             //Setting event handlers
             $(".SVGcontainer").click(
                 function (this): void {
-                    
+                    debugger;
                     //Checking the click and taking measures
-                    let id=$(this).attr("id");
                     if(Context.clickCount==0){
                         Context.clickCount=1;
-                        Context.ClickedNow=id;
+                        Context.ClickedNow=Context.Clicked;
                         //Block to make it active
                         $(this).removeClass("inactive").addClass("active");
                         //block to make $(this) to an active form
                         activate(this);
                     }
-                    else if(Context.clickCount==1 && Context.ClickedNow==id){
+                    else if(Context.clickCount==1 && Context.ClickedNow==Context.Clicked){
                         Context.clickCount=0; 
                         Context.update(options);
                     }
                     else{
+                        Context.clickCount=1;
+                        Context.ClickedNow=Context.Clicked;
                         //Block to make it active
                         $(this).removeClass("inactive").addClass("active");
                         //block to make $(this) to an active form
                         activate(this);
-                        Context.clickCount=0;
                     }
                 })
 

@@ -1200,26 +1200,27 @@ var powerbi;
                             $(this.target).css({ "overflow-y": "scroll" });
                         //Setting event handlers
                         $(".SVGcontainer").click(function () {
+                            debugger;
                             //Checking the click and taking measures
-                            var id = $(this).attr("id");
                             if (Context.clickCount == 0) {
                                 Context.clickCount = 1;
-                                Context.ClickedNow = id;
+                                Context.ClickedNow = Context.Clicked;
                                 //Block to make it active
                                 $(this).removeClass("inactive").addClass("active");
                                 //block to make $(this) to an active form
                                 activate(this);
                             }
-                            else if (Context.clickCount == 1 && Context.ClickedNow == id) {
+                            else if (Context.clickCount == 1 && Context.ClickedNow == Context.Clicked) {
                                 Context.clickCount = 0;
                                 Context.update(options);
                             }
                             else {
+                                Context.clickCount = 1;
+                                Context.ClickedNow = Context.Clicked;
                                 //Block to make it active
                                 $(this).removeClass("inactive").addClass("active");
                                 //block to make $(this) to an active form
                                 activate(this);
-                                Context.clickCount = 0;
                             }
                         });
                         //Partial display
