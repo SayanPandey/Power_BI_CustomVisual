@@ -728,7 +728,7 @@ var powerbi;
                         });
                         ProgTitle2.append('br');
                         rightSide.html('<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAYAAADEtGw7AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAF3SURBVEhLxZS/K0VxGIdPLq7B4Copg0xKSq6VRWFgMrKZKBlISZQ7XYtBNkalJAt3kFUpSqaLyGKw+QsM53jer0/3drpXne+JPPV07+d9z/ueb+f+CP6VKIoGwzBcxHWcJjeqlQ4WtLDoFC9xBefxCK9xXJf5w+ICC7YVK1AbwlscVckPBssszynGoD5G/1DRDwbf9LYGen14oegHg4/2nBVjUB+hf6zoB4MlHFCMQX0J1xT9YPCBk/UoxqC3gDuKfjBYxrxiDOobWFT0g8FhvFGsQK0LX7BDJX8Ytu9rv6KDvMojKiimgyVTeK7oIL9ju2I6WJDndCeKDmo/fr8TwcJmluzjpkoO8hXOKiaHoU7cwlcscoMmtRzU7MM7o37H65wdQK36cEEG7Y/nCZd536ZWXbimF3fxGSdVroXmHh5gVqVEcIButNNPqFTFmjTsl5ZRyQtm7U/pXrEKxRn8sDunlflPXlu18huKWYq5X7BBK/+CIPgCK5i7ktP1SeYAAAAASUVORK5CYII=">');
-                        rightSide.append("div").text(Tile.value);
+                        rightSide.append("div").text(this.getFormatted(Tile.value));
                         //Fixing a hidden input fields  to add up values of more than one path joining it
                         d3.select("#" + Tile.id).append("input").attr({ 'type': 'hidden', 'value': '0', 'class': 'runtime' });
                         //Fixing another hidden input fields  to store the default values
@@ -894,7 +894,8 @@ var powerbi;
                         //Looking for of total value
                         var vValue = $("#" + id).find('.default').val();
                         var Value = parseInt(vValue);
-                        var percent_Total = (Value / this.clickedValue) * 100;
+                        var percent_Total = (Value2 / Value) * 100;
+                        console.log(Value2 + ' ' + Value + ' ' + percent_ofSelected + ' ' + percent_Total);
                         //Fixing the size of the progress bar Ofselected
                         progbar.select(".ofselected").style({
                             width: percent_ofSelected + "%",
@@ -942,8 +943,27 @@ var powerbi;
                         var vValue = $("#" + id).find('.runtime').val();
                         var Value = parseInt(vValue);
                         value = value + Value;
+                        console.log('Value ' + Value + 'value' + value);
                         $("#" + id).find('.runtime').val(value);
                         return value;
+                    };
+                    //Utility function to get formatted value
+                    Visual.prototype.getFormatted = function (Quantity) {
+                        var value;
+                        if (Quantity >= 1000) {
+                            value = (Quantity / 1000).toFixed(1) + "K";
+                            return value;
+                        }
+                        else if (Quantity >= 1000000) {
+                            value = (Quantity / 1000000).toFixed(1) + "M";
+                            return value;
+                        }
+                        else if (Quantity >= 1000000000) {
+                            value = (Quantity / 1000000000).toFixed(1) + "B";
+                            return value;
+                        }
+                        else
+                            return "" + Quantity;
                     };
                     //Using DFS Algorithm in Directed Graph
                     //Creating connection recursively using Dynamic Programming
@@ -1121,9 +1141,8 @@ var powerbi;
                                         //Getting the best known updated value
                                         Quantity = this.tileAggregate(Filter[i][pointer], Filter[i].value);
                                     }
-                                    $("#" + Filter[i][pointer]).removeClass("grey strong-grey inactive").find(".col-4").find("div").text(Quantity);
-                                    if (Filter[i][prevp] == undefined)
-                                        this.superActivate(Filter[i][pointer]);
+                                    $("#" + Filter[i][pointer]).removeClass("grey strong-grey inactive").find(".col-4").find("div").text(this.getFormatted(Quantity));
+                                    this.superActivate(Filter[i][pointer]);
                                 }
                             }
                         }
@@ -1186,7 +1205,7 @@ var powerbi;
                             //Putting the default value
                             for (var i = 0; i < Default.Tiles.length; i++) {
                                 if (Default.Tiles[i].col == ColNum && Default.Tiles[i].id == id) {
-                                    $(x).find(".col-4").find("div").text(Default.Tiles[i].value);
+                                    $(x).find(".col-4").find("div").text(Context.getFormatted(Default.Tiles[i].value));
                                     Context.deActivate(x);
                                     break;
                                 }
@@ -1237,7 +1256,7 @@ var powerbi;
                                 var vector = sequence.eq(i);
                                 var length = parseInt(vector.attr('data-length'));
                                 vector.animate({ 'stroke-dashoffset': 0 }, {
-                                    duration: 1.5 * length,
+                                    duration: 1.6 * length,
                                     easing: 'linear',
                                 });
                             }
@@ -1266,8 +1285,8 @@ var powerbi;
     (function (visuals) {
         var plugins;
         (function (plugins) {
-            plugins.chart774830980A704407B8EAE534A05D1ED8_DEBUG = {
-                name: 'chart774830980A704407B8EAE534A05D1ED8_DEBUG',
+            plugins.chart774830980A704407B8EAE534A05D1ED8 = {
+                name: 'chart774830980A704407B8EAE534A05D1ED8',
                 displayName: 'Chart',
                 class: 'Visual',
                 version: '1.0.0',
