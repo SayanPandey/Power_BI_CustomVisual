@@ -228,14 +228,13 @@ module powerbi.extensibility.visual {
             path += " L " + x2l + " " + y2; //Line
             path += "M" + x2l + " " + y2    //Centershift
             path += " L " + x2 + " " + y2;  //Final lining
-
             line.attr("d", path);
         }
 
         //Create Backward line function
         public createLineBackward(id1: string, id2: string, lineId: string) {
             let color = $("#"+id1).find(".col-4").css("background-color");
-            var row = d3.select("#row1").append("svg").attr("class", "connecting").append("path").attr({ "id": lineId, "fill": "transparent","class":"path","stroke":color}); 
+            var row = d3.select("#row1").append("svg").attr("class", "connecting").append("path").attr({ "id": lineId,"fill": "none","class":"path","stroke":color,"stroke-width":"1"});
             var line = $('#'+lineId);
             var div1 = $('#' + id1);
             var div2 = $('#' + id2);
@@ -255,9 +254,9 @@ module powerbi.extensibility.visual {
             //Creating curve from div1 to div 2
             var path = "M" + x1 + " " + y1; //selecting centroid of div1
             path += " H " + hor1;   //creating horizontal line to first break point
-            path += "M" + hor1 + " " + y1;  //shifing the center to the end point
+            //path += "M" + hor1 + " " + y1;  //shifing the center to the end point
             path += " L " + x2l + " " + y2; //Line
-            path += "M" + x2l + " " + y2    //Centershift
+            //path += "M" + x2l + " " + y2    //Centershift
             path += " L " + x2 + " " + y2;  //Final lining
 
             line.attr("d", path);
@@ -270,7 +269,7 @@ module powerbi.extensibility.visual {
 
             //Creating unique identities
             //Making a viewmodel instance
-            var count: number = 0;
+           
             let DefaultTiles: ViewModel = {
                 Tiles: []
             };
@@ -297,6 +296,7 @@ module powerbi.extensibility.visual {
             //Clearing the connection array
             this.ConnectionIdentity =[];
             this.ConnectionIdentityBackwards=[];
+
             //Inserting Default View
             for (let i = 0; i < Metric.length; i++) {
                 let r = Recruit[i];
@@ -721,7 +721,7 @@ module powerbi.extensibility.visual {
             //Setting event handlers
             $(".SVGcontainer").click(
                 function (this): void {
-                    debugger;
+
                     //Checking the click and taking measures
                     if(Context.clickCount==0){
                         Context.clickCount=1;
@@ -730,6 +730,7 @@ module powerbi.extensibility.visual {
                         $(this).removeClass("inactive").addClass("active");
                         //block to make $(this) to an active form
                         activate(this);
+                        
                     }
                     else if(Context.clickCount==1 && Context.ClickedNow==Context.Clicked){
                         Context.clickCount=0; 
@@ -743,7 +744,38 @@ module powerbi.extensibility.visual {
                         //block to make $(this) to an active form
                         activate(this);
                     }
-                })
+
+
+                    //Assigning necessary attributes to animate
+                    $("#row1").each(function() {
+
+                        var sequence = $('path', this);
+                        var iter, vector, length;
+                    
+                        for (iter = 0; iter < sequence.length; iter++) {
+                        vector = sequence[iter];
+                        length = vector.getTotalLength();
+                        $(vector).attr('data-length', length).css({'stroke-dashoffset': length, 'stroke-dasharray': length});
+                        }
+                    });
+
+                    //Animate lines now
+                    var count = 0;
+
+
+                    var sequence = $("#row1").find('path');
+                    for(let i=0;i<sequence.length;i++){
+                    var vector = sequence.eq(i);
+                    var length = parseInt(vector.attr('data-length'));
+
+                        vector.animate({'stroke-dashoffset': 0}, {
+                    
+                            duration: 1.5*length,
+                            easing: 'linear',
+                        });
+                    }
+                    //Click function ends here
+                });
 
             //Partial display
             // $(".inactive").mouseenter(

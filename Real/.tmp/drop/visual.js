@@ -763,7 +763,7 @@ var powerbi;
                     //Create Backward line function
                     Visual.prototype.createLineBackward = function (id1, id2, lineId) {
                         var color = $("#" + id1).find(".col-4").css("background-color");
-                        var row = d3.select("#row1").append("svg").attr("class", "connecting").append("path").attr({ "id": lineId, "fill": "transparent", "class": "path", "stroke": color });
+                        var row = d3.select("#row1").append("svg").attr("class", "connecting").append("path").attr({ "id": lineId, "fill": "none", "class": "path", "stroke": color, "stroke-width": "1" });
                         var line = $('#' + lineId);
                         var div1 = $('#' + id1);
                         var div2 = $('#' + id2);
@@ -779,9 +779,9 @@ var powerbi;
                         //Creating curve from div1 to div 2
                         var path = "M" + x1 + " " + y1; //selecting centroid of div1
                         path += " H " + hor1; //creating horizontal line to first break point
-                        path += "M" + hor1 + " " + y1; //shifing the center to the end point
+                        //path += "M" + hor1 + " " + y1;  //shifing the center to the end point
                         path += " L " + x2l + " " + y2; //Line
-                        path += "M" + x2l + " " + y2; //Centershift
+                        //path += "M" + x2l + " " + y2    //Centershift
                         path += " L " + x2 + " " + y2; //Final lining
                         line.attr("d", path);
                     };
@@ -791,7 +791,6 @@ var powerbi;
                         var dv = options.dataViews;
                         //Creating unique identities
                         //Making a viewmodel instance
-                        var count = 0;
                         var DefaultTiles = {
                             Tiles: []
                         };
@@ -1200,7 +1199,6 @@ var powerbi;
                             $(this.target).css({ "overflow-y": "scroll" });
                         //Setting event handlers
                         $(".SVGcontainer").click(function () {
-                            debugger;
                             //Checking the click and taking measures
                             if (Context.clickCount == 0) {
                                 Context.clickCount = 1;
@@ -1222,6 +1220,28 @@ var powerbi;
                                 //block to make $(this) to an active form
                                 activate(this);
                             }
+                            //Assigning necessary attributes to animate
+                            $("#row1").each(function () {
+                                var sequence = $('path', this);
+                                var iter, vector, length;
+                                for (iter = 0; iter < sequence.length; iter++) {
+                                    vector = sequence[iter];
+                                    length = vector.getTotalLength();
+                                    $(vector).attr('data-length', length).css({ 'stroke-dashoffset': length, 'stroke-dasharray': length });
+                                }
+                            });
+                            //Animate lines now
+                            var count = 0;
+                            var sequence = $("#row1").find('path');
+                            for (var i = 0; i < sequence.length; i++) {
+                                var vector = sequence.eq(i);
+                                var length = parseInt(vector.attr('data-length'));
+                                vector.animate({ 'stroke-dashoffset': 0 }, {
+                                    duration: 1.5 * length,
+                                    easing: 'linear',
+                                });
+                            }
+                            //Click function ends here
                         });
                         //Partial display
                         // $(".inactive").mouseenter(
