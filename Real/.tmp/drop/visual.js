@@ -729,6 +729,21 @@ var powerbi;
                         ProgTitle2.append('br');
                         rightSide.html('<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAYAAADEtGw7AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAF3SURBVEhLxZS/K0VxGIdPLq7B4Copg0xKSq6VRWFgMrKZKBlISZQ7XYtBNkalJAt3kFUpSqaLyGKw+QsM53jer0/3drpXne+JPPV07+d9z/ueb+f+CP6VKIoGwzBcxHWcJjeqlQ4WtLDoFC9xBefxCK9xXJf5w+ICC7YVK1AbwlscVckPBssszynGoD5G/1DRDwbf9LYGen14oegHg4/2nBVjUB+hf6zoB4MlHFCMQX0J1xT9YPCBk/UoxqC3gDuKfjBYxrxiDOobWFT0g8FhvFGsQK0LX7BDJX8Ytu9rv6KDvMojKiimgyVTeK7oIL9ju2I6WJDndCeKDmo/fr8TwcJmluzjpkoO8hXOKiaHoU7cwlcscoMmtRzU7MM7o37H65wdQK36cEEG7Y/nCZd536ZWXbimF3fxGSdVroXmHh5gVqVEcIButNNPqFTFmjTsl5ZRyQtm7U/pXrEKxRn8sDunlflPXlu18huKWYq5X7BBK/+CIPgCK5i7ktP1SeYAAAAASUVORK5CYII=">');
                         rightSide.append("div").text(this.getFormatted(Tile.value));
+                        //Appending the bookmark icon
+                        if (Tile.col != 1) {
+                            block.append("span").classed("hidden", true).style({
+                                position: 'absolute',
+                                top: '0px',
+                                right: '1px',
+                                'z-index': '500'
+                            }).html('<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAFsSURBVDhP1ZJPK0RRGMbvjEaIkYWdnZWUlAU2PoDiE9j6s/AJlNixsVGy0Cg7W5L1EKXZTcmfZGE3SysL6V6/59xnroUhmqZ46td7z/O85z33zpzo/yiO4wsY8rJ5aRhUWz40SZJe1iMwDEXbP5eGgYauut7AAZTgAS5hiYPaveVr0ZSjeQ4moAZr8hwrz+PpoDd4ghlHn0VzHw0n1IRaoYxSG/6meBvqk3jeprQ5SoU5ALdpS2i6tl///C3sdQifSe2CZwgiP4UeZdpUhHtnQaz3Qoh41tCa/Xnb8s9C84fKkNNpHYTnwbJYl7xPG6dhEjR0wbb8atqdivW+o/AJ3RjHaRTCR0rBWQHG8LIrBf3wql6J5x1K9ucFYeRhkzB204qjTHj1oUfueYFFx41Fw5Q3abAO6HSkTG82DrpSVzDo6HsxSPdxFg7hjnWZWgFd7GXIPt9bficG6o/L3lRqemgjtXLorpd/XlH0DnXrF5UJ4h+DAAAAAElFTkSuQmCC">');
+                            block.append("span").classed("visible", true).style({
+                                position: 'absolute',
+                                top: '0px',
+                                right: '1px',
+                                'z-index': '500'
+                            }).html('<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAFGSURBVDhP7ZK/K4VxGMXf/Eq37mAxka5ylztZyI8/A9ksd7GZ/RVSshqUhSw2iwxik0VKFhExEtF9X5/zfA/lhiwGdU99+j7nnOf73u57b9bSP1Ge50OwUBRFj6MPkferg15H34ulMqzAC4w4Vl6DAVv5OXiERT60w/FnUU7ABQsF575j5UvOGjCvTA9hvnF+CNVYfhfBLDxrQWJeVc7Yyfya0shP4wLC7qU08nsYi4JhCnJ3Iex6lIj5zLHybcfKjx2H8HoFwyrGZZyH8HccJV+sMq9xLkP8EJwVaMSyhb/kGFSvhVG4TlUSPr52s6j0GnbTVhL+BCpeSSLogyPvhPCbUFOPbYNJ/EGUFn4LyvGQZtG3U+o/dpvWk/AP8GQbwp/DjK/+LPZLLNdhB/Q+9QDpCjaw0/D1/+834nI3dNm29KfKsjf/eNyL+3VsLQAAAABJRU5ErkJggg==">');
+                        }
                         //Fixing a hidden input fields  to add up values of more than one path joining it
                         d3.select("#" + Tile.id).append("input").attr({ 'type': 'hidden', 'value': '0', 'class': 'runtime' });
                         //Fixing another hidden input fields  to store the default values
@@ -764,27 +779,61 @@ var powerbi;
                     Visual.prototype.createLineBackward = function (id1, id2, lineId) {
                         //Commenting major part of code due since lines are not required
                         var color = $("#" + id1).find(".col-5").css("background-color");
-                        var row = d3.select("#row1").append("svg").attr("class", "connecting").append("path").attr({ "id": lineId, "fill": "none", "class": "path", "stroke": color, "stroke-width": "1" });
-                        // var line = $('#'+lineId);
-                        // var div1 = $('#' + id1);
-                        // var div2 = $('#' + id2);
-                        // //Center for the first block
-                        // var x1 = div1.offset().left + (div1.width() / 2);
-                        // var y1 = div1.offset().top + (div1.height() / 2);
-                        // //Line to of Second block
-                        // var x2l = div2.offset().left+(div2.width()) ;
-                        // var x2 = div2.offset().left + (div1.width() / 2);
-                        // var y2 = div2.offset().top + (div2.height() / 2);
-                        // //First breakpoint horizontal
-                        // var hor1 = div1.offset().left;
-                        // //Creating curve from div1 to div 2
-                        // var path = "M" + x1 + " " + y1; //selecting centroid of div1
-                        // path += " H " + hor1;   //creating horizontal line to first break point
-                        // //path += "M" + hor1 + " " + y1;  //shifing the center to the end point
-                        // path += " L " + x2l + " " + y2; //Line
-                        // //path += "M" + x2l + " " + y2    //Centershift
-                        // path += " L " + x2 + " " + y2;  //Final lining
-                        // line.attr("d", path);
+                        var row = d3.select("#row1").append("svg").attr("class", "connecting").append("path").attr({ "id": lineId, "fill": "none", "class": "path", "stroke": color, "stroke-width": "2" });
+                        var line = $('#' + lineId);
+                        var div1 = $('#' + id1).find(".row2");
+                        var div2 = $('#' + id2).find(".row2");
+                        //Making hover remove opacity
+                        $("#" + id1).find(".row").on("mouseenter", function () {
+                            $("#" + lineId).parent().animate({
+                                opacity: '1'
+                            }, 100);
+                        }).on("mouseleave", function () {
+                            $("#" + lineId).parent().animate({
+                                opacity: '0.06'
+                            }, 100);
+                        });
+                        //Show hide funtionality
+                        $("#" + id1).find(".hidden").click(function () {
+                            //To stop bubbling propagation
+                            event.stopPropagation();
+                            $("#" + id1).find(".row").unbind("mouseleave").unbind("mouseenter");
+                            $("#" + lineId).parent().css("opacity", "1");
+                            $(this).hide();
+                            $(this).parent().find('.visible').show();
+                        });
+                        $("#" + id1).find(".visible").click(function () {
+                            //To stop bubbling propagation
+                            event.stopPropagation();
+                            $("#" + id1).find(".row").on("mouseenter", function () {
+                                $("#" + lineId).parent().animate({
+                                    opacity: '1'
+                                }, 100);
+                            }).on("mouseleave", function () {
+                                $("#" + lineId).parent().animate({
+                                    opacity: '0.06'
+                                }, 100);
+                            });
+                            $(this).hide();
+                            $(this).parent().find('.hidden').show();
+                        });
+                        //Center for the first block
+                        var x1 = div1.offset().left + (div1.width() / 2);
+                        var y1 = div1.offset().top + (div1.height() / 2);
+                        //Line to of Second block
+                        var x2l = div2.offset().left + (div2.width());
+                        var x2 = div2.offset().left + (div1.width() / 2);
+                        var y2 = div2.offset().top + (div2.height() / 2);
+                        //First breakpoint horizontal
+                        var hor1 = div1.offset().left;
+                        //Creating curve from div1 to div 2
+                        var path = "M" + x1 + " " + y1; //selecting centroid of div1
+                        path += " H " + hor1; //creating horizontal line to first break point
+                        //path += "M" + hor1 + " " + y1;  //shifing the center to the end point
+                        path += " L " + x2l + " " + y2; //Line
+                        //path += "M" + x2l + " " + y2    //Centershift
+                        path += " L " + x2 + " " + y2; //Final lining
+                        line.attr("d", path);
                     };
                     //Data inserting code
                     Visual.prototype.getViewModel = function (options) {
@@ -896,7 +945,6 @@ var powerbi;
                         var vValue = $("#" + id).find('.default').val();
                         var Value = parseInt(vValue);
                         var percent_Total = (Value2 / Value) * 100;
-                        console.log(Value2 + ' ' + Value + ' ' + percent_ofSelected + ' ' + percent_Total);
                         //Fixing the size of the progress bar Ofselected
                         progbar.select(".ofselected").style({
                             width: percent_ofSelected + "%",
@@ -928,7 +976,7 @@ var powerbi;
                         deactTile.selectAll(".progtitle").style({
                             display: "none"
                         });
-                        deactTile.selectAll(".col-8").style({
+                        deactTile.selectAll(".col-7").style({
                             color: "Black",
                             "background-color": "white"
                         });
@@ -944,7 +992,6 @@ var powerbi;
                         var vValue = $("#" + id).find('.runtime').val();
                         var Value = parseInt(vValue);
                         value = value + Value;
-                        console.log('Value ' + Value + 'value' + value);
                         $("#" + id).find('.runtime').val(value);
                         return value;
                     };
@@ -1213,10 +1260,10 @@ var powerbi;
                             }
                         }
                         //Viewport scrolling 
-                        var innerHeight = window.innerHeight;
-                        var rowHeight = $("#row1").height();
-                        if (rowHeight > innerHeight)
-                            $(this.target).css({ "overflow-y": "scroll" });
+                        // var innerHeight = window.innerHeight;
+                        // var rowHeight = $("#row1").height();
+                        // if (rowHeight > innerHeight)    
+                        //     $(this.target).css({ "overflow-y": "scroll" });
                         //Setting event handlers
                         $(".SVGcontainer").click(function () {
                             //Checking the click and taking measures
