@@ -109,19 +109,19 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
             switch (Tile.col) {
                 case 1:
                     color = "white";
-                    stroke = "#F15C03";
+                    stroke = "#001B90";
                     break;
                 case 2:
                     color = "white";
-                    stroke = "#17A517";
+                    stroke = "#3E54A9";
                     break;
                 case 3:
                     color = "white";
-                    stroke = "#2BADE0";
+                    stroke = "#00508E";
                     break;
                 case 4:
                     color = "white";
-                    stroke = "#6634C6";
+                    stroke = "#007AE0";
                     break;
                 default:
                     color = "white";
@@ -145,12 +145,12 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
                     "border":"solid 2px "+stroke
                 }); //The New Mockup design longs for perfect design that will be easy to achieve with divs than svg
 
-            let leftSide=block.append("div").classed("col-8",true).style({
+            let leftSide=block.append("div").classed("col-7",true).style({
                 "-webkit-box-shadow": "0px 0px 0px 1.5px"+stroke,
                 "-moz-box-shadow":"0px 0px 0px 1.5px"+stroke,
                 "box-shadow":"0px 0px 0px 1.5px"+stroke
                 });
-            let rightSide=block.append("div").classed("col-4",true).style({
+            let rightSide=block.append("div").classed("col-5",true).style({
                 "-webkit-box-shadow": "0px 0px 0px 1.5px"+stroke,
                 "-moz-box-shadow":"0px 0px 0px 1.5px"+stroke,
                 "box-shadow":"0px 0px 0px 1.5px"+stroke
@@ -233,33 +233,35 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
 
         //Create Backward line function
         public createLineBackward(id1: string, id2: string, lineId: string) {
-            let color = $("#"+id1).find(".col-4").css("background-color");
+
+            //Commenting major part of code due since lines are not required
+            let color = $("#"+id1).find(".col-5").css("background-color");
             var row = d3.select("#row1").append("svg").attr("class", "connecting").append("path").attr({ "id": lineId,"fill": "none","class":"path","stroke":color,"stroke-width":"1"});
-            var line = $('#'+lineId);
-            var div1 = $('#' + id1);
-            var div2 = $('#' + id2);
+            // var line = $('#'+lineId);
+            // var div1 = $('#' + id1);
+            // var div2 = $('#' + id2);
 
-            //Center for the first block
-            var x1 = div1.offset().left + (div1.width() / 2);
-            var y1 = div1.offset().top + (div1.height() / 2);
+            // //Center for the first block
+            // var x1 = div1.offset().left + (div1.width() / 2);
+            // var y1 = div1.offset().top + (div1.height() / 2);
 
-            //Line to of Second block
-            var x2l = div2.offset().left+(div2.width()) ;
-            var x2 = div2.offset().left + (div1.width() / 2);
-            var y2 = div2.offset().top + (div2.height() / 2);
+            // //Line to of Second block
+            // var x2l = div2.offset().left+(div2.width()) ;
+            // var x2 = div2.offset().left + (div1.width() / 2);
+            // var y2 = div2.offset().top + (div2.height() / 2);
 
-            //First breakpoint horizontal
-            var hor1 = div1.offset().left;
+            // //First breakpoint horizontal
+            // var hor1 = div1.offset().left;
 
-            //Creating curve from div1 to div 2
-            var path = "M" + x1 + " " + y1; //selecting centroid of div1
-            path += " H " + hor1;   //creating horizontal line to first break point
-            //path += "M" + hor1 + " " + y1;  //shifing the center to the end point
-            path += " L " + x2l + " " + y2; //Line
-            //path += "M" + x2l + " " + y2    //Centershift
-            path += " L " + x2 + " " + y2;  //Final lining
+            // //Creating curve from div1 to div 2
+            // var path = "M" + x1 + " " + y1; //selecting centroid of div1
+            // path += " H " + hor1;   //creating horizontal line to first break point
+            // //path += "M" + hor1 + " " + y1;  //shifing the center to the end point
+            // path += " L " + x2l + " " + y2; //Line
+            // //path += "M" + x2l + " " + y2    //Centershift
+            // path += " L " + x2 + " " + y2;  //Final lining
 
-            line.attr("d", path);
+            // line.attr("d", path);
         }
 
         //Data inserting code
@@ -358,8 +360,8 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
         //Super activation for Tiles having progressbars
         public superActivate(id : string){
             $("#"+id).find(".progtitle").slideDown(500);
-            let color=$("#"+id).find(".col-4").css("background-color");
-            let progbar=d3.select("#"+id).select(".col-8").style({
+            let color=$("#"+id).find(".col-5").css("background-color");
+            let progbar=d3.select("#"+id).select(".col-7").style({
                  "background-color":"white",
                  "color":"black"
              });
@@ -403,8 +405,8 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
         public deActivate(x:SVGElement){
             
             $(x).find(".progtitle").hide();
-            let color=$(x).find(".col-4").css("background-color");
-            d3.select(x).select(".col-8").style({
+            let color=$(x).find(".col-5").css("background-color");
+            d3.select(x).select(".col-7").style({
                 "background-color":color,
                 "color":"white"
             });
@@ -649,7 +651,7 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
                             //Getting the best known updated value
                             Quantity=<number>this.tileAggregate(Filter[i][pointer],Filter[i].value);
                         }
-                        $("#"+Filter[i][pointer]).removeClass("grey strong-grey inactive").find(".col-4").find("div").text(this.getFormatted(Quantity));
+                        $("#"+Filter[i][pointer]).removeClass("grey strong-grey inactive").find(".col-5").find("div").text(this.getFormatted(Quantity));
                         this.superActivate(Filter[i][pointer]);
                     }
                 }
@@ -725,7 +727,7 @@ module powerbi.extensibility.visual.chart774830980A704407B8EAE534A05D1ED8  {
                //Putting the default value
                for (let i = 0; i < Default.Tiles.length; i++) {
                     if(Default.Tiles[i].col==ColNum && Default.Tiles[i].id==id){
-                        $(x).find(".col-4").find("div").text(Context.getFormatted(Default.Tiles[i].value));
+                        $(x).find(".col-5").find("div").text(Context.getFormatted(Default.Tiles[i].value));
                         Context.deActivate(x);
                         break;
                     }
