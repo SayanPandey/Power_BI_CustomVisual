@@ -8289,3 +8289,6 @@
 .visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG .visible {
   display: none;
 }
+.visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG .text {
+  position: relative;
+}

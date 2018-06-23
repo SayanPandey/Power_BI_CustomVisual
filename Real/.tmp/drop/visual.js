@@ -630,9 +630,11 @@ var powerbi;
                         this.row.append("div").classed("col-3", true).attr("id", "col-3").append("h5").text("Launch").classed("head head3", true);
                         this.row.append("div").classed("col-3", true).attr("id", "col-4").append("h5").text("Grow").classed("head head4", true);
                         //Initialising Connection Identity
-                        this.ConnectionIdentity = [];
+                        // this.ConnectionIdentity = [];
                         //Initialising backward Connection Identity
                         this.ConnectionIdentityBackwards = [];
+                        //Initializing ViewValue
+                        this.ViewValue = [];
                         //Initializing the selection Manager to filter next data points
                         this.selectionManager = this.host.createSelectionManager();
                         //Initializing clickcount to zero
@@ -645,6 +647,7 @@ var powerbi;
                     };
                     //Utility function to create chart
                     Visual.prototype.createChart = function (Tile) {
+                        //Defining special color scheme
                         var color;
                         var stroke;
                         switch (Tile.col) {
@@ -672,17 +675,16 @@ var powerbi;
                         var Context = this;
                         //This is the column used to recognise specific chart
                         var newCol = d3.select("#col-" + Tile.col).append("div").classed("SVGcontainer inactive", true)
-                            .attr("id", Tile.id).attr("style", "padding:10px;")
-                            .on("click", function () {
-                            Context.selectionManager.select(Tile.identity);
-                            Context.Clicked = Tile.id;
-                            Context.clickedValue = Tile.value;
-                            Context.clickedColor = stroke;
-                        });
+                            .attr("id", Tile.id).attr("style", "padding:10px;");
                         //making new chart
                         var block = newCol.append("div").classed("row row2", true)
                             .style({
                             "border": "solid 2px " + stroke
+                        }).on("click", function () {
+                            Context.selectionManager.select(Tile.identity);
+                            Context.Clicked = Tile.id;
+                            Context.clickedValue = Tile.value;
+                            Context.clickedColor = stroke;
                         }); //The New Mockup design longs for perfect design that will be easy to achieve with divs than svg
                         var leftSide = block.append("div").classed("col-7", true).style({
                             "-webkit-box-shadow": "0px 0px 0px 1.5px" + stroke,
@@ -727,7 +729,7 @@ var powerbi;
                             style: "width:80%; background-color:" + stroke
                         });
                         ProgTitle2.append('br');
-                        rightSide.html('<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAYAAADEtGw7AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAF3SURBVEhLxZS/K0VxGIdPLq7B4Copg0xKSq6VRWFgMrKZKBlISZQ7XYtBNkalJAt3kFUpSqaLyGKw+QsM53jer0/3drpXne+JPPV07+d9z/ueb+f+CP6VKIoGwzBcxHWcJjeqlQ4WtLDoFC9xBefxCK9xXJf5w+ICC7YVK1AbwlscVckPBssszynGoD5G/1DRDwbf9LYGen14oegHg4/2nBVjUB+hf6zoB4MlHFCMQX0J1xT9YPCBk/UoxqC3gDuKfjBYxrxiDOobWFT0g8FhvFGsQK0LX7BDJX8Ytu9rv6KDvMojKiimgyVTeK7oIL9ju2I6WJDndCeKDmo/fr8TwcJmluzjpkoO8hXOKiaHoU7cwlcscoMmtRzU7MM7o37H65wdQK36cEEG7Y/nCZd536ZWXbimF3fxGSdVroXmHh5gVqVEcIButNNPqFTFmjTsl5ZRyQtm7U/pXrEKxRn8sDunlflPXlu18huKWYq5X7BBK/+CIPgCK5i7ktP1SeYAAAAASUVORK5CYII=">');
+                        rightSide.html('<img src=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAQAAABKfvVzAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QAAKqNIzIAAAAJcEhZcwAADdcAAA3XAUIom3gAAAAHdElNRQfiBhYHNiYzNO/HAAABiElEQVQ4y52TzUtUURiHnzs4juFGDQIXRmDUJsJNUEaMIQmiLSQwKDe18A/wDzCIVhItZiG0c1sQgtTCRRA2tXEjxTS7qFnYpkWUkPj1tMi595zxhkO/1ft73o/zHs698P+yaLFt7oArbrvtigMtfNnfR7hd1m2qblfKS9byOE4bajrltyJ+G6ADgLPRfv32MEofVUSSlA9mJ0wGc1Yd8Zuq+z5wNshMZA0F11J81a9B0aifD6M1C+G1u12w5rrzDkd7V7zvB2su2P23sgDgOBXK7FKkTGd0n076OGCXMhXHm9MXo5lDfg/clO8Ctwg4Y6wXTrp1GD91qiU7g9UI/PChJW+45LJznvCmH6N8lXSaasOLPvZn6vd84wWfBxVbBObAS762Vb8876fMhg0vvWeeVr2bmfAx3jOW+91fZz0zBR7xik0AvnAut6FIiR0ANnnSfItTjjnohvka8o6XPXn0N/pnQ7hSOzILk4if4RrDXOE0PSTs0KBBnWfJ2+NHdthrcmxZO/oD9O8Vy6xKvwMAAAAldEVYdGRhdGU6Y3JlYXRlADIwMTgtMDYtMjJUMDc6NTQ6MzgrMDI6MDAf3EwXAAAAJXRFWHRkYXRlOm1vZGlmeQAyMDE4LTA2LTIyVDA3OjU0OjM4KzAyOjAwboH0qwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAAASUVORK5CYII=>');
                         rightSide.append("div").text(this.getFormatted(Tile.value));
                         //Appending the bookmark icon
                         if (Tile.col != 1) {
@@ -750,31 +752,31 @@ var powerbi;
                         d3.select("#" + Tile.id).append("input").attr({ 'type': 'hidden', 'value': Tile.value, 'class': 'default' });
                     };
                     //create line function()
-                    Visual.prototype.createLine = function (id1, id2, lineId) {
-                        //Finding the color of the line
-                        var color = $("#" + id1).find(".col-4").css("background-color");
-                        var row = d3.select("#row1").append("svg").attr("class", "connecting").append("path").attr({ "id": lineId, "fill": "transparent", "class": "path", "stroke": color });
-                        var line = $('#' + lineId);
-                        var div1 = $('#' + id1);
-                        var div2 = $('#' + id2);
-                        //Center for the first block
-                        var x1 = div1.offset().left + (div1.width() / 2);
-                        var y1 = div1.offset().top + (div1.height() / 2);
-                        //Line to of Second block
-                        var x2l = div2.offset().left;
-                        var x2 = div2.offset().left + (div1.width() / 2);
-                        var y2 = div2.offset().top + (div2.height() / 2);
-                        //First breakpoint horizontal
-                        var hor1 = div1.offset().left + (div1.width());
-                        //Creating curve from div1 to div 2
-                        var path = "M" + x1 + " " + y1; //selecting centroid of div1
-                        path += " H " + hor1; //creating horizontal line to first break point
-                        path += "M" + hor1 + " " + y1; //shifing the center to the end point
-                        path += " L " + x2l + " " + y2; //Line
-                        path += "M" + x2l + " " + y2; //Centershift
-                        path += " L " + x2 + " " + y2; //Final lining
-                        line.attr("d", path);
-                    };
+                    // public createLine(id1: string, id2: string, lineId: string) {
+                    //     //Finding the color of the line
+                    //     let color = $("#"+id1).find(".col-4").css("background-color");
+                    //     var row = d3.select("#row1").append("svg").attr("class", "connecting").append("path").attr({ "id": lineId, "fill": "transparent","class":"path","stroke":color});
+                    //     var line = $('#'+lineId);
+                    //     var div1 = $('#' + id1);
+                    //     var div2 = $('#' + id2);
+                    //     //Center for the first block
+                    //     var x1 = div1.offset().left + (div1.width() / 2);
+                    //     var y1 = div1.offset().top + (div1.height() / 2);
+                    //     //Line to of Second block
+                    //     var x2l = div2.offset().left;
+                    //     var x2 = div2.offset().left + (div1.width() / 2);
+                    //     var y2 = div2.offset().top + (div2.height() / 2);
+                    //     //First breakpoint horizontal
+                    //     var hor1 = div1.offset().left + (div1.width());
+                    //     //Creating curve from div1 to div 2
+                    //     var path = "M" + x1 + " " + y1; //selecting centroid of div1
+                    //     path += " H " + hor1;   //creating horizontal line to first break point
+                    //     path += "M" + hor1 + " " + y1;  //shifing the center to the end point
+                    //     path += " L " + x2l + " " + y2; //Line
+                    //     path += "M" + x2l + " " + y2    //Centershift
+                    //     path += " L " + x2 + " " + y2;  //Final lining
+                    //     line.attr("d", path);
+                    // }
                     //Create Backward line function
                     Visual.prototype.createLineBackward = function (id1, id2, lineId) {
                         //Commenting major part of code due since lines are not required
@@ -862,8 +864,9 @@ var powerbi;
                         var Metric = dv[0].categorical.values[0].values;
                         //let Link= dv[0].categorical.categories[5].values;
                         //Clearing the connection array
-                        this.ConnectionIdentity = [];
+                        // this.ConnectionIdentity =[];
                         this.ConnectionIdentityBackwards = [];
+                        this.ViewValue = [];
                         //Inserting Default View
                         for (var i = 0; i < Metric.length; i++) {
                             var r = Recruit[i];
@@ -873,7 +876,7 @@ var powerbi;
                             var num = Metric[i];
                             var col = 0;
                             var head = '';
-                            if (r == null || d == null || l == null || g == null) {
+                            if (r == null || d == null || l == null || g == null && Direction[i] == null) {
                                 if (r != null) {
                                     col = 1, head = r;
                                 }
@@ -903,9 +906,20 @@ var powerbi;
                             }
                             else {
                                 //Pushing specific connection defining objects
-                                if (Direction[i] == "Forward") {
-                                    //Pushing Forward Data
-                                    this.ConnectionIdentity.push({
+                                // if(Direction[i]=="Forward"){
+                                //     //Pushing Forward Data
+                                //     this.ConnectionIdentity.push({
+                                //         Recruit:this.removeSpl(<string>r),
+                                //         Develop:this.removeSpl(<string>d),
+                                //         Launch:this.removeSpl(<string>l),
+                                //         grow:this.removeSpl(<string>g),
+                                //         value:<number>num
+                                //     });
+                                // }
+                                // else
+                                if (Direction[i] == "Backward") {
+                                    //Pushing Backward Data
+                                    this.ConnectionIdentityBackwards.push({
                                         Recruit: this.removeSpl(r),
                                         Develop: this.removeSpl(d),
                                         Launch: this.removeSpl(l),
@@ -913,9 +927,9 @@ var powerbi;
                                         value: num
                                     });
                                 }
-                                else if (Direction[i] == "Backward") {
-                                    //Pushing Backward Data
-                                    this.ConnectionIdentityBackwards.push({
+                                else if (Direction[i] == "Node") {
+                                    //Pushing Backward Data that actually sets the
+                                    this.ViewValue.push({
                                         Recruit: this.removeSpl(r),
                                         Develop: this.removeSpl(d),
                                         Launch: this.removeSpl(l),
@@ -930,11 +944,15 @@ var powerbi;
                     };
                     //Super activation for Tiles having progressbars
                     Visual.prototype.superActivate = function (id) {
-                        $("#" + id).find(".progtitle").slideDown(500);
-                        var color = $("#" + id).find(".col-5").css("background-color");
+                        var x = $("#" + id);
+                        x.find(".progtitle").slideDown(500);
+                        var color = x.find(".col-5").css("background-color");
                         var progbar = d3.select("#" + id).select(".col-7").style({
                             "background-color": "white",
                             "color": "black"
+                        });
+                        x.find('.col-5').find("div").animate({
+                            'bottom': '10px'
                         });
                         //Now calculating the values of the progress bars
                         //Looking for of selected value
@@ -984,17 +1002,18 @@ var powerbi;
                         for (var i = 0; i < deactTile[0].length; i++) {
                             var vValue = $(deactTile[0][i]).find('.default').val();
                             var Value = parseInt(vValue);
-                            $(deactTile[0][i]).find('.col-4').find('div').text(Value);
+                            $(deactTile[0][i]).find('.col-5').find('div').text(this.getFormatted(Value));
+                            $;
                         }
                     };
                     //Utility Function to sum up values of ending column tiles in case of multiple connections
-                    Visual.prototype.tileAggregate = function (id, value) {
-                        var vValue = $("#" + id).find('.runtime').val();
-                        var Value = parseInt(vValue);
-                        value = value + Value;
-                        $("#" + id).find('.runtime').val(value);
-                        return value;
-                    };
+                    // public tileAggregate(id:string,value:number){
+                    //     let vValue=$("#"+id).find('.runtime').val();
+                    //     let Value:number=parseInt(vValue);
+                    //     value=value+Value;
+                    //     $("#"+id).find('.runtime').val(value);
+                    //     return value;
+                    // }
                     //Utility function to get formatted value
                     Visual.prototype.getFormatted = function (Quantity) {
                         var value;
@@ -1015,98 +1034,98 @@ var powerbi;
                     };
                     //Using DFS Algorithm in Directed Graph
                     //Creating connection recursively using Dynamic Programming
-                    Visual.prototype.getConnection = function (id, click, col, pointer, Filter) {
-                        if (pointer == null)
-                            return null; //Recursion ending case
-                        //Getting a temporary filter to facilitate Dynamic Programming
-                        //This Temporary Filter will be used to splice off the  not required data points for a level of recursion
-                        var TempFilter;
-                        TempFilter = Filter.slice(0);
-                        var forp = 'All';
-                        var prevp = 'All';
-                        //Applying the specific pointer
-                        switch (col) {
-                            case 1:
-                                pointer = "Recruit";
-                                prevp = null;
-                                forp = "Develop";
-                                break;
-                            case 2:
-                                pointer = "Develop";
-                                prevp = "Recruit";
-                                forp = "Launch";
-                                break;
-                            case 3:
-                                pointer = "Launch";
-                                prevp = "Develop";
-                                forp = "grow";
-                                break;
-                            case 4:
-                                pointer = "grow";
-                                prevp = "Launch";
-                                forp = null;
-                                break;
-                        }
-                        //Installing Filter
-                        //Getting the first connection
-                        if (click == true) {
-                            //Pushing values in Filter First step of DP
-                            for (var i = 0; i < this.ConnectionIdentity.length; i++)
-                                if (id == this.ConnectionIdentity[i][pointer] && (this.ConnectionIdentity[i][prevp] == "All" || col == 1)) {
-                                    Filter.push({
-                                        Recruit: this.ConnectionIdentity[i].Recruit,
-                                        Develop: this.ConnectionIdentity[i].Develop,
-                                        Launch: this.ConnectionIdentity[i].Launch,
-                                        grow: this.ConnectionIdentity[i].grow,
-                                        value: this.ConnectionIdentity[i].value
-                                    });
-                                }
-                            //Pushing a Shallow array
-                            TempFilter = Filter.slice(0);
-                        }
-                        else {
-                            //Clearing out not mathing Data Points
-                            for (var i = 0; i < TempFilter.length; i++) {
-                                if (id != TempFilter[i][pointer]) {
-                                    //Removing the Unmatched Identities
-                                    TempFilter.splice(i, 1);
-                                    //Since clearing out resizes interface automatically so setting i yo i-1 guarantees that no data point will be overlooked 
-                                    i = i - 1;
-                                }
-                            }
-                        }
-                        //Aceessing the connection list
-                        for (var i = 0; i < Filter.length; i++) {
-                            if (id == Filter[i][pointer]) {
-                                //Checking if a line exists or not // Id of line is in form Id(div1)+Id(div2)
-                                if (Filter[i][forp] != undefined && !document.getElementById(Filter[i][pointer] + Filter[i][forp]) && Filter[i][forp] != "All") {
-                                    //Making Current tile active
-                                    $("#" + Filter[i][pointer]).removeClass("grey strong-grey inactive").addClass("active");
-                                    //Making it superactive except clicked column
-                                    if (!click)
-                                        this.superActivate(Filter[i][pointer]);
-                                    click = false; //Setting further clicks to false
-                                    if (Filter[i][forp] != undefined) {
-                                        this.createLine(Filter[i][pointer], Filter[i][forp], Filter[i][pointer] + Filter[i][forp]);
-                                        //Calling recursion function
-                                        this.getConnection(Filter[i][forp], click, col + 1, forp, TempFilter);
-                                    }
-                                }
-                                else if (Filter[i][forp] == "All" || Filter[i][forp] == undefined) {
-                                    //get a temporary variable within the scope to store value
-                                    var Quantity = void 0;
-                                    if (click == false) {
-                                        //Getting the best known updated value
-                                        Quantity = this.tileAggregate(Filter[i][pointer], Filter[i].value);
-                                    }
-                                    //Code below is to activate a end node
-                                    $("#" + Filter[i][pointer]).removeClass("grey strong-grey inactive").find(".col-4").text(Quantity);
-                                    if (Filter[i][forp] == undefined)
-                                        this.superActivate(Filter[i][pointer]);
-                                }
-                            }
-                        }
-                    };
+                    // public getConnection(id:string,click:boolean, col:number,pointer:string,Filter:Connection[]){
+                    //     if(pointer==null)
+                    //         return null; //Recursion ending case
+                    //     //Getting a temporary filter to facilitate Dynamic Programming
+                    //     //This Temporary Filter will be used to splice off the  not required data points for a level of recursion
+                    //     let TempFilter:Connection[];
+                    //     TempFilter=Filter.slice(0);
+                    //     let forp='All';
+                    //     let prevp='All';
+                    //     //Applying the specific pointer
+                    //     switch(col){
+                    //         case 1:
+                    //             pointer="Recruit";
+                    //             prevp=null;
+                    //             forp="Develop";
+                    //             break;
+                    //         case 2:
+                    //             pointer="Develop";
+                    //             prevp="Recruit";
+                    //             forp="Launch";
+                    //             break;
+                    //         case 3:
+                    //             pointer="Launch";
+                    //             prevp="Develop";
+                    //             forp="grow";
+                    //             break;
+                    //         case 4:
+                    //             pointer="grow";
+                    //             prevp="Launch";
+                    //             forp=null;
+                    //             break;
+                    //     }
+                    //     //Installing Filter
+                    //     //Getting the first connection
+                    //     if(click==true){
+                    //         //Pushing values in Filter First step of DP
+                    //         for(let i=0;i<this.ConnectionIdentity.length;i++)
+                    //             if(id==this.ConnectionIdentity[i][pointer] && (this.ConnectionIdentity[i][prevp]=="All" || col==1)){
+                    //                 Filter.push({
+                    //                     Recruit:this.ConnectionIdentity[i].Recruit,
+                    //                     Develop:this.ConnectionIdentity[i].Develop,
+                    //                     Launch:this.ConnectionIdentity[i].Launch,
+                    //                     grow:this.ConnectionIdentity[i].grow,
+                    //                     value:this.ConnectionIdentity[i].value
+                    //                 });
+                    //             }
+                    //             //Pushing a Shallow array
+                    //             TempFilter=Filter.slice(0);
+                    //     }
+                    //     else{
+                    //         //Clearing out not mathing Data Points
+                    //         for(let i=0;i<TempFilter.length;i++){
+                    //             if(id!=TempFilter[i][pointer]){
+                    //                 //Removing the Unmatched Identities
+                    //                 TempFilter.splice(i,1);
+                    //                 //Since clearing out resizes interface automatically so setting i yo i-1 guarantees that no data point will be overlooked 
+                    //                 i=i-1; 
+                    //             }
+                    //         }
+                    //     }
+                    //     //Aceessing the connection list
+                    //     for(let i=0;i<Filter.length;i++){
+                    //         if(id==Filter[i][pointer]){
+                    //             //Checking if a line exists or not // Id of line is in form Id(div1)+Id(div2)
+                    //             if(Filter[i][forp]!=undefined && !document.getElementById(Filter[i][pointer]+Filter[i][forp]) && Filter[i][forp]!="All"){
+                    //                 //Making Current tile active
+                    //                 $("#"+Filter[i][pointer]).removeClass("grey strong-grey inactive").addClass("active");
+                    //                 //Making it superactive except clicked column
+                    //                if(!click)
+                    //                     this.superActivate(Filter[i][pointer]);
+                    //                 click=false;    //Setting further clicks to false
+                    //                 if(Filter[i][forp]!=undefined){
+                    //                     this.createLine(Filter[i][pointer],Filter[i][forp],Filter[i][pointer]+Filter[i][forp]);
+                    //                     //Calling recursion function
+                    //                     this.getConnection(Filter[i][forp],click,col+1,forp,TempFilter);
+                    //                 }
+                    //             }
+                    //             else if(Filter[i][forp]=="All"|| Filter[i][forp]==undefined){
+                    //                 //get a temporary variable within the scope to store value
+                    //                 let Quantity:number;
+                    //                 if(click==false){
+                    //                     //Getting the best known updated value
+                    //                     Quantity=<number>this.tileAggregate(Filter[i][pointer],Filter[i].value);
+                    //                 }
+                    //                 //Code below is to activate a end node
+                    //                 $("#"+Filter[i][pointer]).removeClass("grey strong-grey inactive").find(".col-4").text(Quantity);
+                    //                 if(Filter[i][forp]==undefined)
+                    //                         this.superActivate(Filter[i][pointer]);
+                    //             }
+                    //         }
+                    //     }
+                    // }
                     // Using DFS Algorithm in Directed Graph
                     // Creating connection Backwards recursively using Dynamic Programming
                     Visual.prototype.getConnectionBackward = function (id, click, col, pointer, Filter) {
@@ -1184,17 +1203,63 @@ var powerbi;
                                 }
                                 else if (Filter[i][prevp] == "All" || Filter[i][prevp] == undefined) {
                                     //get a temporary variable within the scope to store value
-                                    var Quantity = void 0;
-                                    if (click == false) {
-                                        //Getting the best known updated value
-                                        Quantity = this.tileAggregate(Filter[i][pointer], Filter[i].value);
-                                    }
-                                    $("#" + Filter[i][pointer]).removeClass("grey strong-grey inactive").find(".col-5").find("div").text(this.getFormatted(Quantity));
+                                    // let Quantity:number;
+                                    // if(click==false){
+                                    //     //Getting the best known updated value
+                                    //     Quantity=<number>this.tileAggregate(Filter[i][pointer],Filter[i].value);
+                                    // }
+                                    $("#" + Filter[i][pointer]).removeClass("grey strong-grey inactive").find(".col-5"); //.find("div").text(this.getFormatted(Quantity));
                                     this.superActivate(Filter[i][pointer]);
                                 }
                             }
                         }
                     };
+                    //Function that will set the values Uncalculated in front end after the lines are being calculated
+                    Visual.prototype.getTileValue = function (id, ColNum, ViewValueTemp) {
+                        var pointer = 'All';
+                        ViewValueTemp = this.ViewValue;
+                        //Applying the specific pointer
+                        switch (ColNum) {
+                            case 1:
+                                break;
+                            case 2:
+                                for (var i = 0; i < ViewValueTemp.length; i++) {
+                                    if (!(id == ViewValueTemp[i].Develop && ViewValueTemp[i].Launch == 'All' && ViewValueTemp[i].grow == 'All')) {
+                                        ViewValueTemp.splice(i);
+                                    }
+                                }
+                                ;
+                                pointer = "Develop";
+                                break;
+                            case 3:
+                                for (var i = 0; i < ViewValueTemp.length; i++) {
+                                    if (!(id == ViewValueTemp[i].Launch && ViewValueTemp[i].grow == 'All')) {
+                                        ViewValueTemp.splice(i);
+                                    }
+                                }
+                                pointer = "Launch";
+                                break;
+                            case 4:
+                                debugger;
+                                for (var i = 0; i < ViewValueTemp.length; i++) {
+                                    if (id == ViewValueTemp[i].grow) {
+                                        if (ViewValueTemp[i].Launch != 'All') {
+                                            $("#" + ViewValueTemp[i].Launch).find('.col-5').find("div").text(this.getFormatted(ViewValueTemp[i].value));
+                                        }
+                                        else if (ViewValueTemp[i].Develop != 'All') {
+                                            $("#" + ViewValueTemp[i].Develop).find('.col-5').text(this.getFormatted(ViewValueTemp[i].value));
+                                        }
+                                        else if (ViewValueTemp[i].Recruit != 'All') {
+                                            $("#" + ViewValueTemp[i].Recruit).find('.col-5').text(this.getFormatted(ViewValueTemp[i].value));
+                                        }
+                                    }
+                                }
+                                pointer = "Grow";
+                                break;
+                        }
+                        console.log(ViewValueTemp);
+                    };
+                    ;
                     //Update function
                     Visual.prototype.update = function (options) {
                         //Clearing selection manager
@@ -1218,6 +1283,10 @@ var powerbi;
                             $("#row1").find('path').parent().remove();
                             //Block to disable other activation
                             $("#row1").find('.col-3').find(".SVGcontainer").addClass("strong-grey inactive");
+                            //Removing all Visible eyes
+                            $("#row1").find('.visible').hide();
+                            $("#row1").find('.hidden').show();
+                            $(".row").unbind("mouseenter").unbind("mouseleave");
                             //Block to ACTIVATE
                             $(x).removeClass("strong-grey");
                             var id = $(x).attr("id");
@@ -1244,9 +1313,14 @@ var powerbi;
                             // Filter=[];
                             // //Making Forward Connection
                             // Context.getConnection(id,true,ColNum,'All',Filter);
-                            //clearing the filter agin for backward Connections
+                            // Making a ViewValueTemp Filter to store most of the values and use DP to get some factual data
+                            var ViewValueTemp;
+                            ViewValueTemp = [];
+                            //clearing the filter again for backward Connections
                             Filter = [];
+                            //Calling functions
                             Context.getConnectionBackward(id, true, ColNum, 'All', Filter);
+                            //Context.getTileValue(id,ColNum,ViewValueTemp);
                             //Now refresing dimmed tiles
                             //function call to deactivate all tiles
                             Context.deactivateAll();
@@ -1258,6 +1332,7 @@ var powerbi;
                                     break;
                                 }
                             }
+                            //Activate function ends here
                         }
                         //Viewport scrolling 
                         // var innerHeight = window.innerHeight;
@@ -1297,8 +1372,6 @@ var powerbi;
                                     $(vector).attr('data-length', length).css({ 'stroke-dashoffset': length, 'stroke-dasharray': length });
                                 }
                             });
-                            //Animate lines now
-                            var count = 0;
                             var sequence = $("#row1").find('path');
                             for (var i = 0; i < sequence.length; i++) {
                                 var vector = sequence.eq(i);
