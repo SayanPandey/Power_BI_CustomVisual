@@ -637,6 +637,13 @@ var powerbi;
                         this.ViewValue = [];
                         //Initializing the selection Manager to filter next data points
                         this.selectionManager = this.host.createSelectionManager();
+                        //Initializig the interface to calculate thickness of the lines
+                        this.Thickness = {
+                            Recruit: 0,
+                            Develop: 0,
+                            Launch: 0,
+                            grow: 0
+                        };
                         //Initializing clickcount to zero
                         this.clickCount = 0;
                     }
@@ -1127,9 +1134,8 @@ var powerbi;
                     //     }
                     // }
                     // Using DFS Algorithm in Directed Graph
-                    // Creating connection Backwards recursively using Dynamic Programming
+                    // Creating connection Backwards recursively using Dynamic Programminh
                     Visual.prototype.getConnectionBackward = function (id, click, col, pointer, Filter) {
-                        var sum;
                         if (pointer == null)
                             return null; //Recursion ending case
                         //Getting a temporary filter to facilitate Dynamic Programming
@@ -1211,6 +1217,7 @@ var powerbi;
                                     // }
                                     $("#" + Filter[i][pointer]).removeClass("grey strong-grey inactive").find(".col-5"); //.find("div").text(this.getFormatted(Quantity));
                                     this.superActivate(Filter[i][pointer]);
+                                    this.Thickness[pointer] += Filter[i].value;
                                 }
                             }
                         }
@@ -1319,6 +1326,13 @@ var powerbi;
                             ViewValueTemp = [];
                             //clearing the filter again for backward Connections
                             Filter = [];
+                            //Clearing the Thickness interface instance values
+                            Context.Thickness = {
+                                Recruit: 0,
+                                Develop: 0,
+                                Launch: 0,
+                                grow: 0
+                            };
                             //Calling functions
                             Context.getConnectionBackward(id, true, ColNum, 'All', Filter);
                             //Context.getTileValue(id,ColNum,ViewValueTemp);
@@ -1333,9 +1347,10 @@ var powerbi;
                                     break;
                                 }
                             }
+                            console.log(Context.Thickness);
                             //Activate function ends here
                         }
-                        //Viewport scrolling 
+                        // //Viewport scrolling 
                         // var innerHeight = window.innerHeight;
                         // var rowHeight = $("#row1").height();
                         // if (rowHeight > innerHeight)    

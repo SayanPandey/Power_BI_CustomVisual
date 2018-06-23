@@ -52,10 +52,10 @@ module powerbi.extensibility.visual {
 
     //Below is a interface to store summarized value at the Column level to get ratio for Weighted lines
     interface Sum {
-        recruitSum:number;
-        developSum:number;
-        launchSum:number;
-        growSum:number;
+        Recruit:number;
+        Develop:number;
+        Launch:number;
+        grow:number;
     }
 
     export class Visual implements IVisual {
@@ -86,6 +86,9 @@ module powerbi.extensibility.visual {
         //For Interaction and Selection Changes
         private selectionManager : ISelectionManager;
 
+        //For Summation of values to create weighted lines
+        private Thickness : Sum;
+
         constructor(options: VisualConstructorOptions) {
             this.host = options.host;
             this.target = options.element;
@@ -101,12 +104,23 @@ module powerbi.extensibility.visual {
 
             //Initialising Connection Identity
             // this.ConnectionIdentity = [];
+
             //Initialising backward Connection Identity
             this.ConnectionIdentityBackwards=[];
+
             //Initializing ViewValue
             this.ViewValue=[];
+
             //Initializing the selection Manager to filter next data points
             this.selectionManager= this.host.createSelectionManager();
+
+            //Initializig the interface to calculate thickness of the lines
+            this.Thickness={
+                Recruit:0,
+                Develop:0,
+                Launch:0,
+                grow:0
+            }
 
             //Initializing clickcount to zero
             this.clickCount=0;
@@ -643,11 +657,11 @@ module powerbi.extensibility.visual {
         //     }
         // }
 
+
         // Using DFS Algorithm in Directed Graph
-        // Creating connection Backwards recursively using Dynamic Programming
+        // Creating connection Backwards recursively using Dynamic Programminh
         public getConnectionBackward(id:string,click:boolean, col:number,pointer:string,Filter:Connection[]):number{
-            
-            let sum:number;
+    
             if(pointer==null)
                 return null; //Recursion ending case
             
@@ -734,7 +748,9 @@ module powerbi.extensibility.visual {
                         //     Quantity=<number>this.tileAggregate(Filter[i][pointer],Filter[i].value);
                         // }
                         $("#"+Filter[i][pointer]).removeClass("grey strong-grey inactive").find(".col-5");//.find("div").text(this.getFormatted(Quantity));
+
                         this.superActivate(Filter[i][pointer]);
+                        this.Thickness[pointer]+=Filter[i].value;
                     }
                 }
             }
@@ -857,6 +873,14 @@ module powerbi.extensibility.visual {
                 //clearing the filter again for backward Connections
                 Filter=[];
 
+                //Clearing the Thickness interface instance values
+                Context.Thickness={
+                    Recruit:0,
+                    Develop:0,
+                    Launch:0,
+                    grow:0
+                };
+
                 //Calling functions
                 Context.getConnectionBackward(id,true,ColNum,'All',Filter);
                 //Context.getTileValue(id,ColNum,ViewValueTemp);
@@ -873,10 +897,11 @@ module powerbi.extensibility.visual {
                         break;
                     }
                 }
+                console.log(Context.Thickness);
                 //Activate function ends here
             }
 
-            //Viewport scrolling 
+            // //Viewport scrolling 
             // var innerHeight = window.innerHeight;
             // var rowHeight = $("#row1").height();
             // if (rowHeight > innerHeight)    
