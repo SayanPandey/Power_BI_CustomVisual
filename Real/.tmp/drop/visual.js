@@ -1129,6 +1129,7 @@ var powerbi;
                     // Using DFS Algorithm in Directed Graph
                     // Creating connection Backwards recursively using Dynamic Programming
                     Visual.prototype.getConnectionBackward = function (id, click, col, pointer, Filter) {
+                        var sum;
                         if (pointer == null)
                             return null; //Recursion ending case
                         //Getting a temporary filter to facilitate Dynamic Programming
@@ -1288,9 +1289,9 @@ var powerbi;
                             $("#row1").find('.hidden').show();
                             $(".row").unbind("mouseenter").unbind("mouseleave");
                             //Block to ACTIVATE
-                            $(x).removeClass("strong-grey");
-                            var id = $(x).attr("id");
-                            var col = $(x).parent().attr("id");
+                            $(x).parent().removeClass("strong-grey");
+                            var id = $(x).parent().attr("id");
+                            var col = $(x).parent().parent().attr("id");
                             var ColNum;
                             switch (col) {
                                 case 'col-1':
@@ -1327,7 +1328,7 @@ var powerbi;
                             //Putting the default value
                             for (var i = 0; i < Default.Tiles.length; i++) {
                                 if (Default.Tiles[i].col == ColNum && Default.Tiles[i].id == id) {
-                                    $(x).find(".col-5").find("div").text(Context.getFormatted(Default.Tiles[i].value));
+                                    $(x).parent().find(".col-5").find("div").text(Context.getFormatted(Default.Tiles[i].value));
                                     Context.deActivate(x);
                                     break;
                                 }
@@ -1340,13 +1341,15 @@ var powerbi;
                         // if (rowHeight > innerHeight)    
                         //     $(this.target).css({ "overflow-y": "scroll" });
                         //Setting event handlers
-                        $(".SVGcontainer").click(function () {
+                        $(".SVGcontainer").find(".row").click(function () {
+                            //Stop propagaion of the bubble
+                            event.stopPropagation();
                             //Checking the click and taking measures
                             if (Context.clickCount == 0) {
                                 Context.clickCount = 1;
                                 Context.ClickedNow = Context.Clicked;
                                 //Block to make it active
-                                $(this).removeClass("inactive").addClass("active");
+                                var parent_1 = $(this).parent().removeClass("inactive").addClass("active");
                                 //block to make $(this) to an active form
                                 activate(this);
                             }

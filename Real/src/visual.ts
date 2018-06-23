@@ -50,6 +50,14 @@ module powerbi.extensibility.visual {
         value:number
     }
 
+    //Below is a interface to store summarized value at the Column level to get ratio for Weighted lines
+    interface Sum {
+        recruitSum:number;
+        developSum:number;
+        launchSum:number;
+        growSum:number;
+    }
+
     export class Visual implements IVisual {
 
         //Property declaration
@@ -637,11 +645,12 @@ module powerbi.extensibility.visual {
 
         // Using DFS Algorithm in Directed Graph
         // Creating connection Backwards recursively using Dynamic Programming
-        public getConnectionBackward(id:string,click:boolean, col:number,pointer:string,Filter:Connection[]){
-
+        public getConnectionBackward(id:string,click:boolean, col:number,pointer:string,Filter:Connection[]):number{
+            
+            let sum:number;
             if(pointer==null)
                 return null; //Recursion ending case
-
+            
             //Getting a temporary filter to facilitate Dynamic Programming
             let TempFilter:Connection[];
             TempFilter=Filter.slice(0);
@@ -726,7 +735,6 @@ module powerbi.extensibility.visual {
                         // }
                         $("#"+Filter[i][pointer]).removeClass("grey strong-grey inactive").find(".col-5");//.find("div").text(this.getFormatted(Quantity));
                         this.superActivate(Filter[i][pointer]);
-
                     }
                 }
             }
@@ -814,9 +822,9 @@ module powerbi.extensibility.visual {
                 $(".row").unbind("mouseenter").unbind("mouseleave");
 
                 //Block to ACTIVATE
-                $(x).removeClass("strong-grey");
-                let id=$(x).attr("id");
-                let col=$(x).parent().attr("id");
+                $(x).parent().removeClass("strong-grey");
+                let id=$(x).parent().attr("id");
+                let col=$(x).parent().parent().attr("id");
                 let ColNum:number;
                 switch(col){
                     case 'col-1':
@@ -860,7 +868,7 @@ module powerbi.extensibility.visual {
                //Putting the default value
                for (let i = 0; i < Default.Tiles.length; i++) {
                     if(Default.Tiles[i].col==ColNum && Default.Tiles[i].id==id){
-                        $(x).find(".col-5").find("div").text(Context.getFormatted(Default.Tiles[i].value));
+                        $(x).parent().find(".col-5").find("div").text(Context.getFormatted(Default.Tiles[i].value));
                         Context.deActivate(x);
                         break;
                     }
@@ -876,15 +884,18 @@ module powerbi.extensibility.visual {
 
 
             //Setting event handlers
-            $(".SVGcontainer").click(
+            $(".SVGcontainer").find(".row").click(
                 function (this): void {
+
+                    //Stop propagaion of the bubble
+                    event.stopPropagation();
 
                     //Checking the click and taking measures
                     if(Context.clickCount==0){
                         Context.clickCount=1;
                         Context.ClickedNow=Context.Clicked;
                         //Block to make it active
-                        $(this).removeClass("inactive").addClass("active");
+                        let parent=$(this).parent().removeClass("inactive").addClass("active");
                         //block to make $(this) to an active form
                         activate(this);
                         
