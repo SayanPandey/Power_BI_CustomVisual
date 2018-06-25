@@ -277,10 +277,14 @@ module powerbi.extensibility.visual {
 
         //Create Backward line function
         public createLineBackward(id1: string, id2: string, lineId: string) {
-            //Commenting major part of code due since lines are not required
+            //Commenting find the color
             let color = $("#"+id1).find(".col-5").css("background-color");
+
+            //Finding the line width
+            let Thickness=$("#"+id2).find(".runtime").val();
+            Thickness=(parseInt(Thickness)/this.clickedValue)*15;
             
-            var row = d3.select("#row1").append("svg").attr("class", "connecting").append("path").attr({ "id": lineId,"fill": "none","class":"path","stroke":color,"stroke-width":"2"})
+            var row = d3.select("#row1").append("svg").attr("class", "connecting").append("path").attr({ "id": lineId,"fill": "none","class":"path","stroke":color,"stroke-width":Thickness})
             var line = $('#'+lineId);
             var div1 = $('#' + id1).find(".row2");
             var div2 = $('#' + id2).find(".row2");
@@ -333,7 +337,7 @@ module powerbi.extensibility.visual {
             var y2 = div2.offset().top + (div2.height() / 2);
 
             //First breakpoint horizontal
-            var hor1 = div1.offset().left;
+            var hor1 = div1.offset().left+5;
 
             //Creating curve from div1 to div 2
             var path = "M" + x1 + " " + y1; //selecting centroid of div1
@@ -726,17 +730,21 @@ module powerbi.extensibility.visual {
                     //Checking if a line exists or not // Id of line is in form Id(div1)+Id(div2)
                     if(Filter[i][prevp]!=undefined && !document.getElementById(Filter[i][pointer]+Filter[i][prevp]) && Filter[i][prevp]!="All"){
 
-                        //Making Current tile active
-                        $("#"+Filter[i][pointer]).removeClass("grey strong-grey inactive").addClass("active");
-                        //Making it superactive except clicked column
-                        if(this.Clicked!=Filter[i][pointer])
-                            this.superActivate(Filter[i][pointer]);
+                        // //Making Current tile active
+                        // $("#"+Filter[i][pointer]).removeClass("grey strong-grey inactive").addClass("active");
+                        // //Making it superactive except clicked column
+                        // if(this.Clicked!=Filter[i][pointer])
+                        //     this.superActivate(Filter[i][pointer]);
+
                         click=false;    //Setting further clicks to false
 
                         if(Filter[i][prevp]!=undefined){
-                            this.createLineBackward(Filter[i][pointer],Filter[i][prevp],Filter[i][pointer]+Filter[i][prevp]);
+                            //debugger;
                             //Calling recursion function
                             this.getConnectionBackward(Filter[i][prevp],click,col-1,prevp,TempFilter);
+    
+                            //Making lines
+                            this.createLineBackward(Filter[i][pointer],Filter[i][prevp],Filter[i][pointer]+Filter[i][prevp]);
                         }
                     }
                     else if(Filter[i][prevp]=="All"|| Filter[i][prevp]==undefined){
@@ -747,13 +755,17 @@ module powerbi.extensibility.visual {
                         //     //Getting the best known updated value
                         //     Quantity=<number>this.tileAggregate(Filter[i][pointer],Filter[i].value);
                         // }
-                        $("#"+Filter[i][pointer]).removeClass("grey strong-grey inactive").find(".col-5");//.find("div").text(this.getFormatted(Quantity));
 
+                        //Fixing a value to the runtime input field
+                        $("#"+Filter[i][pointer]).find('.runtime').val(Filter[i].value);
+                        $("#"+Filter[i][pointer]).removeClass("grey strong-grey inactive").find(".col-5");//.find("div").text(this.getFormatted(Quantity));
                         this.superActivate(Filter[i][pointer]);
                         this.Thickness[pointer]+=Filter[i].value;
                     }
+                    
                 }
             }
+
         }
 
         //Function that will set the values Uncalculated in front end after the lines are being calculated
@@ -781,7 +793,6 @@ module powerbi.extensibility.visual {
                     pointer="Launch";
                     break;
                 case 4:
-                debugger;
                     for(let i=0;i<ViewValueTemp.length;i++){
                         if(id==ViewValueTemp[i].grow){
                             if(ViewValueTemp[i].Launch!='All'){
