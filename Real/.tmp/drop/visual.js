@@ -637,13 +637,6 @@ var powerbi;
                         this.ViewValue = [];
                         //Initializing the selection Manager to filter next data points
                         this.selectionManager = this.host.createSelectionManager();
-                        //Initializig the interface to calculate thickness of the lines
-                        this.Thickness = {
-                            Recruit: 0,
-                            Develop: 0,
-                            Launch: 0,
-                            grow: 0
-                        };
                         //Initializing clickcount to zero
                         this.clickCount = 0;
                     }
@@ -737,7 +730,7 @@ var powerbi;
                         });
                         ProgTitle2.append('br');
                         rightSide.html('<img src=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAQAAABKfvVzAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QAAKqNIzIAAAAJcEhZcwAADdcAAA3XAUIom3gAAAAHdElNRQfiBhYHNiYzNO/HAAABiElEQVQ4y52TzUtUURiHnzs4juFGDQIXRmDUJsJNUEaMIQmiLSQwKDe18A/wDzCIVhItZiG0c1sQgtTCRRA2tXEjxTS7qFnYpkWUkPj1tMi595zxhkO/1ft73o/zHs698P+yaLFt7oArbrvtigMtfNnfR7hd1m2qblfKS9byOE4bajrltyJ+G6ADgLPRfv32MEofVUSSlA9mJ0wGc1Yd8Zuq+z5wNshMZA0F11J81a9B0aifD6M1C+G1u12w5rrzDkd7V7zvB2su2P23sgDgOBXK7FKkTGd0n076OGCXMhXHm9MXo5lDfg/clO8Ctwg4Y6wXTrp1GD91qiU7g9UI/PChJW+45LJznvCmH6N8lXSaasOLPvZn6vd84wWfBxVbBObAS762Vb8876fMhg0vvWeeVr2bmfAx3jOW+91fZz0zBR7xik0AvnAut6FIiR0ANnnSfItTjjnohvka8o6XPXn0N/pnQ7hSOzILk4if4RrDXOE0PSTs0KBBnWfJ2+NHdthrcmxZO/oD9O8Vy6xKvwMAAAAldEVYdGRhdGU6Y3JlYXRlADIwMTgtMDYtMjJUMDc6NTQ6MzgrMDI6MDAf3EwXAAAAJXRFWHRkYXRlOm1vZGlmeQAyMDE4LTA2LTIyVDA3OjU0OjM4KzAyOjAwboH0qwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAAASUVORK5CYII=>');
-                        rightSide.append("div").text(this.getFormatted(Tile.value));
+                        rightSide.append("div").classed("text", true).text(this.getFormatted(Tile.value));
                         //Appending the bookmark icon
                         if (Tile.col != 1) {
                             block.append("span").classed("hidden", true).style({
@@ -830,7 +823,7 @@ var powerbi;
                             $(this).parent().find('.hidden').show();
                         });
                         //Center for the first block
-                        var x1 = div1.offset().left + (div1.width() / 2);
+                        var x1 = div1.offset().left; // + (div1.width() / 2);
                         var y1 = div1.offset().top + (div1.height() / 2);
                         //Line to of Second block
                         var x2l = div2.offset().left + (div2.width());
@@ -838,9 +831,12 @@ var powerbi;
                         var y2 = div2.offset().top + (div2.height() / 2);
                         //First breakpoint horizontal
                         var hor1 = div1.offset().left + 5;
+                        //Finding the parent
+                        var left = $("#" + id1).offset().left;
                         //Creating curve from div1 to div 2
                         var path = "M" + x1 + " " + y1; //selecting centroid of div1
                         path += " H " + hor1; //creating horizontal line to first break point
+                        //path+="C "+x1+","+y1+","+left+", 100, 1000 500 S 500 500,"+x2+" "+y2;
                         //path += "M" + hor1 + " " + y1;  //shifing the center to the end point
                         path += " L " + x2l + " " + y2; //Line
                         //path += "M" + x2l + " " + y2    //Centershift
@@ -886,19 +882,19 @@ var powerbi;
                             var num = Metric[i];
                             var col = 0;
                             var head = '';
-                            if (r == null || d == null || l == null || g == null && Direction[i] == null) {
-                                if (r != null) {
+                            if (Direction[i] == null) {
+                                if (r != 'All') {
                                     col = 1, head = r;
                                 }
-                                else if (d != null) {
+                                else if (d != 'All') {
                                     col = 2;
                                     head = d;
                                 }
-                                else if (l != null) {
+                                else if (l != 'All') {
                                     col = 3;
                                     head = l;
                                 }
-                                else if (g != null) {
+                                else if (g != 'All') {
                                     col = 4;
                                     head = g;
                                 }
@@ -1224,7 +1220,6 @@ var powerbi;
                                     $("#" + Filter[i][pointer]).find('.runtime').val(Filter[i].value);
                                     $("#" + Filter[i][pointer]).removeClass("grey strong-grey inactive").find(".col-5"); //.find("div").text(this.getFormatted(Quantity));
                                     this.superActivate(Filter[i][pointer]);
-                                    this.Thickness[pointer] += Filter[i].value;
                                 }
                             }
                         }
@@ -1239,17 +1234,23 @@ var powerbi;
                                 break;
                             case 2:
                                 for (var i = 0; i < ViewValueTemp.length; i++) {
-                                    if (!(id == ViewValueTemp[i].Develop && ViewValueTemp[i].Launch == 'All' && ViewValueTemp[i].grow == 'All')) {
-                                        ViewValueTemp.splice(i);
+                                    if (id == ViewValueTemp[i].Develop && ViewValueTemp[i].Launch == 'All' && ViewValueTemp[i].grow == 'All') {
+                                        if (ViewValueTemp[i].Recruit != 'All') {
+                                            $("#" + ViewValueTemp[i].Recruit).find('.col-5').find(".text").text(this.getFormatted(ViewValueTemp[i].value));
+                                        }
                                     }
                                 }
-                                ;
                                 pointer = "Develop";
                                 break;
                             case 3:
                                 for (var i = 0; i < ViewValueTemp.length; i++) {
-                                    if (!(id == ViewValueTemp[i].Launch && ViewValueTemp[i].grow == 'All')) {
-                                        ViewValueTemp.splice(i);
+                                    if (id == ViewValueTemp[i].Launch && ViewValueTemp[i].grow == 'All') {
+                                        if (ViewValueTemp[i].Develop != 'All') {
+                                            $("#" + ViewValueTemp[i].Develop).find('.col-5').find(".text").text(this.getFormatted(ViewValueTemp[i].value));
+                                        }
+                                        else if (ViewValueTemp[i].Recruit != 'All') {
+                                            $("#" + ViewValueTemp[i].Recruit).find('.col-5').find(".text").text(this.getFormatted(ViewValueTemp[i].value));
+                                        }
                                     }
                                 }
                                 pointer = "Launch";
@@ -1258,20 +1259,19 @@ var powerbi;
                                 for (var i = 0; i < ViewValueTemp.length; i++) {
                                     if (id == ViewValueTemp[i].grow) {
                                         if (ViewValueTemp[i].Launch != 'All') {
-                                            $("#" + ViewValueTemp[i].Launch).find('.col-5').find("div").text(this.getFormatted(ViewValueTemp[i].value));
+                                            $("#" + ViewValueTemp[i].Launch).find('.col-5').find(".text").text(this.getFormatted(ViewValueTemp[i].value));
                                         }
                                         else if (ViewValueTemp[i].Develop != 'All') {
-                                            $("#" + ViewValueTemp[i].Develop).find('.col-5').text(this.getFormatted(ViewValueTemp[i].value));
+                                            $("#" + ViewValueTemp[i].Develop).find('.col-5').find(".text").text(this.getFormatted(ViewValueTemp[i].value));
                                         }
                                         else if (ViewValueTemp[i].Recruit != 'All') {
-                                            $("#" + ViewValueTemp[i].Recruit).find('.col-5').text(this.getFormatted(ViewValueTemp[i].value));
+                                            $("#" + ViewValueTemp[i].Recruit).find('.col-5').find(".text").text(this.getFormatted(ViewValueTemp[i].value));
                                         }
                                     }
                                 }
                                 pointer = "Grow";
                                 break;
                         }
-                        console.log(ViewValueTemp);
                     };
                     ;
                     //Update function
@@ -1332,16 +1332,10 @@ var powerbi;
                             ViewValueTemp = [];
                             //clearing the filter again for backward Connections
                             Filter = [];
-                            //Clearing the Thickness interface instance values
-                            Context.Thickness = {
-                                Recruit: 0,
-                                Develop: 0,
-                                Launch: 0,
-                                grow: 0
-                            };
                             //Calling functions
                             Context.getConnectionBackward(id, true, ColNum, 'All', Filter);
-                            //Context.getTileValue(id,ColNum,ViewValueTemp);
+                            Context.getTileValue(id, ColNum, ViewValueTemp);
+                            console.log(Context.ViewValue);
                             //Now refresing dimmed tiles
                             //function call to deactivate all tiles
                             Context.deactivateAll();
@@ -1353,7 +1347,6 @@ var powerbi;
                                     break;
                                 }
                             }
-                            console.log(Context.Thickness);
                             //Activate function ends here
                         }
                         // //Viewport scrolling 
@@ -1430,8 +1423,8 @@ var powerbi;
     (function (visuals) {
         var plugins;
         (function (plugins) {
-            plugins.chart774830980A704407B8EAE534A05D1ED8_DEBUG = {
-                name: 'chart774830980A704407B8EAE534A05D1ED8_DEBUG',
+            plugins.chart774830980A704407B8EAE534A05D1ED8 = {
+                name: 'chart774830980A704407B8EAE534A05D1ED8',
                 displayName: 'Chart',
                 class: 'Visual',
                 version: '1.0.0',

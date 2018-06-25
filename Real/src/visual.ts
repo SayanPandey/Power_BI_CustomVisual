@@ -50,14 +50,6 @@ module powerbi.extensibility.visual {
         value:number
     }
 
-    //Below is a interface to store summarized value at the Column level to get ratio for Weighted lines
-    interface Sum {
-        Recruit:number;
-        Develop:number;
-        Launch:number;
-        grow:number;
-    }
-
     export class Visual implements IVisual {
 
         //Property declaration
@@ -86,9 +78,6 @@ module powerbi.extensibility.visual {
         //For Interaction and Selection Changes
         private selectionManager : ISelectionManager;
 
-        //For Summation of values to create weighted lines
-        private Thickness : Sum;
-
         constructor(options: VisualConstructorOptions) {
             this.host = options.host;
             this.target = options.element;
@@ -113,14 +102,6 @@ module powerbi.extensibility.visual {
 
             //Initializing the selection Manager to filter next data points
             this.selectionManager= this.host.createSelectionManager();
-
-            //Initializig the interface to calculate thickness of the lines
-            this.Thickness={
-                Recruit:0,
-                Develop:0,
-                Launch:0,
-                grow:0
-            }
 
             //Initializing clickcount to zero
             this.clickCount=0;
@@ -219,7 +200,7 @@ module powerbi.extensibility.visual {
             });
             ProgTitle2.append('br');
             rightSide.html('<img src=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAQAAABKfvVzAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QAAKqNIzIAAAAJcEhZcwAADdcAAA3XAUIom3gAAAAHdElNRQfiBhYHNiYzNO/HAAABiElEQVQ4y52TzUtUURiHnzs4juFGDQIXRmDUJsJNUEaMIQmiLSQwKDe18A/wDzCIVhItZiG0c1sQgtTCRRA2tXEjxTS7qFnYpkWUkPj1tMi595zxhkO/1ft73o/zHs698P+yaLFt7oArbrvtigMtfNnfR7hd1m2qblfKS9byOE4bajrltyJ+G6ADgLPRfv32MEofVUSSlA9mJ0wGc1Yd8Zuq+z5wNshMZA0F11J81a9B0aifD6M1C+G1u12w5rrzDkd7V7zvB2su2P23sgDgOBXK7FKkTGd0n076OGCXMhXHm9MXo5lDfg/clO8Ctwg4Y6wXTrp1GD91qiU7g9UI/PChJW+45LJznvCmH6N8lXSaasOLPvZn6vd84wWfBxVbBObAS762Vb8876fMhg0vvWeeVr2bmfAx3jOW+91fZz0zBR7xik0AvnAut6FIiR0ANnnSfItTjjnohvka8o6XPXn0N/pnQ7hSOzILk4if4RrDXOE0PSTs0KBBnWfJ2+NHdthrcmxZO/oD9O8Vy6xKvwMAAAAldEVYdGRhdGU6Y3JlYXRlADIwMTgtMDYtMjJUMDc6NTQ6MzgrMDI6MDAf3EwXAAAAJXRFWHRkYXRlOm1vZGlmeQAyMDE4LTA2LTIyVDA3OjU0OjM4KzAyOjAwboH0qwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAAASUVORK5CYII=>');
-            rightSide.append("div").text(this.getFormatted(Tile.value));
+            rightSide.append("div").classed("text",true).text(this.getFormatted(Tile.value));
 
             //Appending the bookmark icon
             if(Tile.col!=1){
@@ -328,7 +309,7 @@ module powerbi.extensibility.visual {
 
 
             //Center for the first block
-            var x1 = div1.offset().left + (div1.width() / 2);
+            var x1 = div1.offset().left;// + (div1.width() / 2);
             var y1 = div1.offset().top + (div1.height() / 2);
 
             //Line to of Second block
@@ -339,9 +320,13 @@ module powerbi.extensibility.visual {
             //First breakpoint horizontal
             var hor1 = div1.offset().left+5;
 
+            //Finding the parent
+            let left=$("#"+id1).offset().left;
+             
             //Creating curve from div1 to div 2
             var path = "M" + x1 + " " + y1; //selecting centroid of div1
             path += " H " + hor1;   //creating horizontal line to first break point
+            //path+="C "+x1+","+y1+","+left+", 100, 1000 500 S 500 500,"+x2+" "+y2;
             //path += "M" + hor1 + " " + y1;  //shifing the center to the end point
             path += " L " + x2l + " " + y2; //Line
             //path += "M" + x2l + " " + y2    //Centershift
@@ -395,11 +380,11 @@ module powerbi.extensibility.visual {
                 let num = Metric[i];
                 let col = 0;
                 let head = '';
-                if (r == null || d == null || l == null || g == null &&Direction[i]==null) {
-                    if (r != null) { col = 1, head = <string>r }
-                    else if (d != null) { col = 2; head = <string>d }
-                    else if (l != null) { col = 3; head = <string>l }
-                    else if (g != null) { col = 4; head = <string>g }
+                if (Direction[i]==null) {
+                    if (r != 'All') { col = 1, head = <string>r }
+                    else if (d != 'All') { col = 2; head = <string>d }
+                    else if (l != 'All') { col = 3; head = <string>l }
+                    else if (g != 'All') { col = 4; head = <string>g }
 
                     
                     //Assigning to the object
@@ -760,7 +745,6 @@ module powerbi.extensibility.visual {
                         $("#"+Filter[i][pointer]).find('.runtime').val(Filter[i].value);
                         $("#"+Filter[i][pointer]).removeClass("grey strong-grey inactive").find(".col-5");//.find("div").text(this.getFormatted(Quantity));
                         this.superActivate(Filter[i][pointer]);
-                        this.Thickness[pointer]+=Filter[i].value;
                     }
                     
                 }
@@ -778,16 +762,23 @@ module powerbi.extensibility.visual {
                     break;
                 case 2:
                     for(let i=0;i<ViewValueTemp.length;i++){
-                        if(!(id==ViewValueTemp[i].Develop && ViewValueTemp[i].Launch=='All' && ViewValueTemp[i].grow=='All')){
-                            ViewValueTemp.splice(i);              
+                        if(id==ViewValueTemp[i].Develop && ViewValueTemp[i].Launch=='All' && ViewValueTemp[i].grow=='All'){
+                           if(ViewValueTemp[i].Recruit!='All'){
+                                $("#"+ViewValueTemp[i].Recruit).find('.col-5').find(".text").text(this.getFormatted(ViewValueTemp[i].value)); 
+                            }                 
                         }
-                    };
+                    }
                     pointer="Develop";
                     break;
                 case 3:
                     for(let i=0;i<ViewValueTemp.length;i++){
-                        if(!(id==ViewValueTemp[i].Launch && ViewValueTemp[i].grow=='All')){
-                            ViewValueTemp.splice(i);              
+                        if(id==ViewValueTemp[i].Launch && ViewValueTemp[i].grow=='All'){
+                            if(ViewValueTemp[i].Develop!='All'){
+                                $("#"+ViewValueTemp[i].Develop).find('.col-5').find(".text").text(this.getFormatted(ViewValueTemp[i].value)); 
+                            }
+                            else if(ViewValueTemp[i].Recruit!='All'){
+                                $("#"+ViewValueTemp[i].Recruit).find('.col-5').find(".text").text(this.getFormatted(ViewValueTemp[i].value)); 
+                            }                 
                         }
                     }
                     pointer="Launch";
@@ -796,20 +787,19 @@ module powerbi.extensibility.visual {
                     for(let i=0;i<ViewValueTemp.length;i++){
                         if(id==ViewValueTemp[i].grow){
                             if(ViewValueTemp[i].Launch!='All'){
-                                $("#"+ViewValueTemp[i].Launch).find('.col-5').find("div").text(this.getFormatted(ViewValueTemp[i].value)); 
+                                $("#"+ViewValueTemp[i].Launch).find('.col-5').find(".text").text(this.getFormatted(ViewValueTemp[i].value)); 
                             }
                             else if(ViewValueTemp[i].Develop!='All'){
-                                $("#"+ViewValueTemp[i].Develop).find('.col-5').text(this.getFormatted(ViewValueTemp[i].value)); 
+                                $("#"+ViewValueTemp[i].Develop).find('.col-5').find(".text").text(this.getFormatted(ViewValueTemp[i].value)); 
                             } 
                             else if(ViewValueTemp[i].Recruit!='All'){
-                                $("#"+ViewValueTemp[i].Recruit).find('.col-5').text(this.getFormatted(ViewValueTemp[i].value)); 
+                                $("#"+ViewValueTemp[i].Recruit).find('.col-5').find(".text").text(this.getFormatted(ViewValueTemp[i].value)); 
                             }                 
                         }
                     }
                     pointer="Grow";
                     break;
-            }            
-            console.log(ViewValueTemp);
+            }
         };
 
        //Update function
@@ -884,17 +874,11 @@ module powerbi.extensibility.visual {
                 //clearing the filter again for backward Connections
                 Filter=[];
 
-                //Clearing the Thickness interface instance values
-                Context.Thickness={
-                    Recruit:0,
-                    Develop:0,
-                    Launch:0,
-                    grow:0
-                };
-
                 //Calling functions
                 Context.getConnectionBackward(id,true,ColNum,'All',Filter);
-                //Context.getTileValue(id,ColNum,ViewValueTemp);
+                Context.getTileValue(id,ColNum,ViewValueTemp);
+
+                console.log(Context.ViewValue);
     
                 //Now refresing dimmed tiles
                 //function call to deactivate all tiles
@@ -908,7 +892,6 @@ module powerbi.extensibility.visual {
                         break;
                     }
                 }
-                console.log(Context.Thickness);
                 //Activate function ends here
             }
 
