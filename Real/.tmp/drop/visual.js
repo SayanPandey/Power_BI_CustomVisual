@@ -882,7 +882,7 @@ var powerbi;
                             var num = Metric[i];
                             var col = 0;
                             var head = '';
-                            if (Direction[i] == null) {
+                            if (Direction[i] == 'Default') {
                                 if (r != 'All') {
                                     col = 1, head = r;
                                 }

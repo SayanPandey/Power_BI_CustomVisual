@@ -380,7 +380,7 @@ module powerbi.extensibility.visual {
                 let num = Metric[i];
                 let col = 0;
                 let head = '';
-                if (Direction[i]==null) {
+                if (Direction[i]=='Default') {
                     if (r != 'All') { col = 1, head = <string>r }
                     else if (d != 'All') { col = 2; head = <string>d }
                     else if (l != 'All') { col = 3; head = <string>l }
