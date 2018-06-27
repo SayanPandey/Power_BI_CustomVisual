@@ -731,6 +731,7 @@ var powerbi;
                         ProgTitle2.append('br');
                         rightSide.html('<img src=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAQAAABKfvVzAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QAAKqNIzIAAAAJcEhZcwAADdcAAA3XAUIom3gAAAAHdElNRQfiBhYHNiYzNO/HAAABiElEQVQ4y52TzUtUURiHnzs4juFGDQIXRmDUJsJNUEaMIQmiLSQwKDe18A/wDzCIVhItZiG0c1sQgtTCRRA2tXEjxTS7qFnYpkWUkPj1tMi595zxhkO/1ft73o/zHs698P+yaLFt7oArbrvtigMtfNnfR7hd1m2qblfKS9byOE4bajrltyJ+G6ADgLPRfv32MEofVUSSlA9mJ0wGc1Yd8Zuq+z5wNshMZA0F11J81a9B0aifD6M1C+G1u12w5rrzDkd7V7zvB2su2P23sgDgOBXK7FKkTGd0n076OGCXMhXHm9MXo5lDfg/clO8Ctwg4Y6wXTrp1GD91qiU7g9UI/PChJW+45LJznvCmH6N8lXSaasOLPvZn6vd84wWfBxVbBObAS762Vb8876fMhg0vvWeeVr2bmfAx3jOW+91fZz0zBR7xik0AvnAut6FIiR0ANnnSfItTjjnohvka8o6XPXn0N/pnQ7hSOzILk4if4RrDXOE0PSTs0KBBnWfJ2+NHdthrcmxZO/oD9O8Vy6xKvwMAAAAldEVYdGRhdGU6Y3JlYXRlADIwMTgtMDYtMjJUMDc6NTQ6MzgrMDI6MDAf3EwXAAAAJXRFWHRkYXRlOm1vZGlmeQAyMDE4LTA2LTIyVDA3OjU0OjM4KzAyOjAwboH0qwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAAASUVORK5CYII=>');
                         rightSide.append("div").classed("text", true).text(this.getFormatted(Tile.value));
+                        rightSide.append('span').classed('tooltiptext', true).text(Tile.value);
                         //Appending the bookmark icon
                         if (Tile.col != 1) {
                             block.append("span").classed("hidden", true).style({
@@ -783,7 +784,10 @@ var powerbi;
                         var color = $("#" + id1).find(".col-5").css("background-color");
                         //Finding the line width
                         var Thickness = $("#" + id2).find(".runtime").val();
-                        Thickness = (parseInt(Thickness) / this.clickedValue) * 15;
+                        Thickness = (parseInt(Thickness) / this.clickedValue) * 10;
+                        //Making visible thickness
+                        if (Thickness < 1)
+                            Thickness = 1;
                         var row = d3.select("#row1").append("svg").attr("class", "connecting").append("path").attr({ "id": lineId, "fill": "none", "class": "path", "stroke": color, "stroke-width": Thickness });
                         var line = $('#' + lineId);
                         var div1 = $('#' + id1).find(".row2");
@@ -849,7 +853,7 @@ var powerbi;
                         var x2 = div2.offset().left + (div2.width());
                         var y2 = div2.offset().top + (div2.height() / 3);
                         //Thecontrol points
-                        var C1x = x1 - (div1.width() / 5);
+                        var C1x = x1 - (div1.width() / 8);
                         var path = 'M' + x1 + ',' + y1 + ' C' + C1x + ',' + y1 + ' ' + C1x + ',' + y2 + ' ' + x2 + ',' + y2;
                         line.attr("d", path);
                     };
@@ -995,7 +999,7 @@ var powerbi;
                             var vValue = $(deactTile[0][i]).find('.default').val();
                             var Value = parseInt(vValue);
                             $(deactTile[0][i]).find('.col-5').find('div').text(this.getFormatted(Value));
-                            $;
+                            $(deactTile[0][i]).find('.col-5').find('.tooltiptext').text(Value);
                         }
                     };
                     //Utility Function to sum up values of ending column tiles in case of multiple connections
@@ -1212,6 +1216,8 @@ var powerbi;
                     };
                     //Utility function to get progressbar value
                     Visual.prototype.progressBarValue = function (id, vValue2) {
+                        //Keeping the value in tooltip
+                        $("#" + id).find('.tooltiptext').text(vValue2);
                         //Now calculating the values of the progress bars
                         //Looking for of selected value
                         var Value2 = vValue2;
@@ -1362,6 +1368,7 @@ var powerbi;
                             for (var i = 0; i < Default.Tiles.length; i++) {
                                 if (Default.Tiles[i].col == ColNum && Default.Tiles[i].id == id) {
                                     $(x).parent().find(".col-5").find("div").text(Context.getFormatted(Default.Tiles[i].value));
+                                    $(x).parent().find(".col-5").find(".tooltiptext").text(Default.Tiles[i].value);
                                     Context.deActivate(x);
                                     break;
                                 }

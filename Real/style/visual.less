@@ -106,3 +106,52 @@ svg{
 .visible{
     display:none;
 }
+
+/* Tooltip container */
+.col-5 {
+    position: relative;
+    display: inline-block;
+}
+
+/* Tooltip text */
+.col-5 .tooltiptext {
+    visibility: hidden;
+    min-width: 100px;
+    max-width:100%;
+    background-color:rgba(0,0,0,1);
+    color: #ffffff;
+    text-align: center;
+    padding: 4px 0;
+    // border-radius: 6px;
+    font-size: 14px;
+    //border:solid #ffffff 1px;
+
+    /* Position the tooltip text */
+    position: absolute;
+    z-index: 100;
+    top: 100%;
+    left: 50%;
+    margin-left: -50px;
+
+    /* Fade in tooltip */
+    opacity: 0.1;
+    transition: opacity 0.3s;
+}
+
+/* Tooltip arrow */
+.col-5 .tooltiptext::after {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent rgba(0,0,0,1) transparent;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.col-5:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}

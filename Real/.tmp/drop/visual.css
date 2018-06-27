@@ -7,6 +7,10 @@
  */
   /*# sourceMappingURL=bootstrap.css.map */
   /*Base container and heads CSS*/
+  /* Tooltip container */
+  /* Tooltip text */
+  /* Tooltip arrow */
+  /* Show the tooltip text when you mouse over the tooltip container */
 }
 .visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG :root {
   --blue: #007bff;
@@ -8288,4 +8292,41 @@
 }
 .visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG .visible {
   display: none;
+}
+.visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG .col-5 {
+  position: relative;
+  display: inline-block;
+}
+.visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG .col-5 .tooltiptext {
+  visibility: hidden;
+  min-width: 100px;
+  max-width: 100%;
+  background-color: #000000;
+  color: #ffffff;
+  text-align: center;
+  padding: 4px 0;
+  font-size: 14px;
+  /* Position the tooltip text */
+  position: absolute;
+  z-index: 100;
+  top: 100%;
+  left: 50%;
+  margin-left: -50px;
+  /* Fade in tooltip */
+  opacity: 0.1;
+  transition: opacity 0.3s;
+}
+.visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG .col-5 .tooltiptext::after {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent #000000 transparent;
+}
+.visual-chart774830980A704407B8EAE534A05D1ED8_DEBUG .col-5:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
 }
