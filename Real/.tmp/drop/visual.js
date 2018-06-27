@@ -824,11 +824,11 @@ var powerbi;
                         });
                         //Center for the first block
                         var x1 = div1.offset().left; // + (div1.width() / 2);
-                        var y1 = div1.offset().top + (div1.height() / 2);
+                        var y1 = div1.offset().top + (div1.height() / 3);
                         //Line to of Second block
                         var x2l = div2.offset().left + (div2.width());
                         var x2 = div2.offset().left + (div1.width() / 2);
-                        var y2 = div2.offset().top + (div2.height() / 2);
+                        var y2 = div2.offset().top + (div2.height() / 3);
                         //First breakpoint horizontal
                         var hor1 = div1.offset().left + 5;
                         //Finding the parent
@@ -840,7 +840,7 @@ var powerbi;
                         //path += "M" + hor1 + " " + y1;  //shifing the center to the end point
                         path += " L " + x2l + " " + y2; //Line
                         //path += "M" + x2l + " " + y2    //Centershift
-                        path += " L " + x2 + " " + y2; //Final lining
+                        //path += " L " + x2 + " " + y2;  //Final lining
                         line.attr("d", path);
                     };
                     //Data inserting code
@@ -960,30 +960,6 @@ var powerbi;
                         x.find('.col-5').find("div").animate({
                             'bottom': '10px'
                         });
-                        //Now calculating the values of the progress bars
-                        //Looking for of selected value
-                        var vValue2 = $("#" + id).find('.runtime').val();
-                        var Value2 = parseInt(vValue2);
-                        var percent_ofSelected = (Value2 / this.clickedValue) * 100;
-                        //Looking for of total value
-                        var vValue = $("#" + id).find('.default').val();
-                        var Value = parseInt(vValue);
-                        var percent_Total = (Value2 / Value) * 100;
-                        //Fixing the size of the progress bar Ofselected
-                        progbar.select(".ofselected").style({
-                            width: percent_ofSelected + "%",
-                            "background-color": this.clickedColor
-                        });
-                        //Fixing the size of the progress bar Total
-                        progbar.select(".total").style({
-                            width: percent_Total + "%",
-                        });
-                        //making the change visible on the text
-                        var text = d3.select("#" + id).selectAll(".progtitle").select(".metric");
-                        //Value for ofSelected
-                        $(text[0][0]).text(percent_ofSelected.toFixed(2) + "%");
-                        //Value for Total
-                        $(text[0][1]).text(percent_Total.toFixed(2) + "%");
                     };
                     //Utility function to deactivate
                     Visual.prototype.deActivate = function (x) {
@@ -1023,16 +999,16 @@ var powerbi;
                     //Utility function to get formatted value
                     Visual.prototype.getFormatted = function (Quantity) {
                         var value;
-                        if (Quantity >= 1000) {
-                            value = (Quantity / 1000).toFixed(1) + "K";
+                        if (Quantity >= 1000000000) {
+                            value = (Quantity / 1000000000).toFixed(1) + "B";
                             return value;
                         }
                         else if (Quantity >= 1000000) {
                             value = (Quantity / 1000000).toFixed(1) + "M";
                             return value;
                         }
-                        else if (Quantity >= 1000000000) {
-                            value = (Quantity / 1000000000).toFixed(1) + "B";
+                        else if (Quantity >= 1000) {
+                            value = (Quantity / 1000).toFixed(1) + "K";
                             return value;
                         }
                         else
@@ -1224,6 +1200,33 @@ var powerbi;
                             }
                         }
                     };
+                    //Utility function to get progressbar value
+                    Visual.prototype.progressBarValue = function (id, vValue2) {
+                        //Now calculating the values of the progress bars
+                        //Looking for of selected value
+                        var Value2 = vValue2;
+                        var percent_ofSelected = (Value2 / this.clickedValue) * 100;
+                        //Looking for of total value
+                        var vValue = $("#" + id).find('.default').val();
+                        var Value = parseInt(vValue);
+                        var percent_Total = (Value2 / Value) * 100;
+                        //Fixing the size of the progress bar Ofselected
+                        var progbar = d3.select("#" + id).select(".col-7");
+                        progbar.select(".ofselected").style({
+                            width: percent_ofSelected + "%",
+                            "background-color": this.clickedColor
+                        });
+                        //Fixing the size of the progress bar Total
+                        progbar.select(".total").style({
+                            width: percent_Total + "%",
+                        });
+                        //making the change visible on the text
+                        var text = d3.select("#" + id).selectAll(".progtitle").select(".metric");
+                        //Value for ofSelected
+                        $(text[0][0]).text(percent_ofSelected.toFixed(2) + "%");
+                        //Value for Total
+                        $(text[0][1]).text(percent_Total.toFixed(2) + "%");
+                    };
                     //Function that will set the values Uncalculated in front end after the lines are being calculated
                     Visual.prototype.getTileValue = function (id, ColNum, ViewValueTemp) {
                         var pointer = 'All';
@@ -1237,6 +1240,7 @@ var powerbi;
                                     if (id == ViewValueTemp[i].Develop && ViewValueTemp[i].Launch == 'All' && ViewValueTemp[i].grow == 'All') {
                                         if (ViewValueTemp[i].Recruit != 'All') {
                                             $("#" + ViewValueTemp[i].Recruit).find('.col-5').find(".text").text(this.getFormatted(ViewValueTemp[i].value));
+                                            this.progressBarValue(ViewValueTemp[i].Recruit, ViewValueTemp[i].value);
                                         }
                                     }
                                 }
@@ -1247,9 +1251,11 @@ var powerbi;
                                     if (id == ViewValueTemp[i].Launch && ViewValueTemp[i].grow == 'All') {
                                         if (ViewValueTemp[i].Develop != 'All') {
                                             $("#" + ViewValueTemp[i].Develop).find('.col-5').find(".text").text(this.getFormatted(ViewValueTemp[i].value));
+                                            this.progressBarValue(ViewValueTemp[i].Develop, ViewValueTemp[i].value);
                                         }
                                         else if (ViewValueTemp[i].Recruit != 'All') {
                                             $("#" + ViewValueTemp[i].Recruit).find('.col-5').find(".text").text(this.getFormatted(ViewValueTemp[i].value));
+                                            this.progressBarValue(ViewValueTemp[i].Recruit, ViewValueTemp[i].value);
                                         }
                                     }
                                 }
@@ -1260,12 +1266,15 @@ var powerbi;
                                     if (id == ViewValueTemp[i].grow) {
                                         if (ViewValueTemp[i].Launch != 'All') {
                                             $("#" + ViewValueTemp[i].Launch).find('.col-5').find(".text").text(this.getFormatted(ViewValueTemp[i].value));
+                                            this.progressBarValue(ViewValueTemp[i].Launch, ViewValueTemp[i].value);
                                         }
                                         else if (ViewValueTemp[i].Develop != 'All') {
                                             $("#" + ViewValueTemp[i].Develop).find('.col-5').find(".text").text(this.getFormatted(ViewValueTemp[i].value));
+                                            this.progressBarValue(ViewValueTemp[i].Develop, ViewValueTemp[i].value);
                                         }
                                         else if (ViewValueTemp[i].Recruit != 'All') {
                                             $("#" + ViewValueTemp[i].Recruit).find('.col-5').find(".text").text(this.getFormatted(ViewValueTemp[i].value));
+                                            this.progressBarValue(ViewValueTemp[i].Recruit, ViewValueTemp[i].value);
                                         }
                                     }
                                 }
