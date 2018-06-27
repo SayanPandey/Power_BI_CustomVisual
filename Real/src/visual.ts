@@ -266,7 +266,7 @@ module powerbi.extensibility.visual {
             let Thickness=$("#"+id2).find(".runtime").val();
             Thickness=(parseInt(Thickness)/this.clickedValue)*10;
 
-            //Making visible thickness
+            //Making visible thickness in case of too small value
             if(Thickness<1)
                 Thickness=1;
             
