@@ -822,25 +822,35 @@ var powerbi;
                             $(this).hide();
                             $(this).parent().find('.hidden').show();
                         });
-                        //Center for the first block
-                        var x1 = div1.offset().left; // + (div1.width() / 2);
+                        //Below is code for horizontal lines
+                        // //Point for the first block
+                        // var x1 = div1.offset().left;// + (div1.width() / 2);
+                        // var y1 = div1.offset().top + (div1.height() / 3);
+                        // //Line to of Second block
+                        // var x2l = div2.offset().left+(div2.width()) ;
+                        // var x2 = div2.offset().left + (div1.width() / 2);
+                        // var y2 = div2.offset().top + (div2.height() / 3);
+                        // //First breakpoint horizontal
+                        // var hor1 = div1.offset().left+5;
+                        // //Finding the parent
+                        // let left=$("#"+id1).offset().left;
+                        // //Creating curve from div1 to div 2
+                        // var path = "M" + x1 + " " + y1; //selecting centroid of div1
+                        // path += " H " + hor1;   //creating horizontal line to first break point
+                        // //path += "M" + hor1 + " " + y1;  //shifing the center to the end point
+                        // path += " L " + x2l + " " + y2; //Line
+                        // //path += "M" + x2l + " " + y2    //Centershift
+                        // //path += " L " + x2 + " " + y2;  //Final lining
+                        //Code for creating curved lines
+                        //Coordinates for first deivision
+                        var x1 = div1.offset().left;
                         var y1 = div1.offset().top + (div1.height() / 3);
-                        //Line to of Second block
-                        var x2l = div2.offset().left + (div2.width());
-                        var x2 = div2.offset().left + (div1.width() / 2);
+                        //Coordinates for first deivision
+                        var x2 = div2.offset().left + (div2.width());
                         var y2 = div2.offset().top + (div2.height() / 3);
-                        //First breakpoint horizontal
-                        var hor1 = div1.offset().left + 5;
-                        //Finding the parent
-                        var left = $("#" + id1).offset().left;
-                        //Creating curve from div1 to div 2
-                        var path = "M" + x1 + " " + y1; //selecting centroid of div1
-                        path += " H " + hor1; //creating horizontal line to first break point
-                        //path+="C "+x1+","+y1+","+left+", 100, 1000 500 S 500 500,"+x2+" "+y2;
-                        //path += "M" + hor1 + " " + y1;  //shifing the center to the end point
-                        path += " L " + x2l + " " + y2; //Line
-                        //path += "M" + x2l + " " + y2    //Centershift
-                        //path += " L " + x2 + " " + y2;  //Final lining
+                        //Thecontrol points
+                        var C1x = x1 - (div1.width() / 5);
+                        var path = 'M' + x1 + ',' + y1 + ' C' + C1x + ',' + y1 + ' ' + C1x + ',' + y2 + ' ' + x2 + ',' + y2;
                         line.attr("d", path);
                     };
                     //Data inserting code
@@ -1432,8 +1442,8 @@ var powerbi;
     (function (visuals) {
         var plugins;
         (function (plugins) {
-            plugins.chart774830980A704407B8EAE534A05D1ED8 = {
-                name: 'chart774830980A704407B8EAE534A05D1ED8',
+            plugins.chart774830980A704407B8EAE534A05D1ED8_DEBUG = {
+                name: 'chart774830980A704407B8EAE534A05D1ED8_DEBUG',
                 displayName: 'Chart',
                 class: 'Visual',
                 version: '1.0.0',
