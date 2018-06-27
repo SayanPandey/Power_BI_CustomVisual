@@ -1449,8 +1449,8 @@ var powerbi;
     (function (visuals) {
         var plugins;
         (function (plugins) {
-            plugins.chart774830980A704407B8EAE534A05D1ED8_DEBUG = {
-                name: 'chart774830980A704407B8EAE534A05D1ED8_DEBUG',
+            plugins.chart774830980A704407B8EAE534A05D1ED8 = {
+                name: 'chart774830980A704407B8EAE534A05D1ED8',
                 displayName: 'Chart',
                 class: 'Visual',
                 version: '1.0.0',
