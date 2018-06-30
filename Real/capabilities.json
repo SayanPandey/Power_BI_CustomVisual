@@ -36,9 +36,9 @@
             ]
         },
         {
-            "displayName": "VALUE",
-            "name": "VALUE",
-            "kind": "Measure"
+            "displayName": "Tooltip",
+            "name": "Tooltip",
+            "kind": "Grouping"
         }
     ],
     "objects": {
@@ -113,7 +113,7 @@
                     "Metric":{
                         "max":1
                     },
-                    "VALUE":{
+                    "Tooltip":{
                         "max":1
                     }
                 }
@@ -145,6 +145,11 @@
                             "for": {
                                 "in": "Direction"
                             }
+                        },
+                        {
+                            "for": {
+                                "in": "Tooltip"
+                            }
                         }
                     ],
                     "dataReductionAlgorithm": {
@@ -156,11 +161,6 @@
                         {
                             "bind": {
                                 "to": "Metric"
-                            }
-                        },
-                        {
-                            "bind": {
-                                "to": "VALUE"
                             }
                         }
                     ]

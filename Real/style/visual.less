@@ -14,9 +14,10 @@
     max-width:100%;
 }
 .headTitle{
-    color:#a6a6a6;
-    font-size: 1em;
-    font-weight: 500;
+    font-size:12px;
+    font-family: "Segoe UI", Regular;
+    min-height: 5vh;
+    max-height: 5vh;
 
 }
 .head1{
@@ -55,14 +56,13 @@
     box-shadow: 0px 0px 24px 0px rgba(0,0,0,0.3);
 }
 .row2 .col-7{
-    font-size:12px;
-    font-family: "Segoe UI", Regular;
-    padding-left:5px;
-    padding-top:5px;
-    padding-bottom:5px;
+    padding-left:6px;
+    padding-top:6px;
+    padding-bottom:6px;
     background-color: white;
     border-top-left-radius: inherit;
     border-bottom-left-radius: inherit;
+
 }
 .row2 .col-5{
     font-size:18px;
@@ -75,9 +75,7 @@
     max-height:5px;
     
 }
-.progress-bar-selected{
-    background-color: green;
-}
+
 //User interaction related css
 .strong-grey{
     opacity:0.1;
@@ -115,22 +113,22 @@ svg{
 
 /* Tooltip text */
 .col-5 .tooltiptext {
-    visibility: hidden;
-    min-width: 100px;
+    display:none;
+    min-width: 150px;
     max-width:100%;
-    background-color:rgba(0,0,0,1);
+    background-color:rgba(0,0,0,0.8);
     color: #ffffff;
     text-align: center;
-    padding: 4px 0;
+    padding: 6px;
     // border-radius: 6px;
-    font-size: 14px;
+    font-size: 12px;
     //border:solid #ffffff 1px;
 
     /* Position the tooltip text */
     position: absolute;
-    z-index: 100;
-    top: 100%;
-    left: 50%;
+    z-index: 1000;
+    top: 0%;
+    left: 170%;
     margin-left: -50px;
 
     /* Fade in tooltip */
@@ -142,16 +140,50 @@ svg{
 .col-5 .tooltiptext::after {
     content: "";
     position: absolute;
-    bottom: 100%;
-    left: 50%;
+    top: 10%;
+    right: 100%;
     margin-left: -5px;
     border-width: 5px;
     border-style: solid;
-    border-color: transparent transparent rgba(0,0,0,1) transparent;
+    border-color:transparent rgba(0,0,0,0.8) transparent transparent;
 }
 
 /* Show the tooltip text when you mouse over the tooltip container */
 .col-5:hover .tooltiptext {
-    visibility: visible;
+    display:block;
     opacity: 1;
+}
+
+.tooltipValue{
+    font-size: 20px;
+    padding-top:3px;
+    font-weight: 500;
+}
+
+#col-4 .tooltiptext {
+    top:110%;
+    left:0%;
+}
+#col-4 .col-5 .tooltiptext::after {
+    content: "";
+    position: absolute;
+    top:-10px;
+    right: 40%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color:transparent transparent rgba(0,0,0,0.8) transparent;
+}
+.strong-grey .col-5:hover .tooltiptext{
+    display:none;
+}
+.superactivated .text,{
+    position: relative;
+    top:25%;
+}
+.superactivated .human{
+    position: relative;
+    top:25%;
+    left: 25%;
+    display: block;
 }

@@ -31,6 +31,7 @@ module powerbi.extensibility.visual {
         head: string,
         id: string,
         value: number,
+        tooltip?:string,
 
         //Below is the identity element to interact with other visuals
         identity:powerbi.visuals.ISelectionId
@@ -157,21 +158,21 @@ module powerbi.extensibility.visual {
                 }); //The New Mockup design longs for perfect design that will be easy to achieve with divs than svg
 
             let leftSide=block.append("div").classed("col-7",true).style({
-                "-webkit-box-shadow": "0px 0px 0px 1.5px"+stroke,
-                "-moz-box-shadow":"0px 0px 0px 1.5px"+stroke,
-                "box-shadow":"0px 0px 0px 1.5px"+stroke
+                "-webkit-box-shadow": "0px 0px 0px 2px"+stroke,
+                "-moz-box-shadow":"0px 0px 0px 2x"+stroke,
+                "box-shadow":"0px 0px 0px 2"+stroke
                 });
             let rightSide=block.append("div").classed("col-5",true).style({
-                "-webkit-box-shadow": "0px 0px 0px 1.5px"+stroke,
-                "-moz-box-shadow":"0px 0px 0px 1.5px"+stroke,
-                "box-shadow":"0px 0px 0px 1.5px"+stroke
+                "-webkit-box-shadow": "0px 0px 0px 2px"+stroke,
+                "-moz-box-shadow":"0px 0px 0px 2px"+stroke,
+                "box-shadow":"0px 0px 0px 2px"+stroke
                 })
             .style({
                 "background-color":stroke,
                 "color":color
             });
-            leftSide.text(Tile.head).append('br');
-            leftSide.append('br');
+            leftSide.append('div').classed('headTitle',true).text(Tile.head);
+            //leftSide.append('br');
             //appending progress bars
             //1st Progress bar
             let ProgTitle1=leftSide.append("div").classed("progtitle",true).text("Of Selected");
@@ -198,10 +199,12 @@ module powerbi.extensibility.visual {
                 'aria-valuemax':"100",
                 style:"width:80%; background-color:"+stroke
             });
-            ProgTitle2.append('br');
+            //ProgTitle2.append('br');
             rightSide.html('<img src=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAQAAABKfvVzAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QAAKqNIzIAAAAJcEhZcwAADdcAAA3XAUIom3gAAAAHdElNRQfiBhYHNiYzNO/HAAABiElEQVQ4y52TzUtUURiHnzs4juFGDQIXRmDUJsJNUEaMIQmiLSQwKDe18A/wDzCIVhItZiG0c1sQgtTCRRA2tXEjxTS7qFnYpkWUkPj1tMi595zxhkO/1ft73o/zHs698P+yaLFt7oArbrvtigMtfNnfR7hd1m2qblfKS9byOE4bajrltyJ+G6ADgLPRfv32MEofVUSSlA9mJ0wGc1Yd8Zuq+z5wNshMZA0F11J81a9B0aifD6M1C+G1u12w5rrzDkd7V7zvB2su2P23sgDgOBXK7FKkTGd0n076OGCXMhXHm9MXo5lDfg/clO8Ctwg4Y6wXTrp1GD91qiU7g9UI/PChJW+45LJznvCmH6N8lXSaasOLPvZn6vd84wWfBxVbBObAS762Vb8876fMhg0vvWeeVr2bmfAx3jOW+91fZz0zBR7xik0AvnAut6FIiR0ANnnSfItTjjnohvka8o6XPXn0N/pnQ7hSOzILk4if4RrDXOE0PSTs0KBBnWfJ2+NHdthrcmxZO/oD9O8Vy6xKvwMAAAAldEVYdGRhdGU6Y3JlYXRlADIwMTgtMDYtMjJUMDc6NTQ6MzgrMDI6MDAf3EwXAAAAJXRFWHRkYXRlOm1vZGlmeQAyMDE4LTA2LTIyVDA3OjU0OjM4KzAyOjAwboH0qwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAAASUVORK5CYII=>');
+            rightSide.select('img').classed('human',true);
             rightSide.append("div").classed("text",true).text(this.getFormatted(Tile.value))
-            rightSide.append('span').classed('tooltiptext',true).text(Tile.value);
+            let tooltip=rightSide.append('span').classed('tooltiptext',true).text(Tile.tooltip);
+            tooltip.append('div').classed('tooltipValue',true).text(' '+Tile.value);
 
             //Appending the bookmark icon
             if(Tile.col!=1){
@@ -382,8 +385,9 @@ module powerbi.extensibility.visual {
             let Launch = dv[0].categorical.categories[2].values;
             let Grow = dv[0].categorical.categories[3].values;
             let Direction=dv[0].categorical.categories[4].values;
+            let Tooltip= dv[0].categorical.categories[5].values;
             let Metric = dv[0].categorical.values[0].values;
-            //let Link= dv[0].categorical.categories[5].values;
+            
             
             //Clearing the connection array
             // this.ConnectionIdentity =[];
@@ -412,6 +416,7 @@ module powerbi.extensibility.visual {
                         head: <string>head,
                         id: this.removeSpl(<string>head),
                         value: <number>Metric[i],
+                        tooltip:<string>Tooltip[i],
                         identity:this.host.createSelectionIdBuilder()
                             .withCategory(dv[0].categorical.categories[col-1], i)
                             .withMeasure(head)
@@ -461,7 +466,7 @@ module powerbi.extensibility.visual {
 
         //Super activation for Tiles having progressbars
         public superActivate(id : string){
-            let x=$("#"+id);
+            let x=$("#"+id).addClass('superactivated');
             x.find(".progtitle").slideDown(500);
             let color=x.find(".col-5").css("background-color");
             let progbar=d3.select("#"+id).select(".col-7").style({
@@ -475,7 +480,7 @@ module powerbi.extensibility.visual {
 
         //Utility function to deactivate
         public deActivate(x:SVGElement){
-            
+            $(x).removeClass('superactivated');
             $(x).find(".progtitle").hide();
             let color=$(x).find(".col-5").css("background-color");
             d3.select(x).select(".col-7").style({
@@ -486,7 +491,7 @@ module powerbi.extensibility.visual {
 
         //Utility Function to deactivate all nodes
         public deactivateAll(){
-            let deactTile=d3.selectAll(".inactive");
+            let deactTile=d3.selectAll(".inactive").classed('superactivated',false);;
             deactTile.selectAll(".progtitle").style({
                 display:"none"
             });
@@ -500,7 +505,7 @@ module powerbi.extensibility.visual {
                 let vValue=$(deactTile[0][i]).find('.default').val();
                 let Value:number=parseInt(vValue);
                 $(deactTile[0][i]).find('.col-5').find('div').text(this.getFormatted(Value));
-                $(deactTile[0][i]).find('.col-5').find('.tooltiptext').text(Value);
+                $(deactTile[0][i]).find('.col-5').find('.tooltipValue').text(' '+Value);
             }
         }
         //Utility Function to sum up values of ending column tiles in case of multiple connections
@@ -745,7 +750,7 @@ module powerbi.extensibility.visual {
         public progressBarValue(id:string,vValue2:number){
             
             //Keeping the value in tooltip
-            $("#"+id).find('.tooltiptext').text(vValue2);
+            $("#"+id).find('.tooltipValue').text(' '+vValue2);
 
             //Now calculating the values of the progress bars
 
@@ -920,7 +925,7 @@ module powerbi.extensibility.visual {
                for (let i = 0; i < Default.Tiles.length; i++) {
                     if(Default.Tiles[i].col==ColNum && Default.Tiles[i].id==id){
                         $(x).parent().find(".col-5").find("div").text(Context.getFormatted(Default.Tiles[i].value));
-                        $(x).parent().find(".col-5").find(".tooltiptext").text(Default.Tiles[i].value);
+                        $(x).parent().find(".col-5").find(".tooltipValue").text(' '+Default.Tiles[i].value);
                         Context.deActivate(x);
                         break;
                     }

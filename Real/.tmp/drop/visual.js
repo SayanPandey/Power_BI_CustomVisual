@@ -687,21 +687,21 @@ var powerbi;
                             Context.clickedColor = stroke;
                         }); //The New Mockup design longs for perfect design that will be easy to achieve with divs than svg
                         var leftSide = block.append("div").classed("col-7", true).style({
-                            "-webkit-box-shadow": "0px 0px 0px 1.5px" + stroke,
-                            "-moz-box-shadow": "0px 0px 0px 1.5px" + stroke,
-                            "box-shadow": "0px 0px 0px 1.5px" + stroke
+                            "-webkit-box-shadow": "0px 0px 0px 2px" + stroke,
+                            "-moz-box-shadow": "0px 0px 0px 2x" + stroke,
+                            "box-shadow": "0px 0px 0px 2" + stroke
                         });
                         var rightSide = block.append("div").classed("col-5", true).style({
-                            "-webkit-box-shadow": "0px 0px 0px 1.5px" + stroke,
-                            "-moz-box-shadow": "0px 0px 0px 1.5px" + stroke,
-                            "box-shadow": "0px 0px 0px 1.5px" + stroke
+                            "-webkit-box-shadow": "0px 0px 0px 2px" + stroke,
+                            "-moz-box-shadow": "0px 0px 0px 2px" + stroke,
+                            "box-shadow": "0px 0px 0px 2px" + stroke
                         })
                             .style({
                             "background-color": stroke,
                             "color": color
                         });
-                        leftSide.text(Tile.head).append('br');
-                        leftSide.append('br');
+                        leftSide.append('div').classed('headTitle', true).text(Tile.head);
+                        //leftSide.append('br');
                         //appending progress bars
                         //1st Progress bar
                         var ProgTitle1 = leftSide.append("div").classed("progtitle", true).text("Of Selected");
@@ -728,10 +728,12 @@ var powerbi;
                             'aria-valuemax': "100",
                             style: "width:80%; background-color:" + stroke
                         });
-                        ProgTitle2.append('br');
+                        //ProgTitle2.append('br');
                         rightSide.html('<img src=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAQAAABKfvVzAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QAAKqNIzIAAAAJcEhZcwAADdcAAA3XAUIom3gAAAAHdElNRQfiBhYHNiYzNO/HAAABiElEQVQ4y52TzUtUURiHnzs4juFGDQIXRmDUJsJNUEaMIQmiLSQwKDe18A/wDzCIVhItZiG0c1sQgtTCRRA2tXEjxTS7qFnYpkWUkPj1tMi595zxhkO/1ft73o/zHs698P+yaLFt7oArbrvtigMtfNnfR7hd1m2qblfKS9byOE4bajrltyJ+G6ADgLPRfv32MEofVUSSlA9mJ0wGc1Yd8Zuq+z5wNshMZA0F11J81a9B0aifD6M1C+G1u12w5rrzDkd7V7zvB2su2P23sgDgOBXK7FKkTGd0n076OGCXMhXHm9MXo5lDfg/clO8Ctwg4Y6wXTrp1GD91qiU7g9UI/PChJW+45LJznvCmH6N8lXSaasOLPvZn6vd84wWfBxVbBObAS762Vb8876fMhg0vvWeeVr2bmfAx3jOW+91fZz0zBR7xik0AvnAut6FIiR0ANnnSfItTjjnohvka8o6XPXn0N/pnQ7hSOzILk4if4RrDXOE0PSTs0KBBnWfJ2+NHdthrcmxZO/oD9O8Vy6xKvwMAAAAldEVYdGRhdGU6Y3JlYXRlADIwMTgtMDYtMjJUMDc6NTQ6MzgrMDI6MDAf3EwXAAAAJXRFWHRkYXRlOm1vZGlmeQAyMDE4LTA2LTIyVDA3OjU0OjM4KzAyOjAwboH0qwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAAASUVORK5CYII=>');
+                        rightSide.select('img').classed('human', true);
                         rightSide.append("div").classed("text", true).text(this.getFormatted(Tile.value));
-                        rightSide.append('span').classed('tooltiptext', true).text(Tile.value);
+                        var tooltip = rightSide.append('span').classed('tooltiptext', true).text(Tile.tooltip);
+                        tooltip.append('div').classed('tooltipValue', true).text(' ' + Tile.value);
                         //Appending the bookmark icon
                         if (Tile.col != 1) {
                             block.append("span").classed("hidden", true).style({
@@ -881,8 +883,8 @@ var powerbi;
                         var Launch = dv[0].categorical.categories[2].values;
                         var Grow = dv[0].categorical.categories[3].values;
                         var Direction = dv[0].categorical.categories[4].values;
+                        var Tooltip = dv[0].categorical.categories[5].values;
                         var Metric = dv[0].categorical.values[0].values;
-                        //let Link= dv[0].categorical.categories[5].values;
                         //Clearing the connection array
                         // this.ConnectionIdentity =[];
                         this.ConnectionIdentityBackwards = [];
@@ -918,6 +920,7 @@ var powerbi;
                                     head: head,
                                     id: this.removeSpl(head),
                                     value: Metric[i],
+                                    tooltip: Tooltip[i],
                                     identity: this.host.createSelectionIdBuilder()
                                         .withCategory(dv[0].categorical.categories[col - 1], i)
                                         .withMeasure(head)
@@ -964,7 +967,7 @@ var powerbi;
                     };
                     //Super activation for Tiles having progressbars
                     Visual.prototype.superActivate = function (id) {
-                        var x = $("#" + id);
+                        var x = $("#" + id).addClass('superactivated');
                         x.find(".progtitle").slideDown(500);
                         var color = x.find(".col-5").css("background-color");
                         var progbar = d3.select("#" + id).select(".col-7").style({
@@ -977,6 +980,7 @@ var powerbi;
                     };
                     //Utility function to deactivate
                     Visual.prototype.deActivate = function (x) {
+                        $(x).removeClass('superactivated');
                         $(x).find(".progtitle").hide();
                         var color = $(x).find(".col-5").css("background-color");
                         d3.select(x).select(".col-7").style({
@@ -986,7 +990,8 @@ var powerbi;
                     };
                     //Utility Function to deactivate all nodes
                     Visual.prototype.deactivateAll = function () {
-                        var deactTile = d3.selectAll(".inactive");
+                        var deactTile = d3.selectAll(".inactive").classed('superactivated', false);
+                        ;
                         deactTile.selectAll(".progtitle").style({
                             display: "none"
                         });
@@ -999,7 +1004,7 @@ var powerbi;
                             var vValue = $(deactTile[0][i]).find('.default').val();
                             var Value = parseInt(vValue);
                             $(deactTile[0][i]).find('.col-5').find('div').text(this.getFormatted(Value));
-                            $(deactTile[0][i]).find('.col-5').find('.tooltiptext').text(Value);
+                            $(deactTile[0][i]).find('.col-5').find('.tooltipValue').text(' ' + Value);
                         }
                     };
                     //Utility Function to sum up values of ending column tiles in case of multiple connections
@@ -1217,7 +1222,7 @@ var powerbi;
                     //Utility function to get progressbar value
                     Visual.prototype.progressBarValue = function (id, vValue2) {
                         //Keeping the value in tooltip
-                        $("#" + id).find('.tooltiptext').text(vValue2);
+                        $("#" + id).find('.tooltipValue').text(' ' + vValue2);
                         //Now calculating the values of the progress bars
                         //Looking for of selected value
                         var Value2 = vValue2;
@@ -1368,7 +1373,7 @@ var powerbi;
                             for (var i = 0; i < Default.Tiles.length; i++) {
                                 if (Default.Tiles[i].col == ColNum && Default.Tiles[i].id == id) {
                                     $(x).parent().find(".col-5").find("div").text(Context.getFormatted(Default.Tiles[i].value));
-                                    $(x).parent().find(".col-5").find(".tooltiptext").text(Default.Tiles[i].value);
+                                    $(x).parent().find(".col-5").find(".tooltipValue").text(' ' + Default.Tiles[i].value);
                                     Context.deActivate(x);
                                     break;
                                 }
