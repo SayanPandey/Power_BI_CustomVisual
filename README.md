@@ -21,7 +21,7 @@ The custom visual that i have developed is shown below. The **purpose,reasons ar
 
 Though **Power BI** custom visual is free to build and use yet there is one restriction; Microsoft won't provide any individual licences or trials in this field. In order to be a Power BI developer you must join any organisation that has Power BI licenses or at least should give you a work e-mail address. Using personal account you get a error message like the one below.
 
-![](/Extras/images/Screenshot.png") 
+![](/Extras/images/Screenshot.png) 
 
 
 
